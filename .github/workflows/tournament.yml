@@ -1,0 +1,63 @@
+name: Tournament
+
+# Runs the round-robin and commits the updated results/leaderboard.json so the
+# Pages scoreboard reflects it. Runs on a weekly schedule and on demand.
+#
+# Timing is measured HERE, on GitHub's runners (slower and more variable than a
+# laptop) — the per-move budget below is deliberately generous. See the docs.
+on:
+  workflow_dispatch:
+    inputs:
+      tournament:
+        description: "Tournament format"
+        type: choice
+        options: [simple, league, championship]
+        default: league
+        required: false
+      time_limit:
+        description: "Per-move time budget in seconds"
+        default: "2.0"
+        required: false
+  schedule:
+    - cron: "0 6 * * 1" # every Monday 06:00 UTC
+
+permissions:
+  contents: write # needed to commit the results file back
+
+concurrency:
+  group: tournament
+  cancel-in-progress: false
+
+jobs:
+  tournament:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run the tournament (hard per-move timeout via subprocess)
+        run: |
+          nim-tournament \
+            --out results/leaderboard.json \
+            --tournament "${{ github.event.inputs.tournament || 'league' }}" \
+            --time-limit "${{ github.event.inputs.time_limit || '2.0' }}"
+
+      - name: Commit updated leaderboard
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet -- results/leaderboard.json; then
+            echo "Leaderboard unchanged; nothing to commit."
+          else
+            git add results/leaderboard.json
+            git commit -m "chore(tournament): update leaderboard [skip ci]"
+            git push
+          fi

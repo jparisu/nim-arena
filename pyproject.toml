@@ -1,0 +1,58 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "nimarena"
+version = "0.1.0"
+description = "Parametrized NIM: a game engine, three reference AIs, a tournament runner, and a clean player API."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "jparisu" }]
+keywords = ["nim", "game", "ai", "minimax", "tournament", "education"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Education",
+    "Topic :: Games/Entertainment :: Board Games",
+]
+dependencies = [
+    "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "ruff>=0.4",
+]
+docs = [
+    "mkdocs>=1.6",
+    "mkdocs-material>=9.5",
+    "mkdocstrings[python]>=0.25",
+]
+
+[project.urls]
+Homepage = "https://github.com/jparisu/nimarena"
+Documentation = "https://nimarena.readthedocs.io"
+Repository = "https://github.com/jparisu/nimarena"
+"Live demo" = "https://jparisu.github.io/nimarena"
+
+[project.scripts]
+nim-tournament = "nimarena.tournament:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/nimarena"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "W"]
+ignore = ["E501"]

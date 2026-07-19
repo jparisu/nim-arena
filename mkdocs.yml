@@ -1,0 +1,62 @@
+site_name: NIM Arena
+site_description: Parametrized NIM — game engine, player API, three AIs, tournament, and a Pyodide web app.
+site_url: https://nimarena.readthedocs.io
+repo_url: https://github.com/jparisu/nimarena
+repo_name: jparisu/nimarena
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+  features:
+    - navigation.instant
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - toc.integrate
+
+nav:
+  - Home: index.md
+  - Game rules: rules.md
+  - Getting started: getting-started.md
+  - Code structure: code-structure.md
+  - Player API reference: player-api.md
+  - Submit a new player: submit-a-player.md
+  - The tournament: tournament.md
+  - The web app: web.md
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - tables
+  - toc:
+      permalink: true
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            show_source: true
+            show_root_heading: true
+            docstring_style: google
