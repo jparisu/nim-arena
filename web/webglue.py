@@ -27,6 +27,19 @@ _MS_PER_SECOND = 1000.0
 _REGISTRY: Registry | None = None
 
 
+def _require_registry() -> Registry:
+    """Return the loaded registry, or fail with an actionable message.
+
+    Every entry point below goes through this rather than touching the global
+    directly: an un-awaited ``init`` otherwise surfaced as
+    ``AttributeError: 'NoneType' object has no attribute 'all'``, which says
+    nothing about what actually went wrong.
+    """
+    if _REGISTRY is None:
+        raise RuntimeError("webglue.init(base_dir) must be called before using the bridge")
+    return _REGISTRY
+
+
 def init(base_dir: str) -> str:
     """Load players from the manifest under ``base_dir`` and return them as JSON."""
     global _REGISTRY
@@ -35,8 +48,22 @@ def init(base_dir: str) -> str:
 
 
 def players_json() -> str:
-    """Return the registered players as a JSON list of ``{"name": ...}``."""
-    return json.dumps([{"name": p.name} for p in _REGISTRY.all()])
+    """Return the registered players as JSON, with their declared identity.
+
+    Each entry is ``{"name", "authors", "description"}``, read from the player's
+    class rather than from any instance, so the UI can label and describe an
+    opponent without playing a game.
+    """
+    return json.dumps(
+        [
+            {
+                "name": type(p).get_name(),
+                "authors": type(p).get_authors(),
+                "description": type(p).get_description(),
+            }
+            for p in _require_registry().all()
+        ]
+    )
 
 
 # --- pure game rules (single source of truth) ------------------------------ #
@@ -77,8 +104,13 @@ def ask_move(name: str, state_json: str) -> str:
     where ``info`` is the player's optional ``last_info`` (used by the "Why did
     it do that?" panel).
     """
-    player = _REGISTRY.get(name)
+    player = _require_registry().get(name)
     state = json.loads(state_json)
+    if game.is_terminal(state):
+        # No legal move exists. Reference bots raise here rather than returning
+        # something illegal, and the tournament never asks — but the browser can,
+        # so give the UI a clear error instead of a bot-shaped crash.
+        raise ValueError(f"no move to make: {state} is terminal")
     t0 = time.perf_counter()
     move = player.choose_move(list(state))
     elapsed_ms = (time.perf_counter() - t0) * _MS_PER_SECOND

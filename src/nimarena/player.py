@@ -1,12 +1,35 @@
 """The player API — the spine of the whole project.
 
 Everything (the tournament, the web page, and every externally submitted bot)
-depends on this one small interface. It is deliberately **minimal**: a player
-carries a ``name`` and implements a single method, :meth:`Player.choose_move`.
+depends on this one small interface. A player declares **who it is** and
+implements **one method**, :meth:`Player.choose_move`.
 
-Keeping the contract tiny is a feature: every extra parameter is one more thing
-an outsider can get wrong. Concerns that belong to the *caller* — timeouts,
+Keeping the move contract tiny is a feature: every extra parameter is one more
+thing an outsider can get wrong. Concerns that belong to the *caller* — timeouts,
 move history, opponent identity — deliberately live in the tournament, not here.
+
+There are two other things a player must provide, and both exist because the
+*caller* needs them, not because the bot does:
+
+**Identity.** :meth:`~Player.get_name`, :meth:`~Player.get_authors` and
+:meth:`~Player.get_description` are ``classmethod``\\ s, so the tournament, the
+docs and the web app can all read a player's identity **without constructing
+it**. They are abstract, which means :class:`abc.ABCMeta` refuses to instantiate
+a subclass that has not filled them in::
+
+    TypeError: Can't instantiate abstract class MyBot without an implementation
+               for abstract method 'get_name'
+
+**Construction.** :meth:`~Player.create` is the *only* way the tournament builds
+a player, and it receives only a ``seed``. A bot is free to ignore the seed (a
+deterministic bot has nothing to seed), but every bot is offered one, so repeated
+games can differ. Because ``create`` is a classmethod, a bot may also use the
+seed to vary its own configuration.
+
+Why a factory rather than a ``seed`` parameter on every ``__init__``: it keeps a
+tournament concern out of the signature every author has to write, and it gives
+the caller one uniform construction path instead of inspecting signatures to see
+which bots accept what.
 """
 
 from __future__ import annotations
@@ -17,19 +40,67 @@ from .game import State
 
 
 class Player(ABC):
-    """A NIM player. Implement :meth:`choose_move` to build an AI.
+    """A NIM player. Implement the three accessors, then :meth:`choose_move`.
 
     A player receives the current board (the number of rows is ``len(state)``,
     and ``state[i]`` is the number of sticks in row ``i``) and must return the
     move it wants to make as a tuple ``(row_index, sticks_to_remove)``.
-
-    Attributes:
-        name: Human-readable, unique player name. Shown in the UI and the
-            scoreboard. Override it in your subclass.
     """
 
-    #: Human-readable, unique player name. Shown in the UI and the scoreboard.
-    name: str = "unnamed"
+    #: Set by the tournament on a roster copy (e.g. ``"hard#1"``). Never set this
+    #: yourself — :attr:`name` falls back to :meth:`get_name` when it is unset.
+    _display_name: str | None = None
+
+    # ----------------------------------------------------------------- #
+    # Identity — readable without constructing the player               #
+    # ----------------------------------------------------------------- #
+
+    @classmethod
+    @abstractmethod
+    def get_name(cls) -> str:
+        """Return this player's unique, human-readable name.
+
+        Shown in the scoreboard, the web app and the docs. Must be unique across
+        every admitted player; the manifest loader rejects duplicates.
+        """
+
+    @classmethod
+    @abstractmethod
+    def get_authors(cls) -> list[str]:
+        """Return the author(s) of this player, as a non-empty list of names."""
+
+    @classmethod
+    @abstractmethod
+    def get_description(cls) -> str:
+        """Return a one-or-two-sentence description of how this player decides.
+
+        This is what the scoreboard and the docs show next to the name, so
+        describe the *strategy*, not the implementation.
+        """
+
+    # ----------------------------------------------------------------- #
+    # Construction — the tournament's only entry point                  #
+    # ----------------------------------------------------------------- #
+
+    @classmethod
+    def create(cls, seed: int) -> Player:
+        """Build an instance of this player for one game.
+
+        The default implementation ignores ``seed`` and calls ``cls()``. Override
+        it if your player takes constructor arguments, or if you want the seed to
+        influence how it is configured.
+
+        Args:
+            seed: a reproducible seed for this game. Never ``None``.
+
+        Returns:
+            A ready-to-play instance.
+        """
+        return cls()
+
+    # ----------------------------------------------------------------- #
+    # Playing                                                           #
+    # ----------------------------------------------------------------- #
 
     @abstractmethod
     def choose_move(self, state: State) -> tuple[int, int]:
@@ -44,7 +115,23 @@ class Player(ABC):
             ``1 <= count <= state[row]``. The move **must** be legal — an
             illegal move forfeits the game in the tournament.
         """
-        ...
+
+    # ----------------------------------------------------------------- #
+    # Display name                                                      #
+    # ----------------------------------------------------------------- #
+
+    @property
+    def name(self) -> str:
+        """The name to display for *this instance*.
+
+        Defaults to :meth:`get_name`. The tournament overwrites it on roster
+        copies so that two copies of the same kind stay distinguishable.
+        """
+        return self._display_name if self._display_name is not None else self.get_name()
+
+    @name.setter
+    def name(self, value: str) -> None:
+        self._display_name = value
 
     def __repr__(self) -> str:  # pragma: no cover - cosmetic
         return f"<{type(self).__name__} name={self.name!r}>"

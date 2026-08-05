@@ -17,8 +17,8 @@ which is exactly why review is the security and correctness gate.
 1. **Fork & clone**, then create a branch.
 
 2. **Add your player file** at `players/<your_bot>.py`. Copy
-   [`players/random_bot.py`](players/random_bot.py) as a template. Your class
-   must subclass `nimarena.player.Player`, set a unique `name`, and implement
+   [`players/random.py`](players/random.py) as a template. Your class must
+   subclass `nimarena.player.Player`, declare its identity, and implement
    `choose_move(self, state) -> (row, count)`:
 
    ```python
@@ -26,7 +26,17 @@ which is exactly why review is the security and correctness gate.
    from nimarena.player import Player
 
    class MyBot(Player):
-       name = "MyBot"  # unique, human-readable
+       @classmethod
+       def get_name(cls) -> str:
+           return "mybot"          # unique across all admitted players
+
+       @classmethod
+       def get_authors(cls) -> list[str]:
+           return ["your-github-handle"]
+
+       @classmethod
+       def get_description(cls) -> str:
+           return "Takes one stick from the first non-empty row."
 
        def choose_move(self, state: State) -> tuple[int, int]:
            # state[i] = sticks in row i. Return (row, count):
@@ -35,12 +45,13 @@ which is exactly why review is the security and correctness gate.
            return (row, 1)
    ```
 
+   Prefer to compete on evaluation rather than write a search? Inherit a strategy
+   from `nimarena.bots` and override its hooks — see the Player API docs.
+
 3. **Register it** — add exactly one entry to [`players.yaml`](players.yaml):
 
    ```yaml
-     - name: MyBot
-       author: your-github-handle
-       file: my_bot.py
+     - file: my_bot.py
        class: MyBot
    ```
 
@@ -57,6 +68,7 @@ which is exactly why review is the security and correctness gate.
 - **Output** a legal move: `(row, count)` with `0 <= row < len(state)` and
   `1 <= count <= state[row]`.
 - **Do not mutate** the `state` you receive.
+- **Declare a unique name.** CI rejects a name already used by an admitted player.
 - **No external dependencies** beyond the standard library and `nimarena`.
 - **No network, filesystem, or subprocess access.** Your `choose_move` should be
   a pure function of the board.

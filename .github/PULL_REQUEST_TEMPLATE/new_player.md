@@ -13,10 +13,11 @@ this checklist into your PR description.
 
 - [ ] Added a single file `players/<my_bot>.py`.
 - [ ] The class subclasses `nimarena.player.Player`.
-- [ ] `name` is set and **unique** (matches the manifest entry).
+- [ ] `get_name`, `get_authors` and `get_description` are implemented.
+- [ ] The name is **unique** — no admitted player already uses it.
 - [ ] `choose_move(self, state) -> (row, count)` returns a **legal** move.
 - [ ] Does **not** mutate the `state` it receives.
-- [ ] Added **exactly one** entry to `players.yaml` (name, author, file, class).
+- [ ] Added **exactly one** entry to `players.yaml` (`file` and `class`).
 - [ ] No external dependencies beyond the standard library and `nimarena`.
 - [ ] No network / filesystem / subprocess / `eval` / `exec`.
 - [ ] Runs locally: `pytest` is green and `nim-tournament --no-subprocess` works.

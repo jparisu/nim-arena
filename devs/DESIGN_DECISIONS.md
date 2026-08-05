@@ -10,7 +10,7 @@ Status of each entry: `DECIDED` (agreed, may not be implemented yet) or
 
 ---
 
-## D1 — Timing is reported as aggregates, never per move · `DECIDED`
+## D1 — Timing is reported as aggregates, never per move · `IMPLEMENTED`
 
 The brief asks four times (`design_prompt.md:273, 290-295, 299, 466`) for *"the time
 elapsed per player per move"*, and its example schema shows a
@@ -141,7 +141,7 @@ bot demonstrates the need.
 
 ---
 
-## D3 — Players are specified, not instantiated, by the orchestrator · `DECIDED`
+## D3 — Players are specified, not instantiated, by the orchestrator · `DECIDED` (blocked on D2)
 
 Because the child builds the players, the parent never holds an instance. A roster
 entry becomes a **specification**:
@@ -172,7 +172,7 @@ unpickling an instance.
 
 ---
 
-## D4 — The player API: mandatory metadata + a seed-only factory · `DECIDED`
+## D4 — The player API: mandatory metadata + a seed-only factory · `IMPLEMENTED`
 
 ### Shape
 
@@ -257,28 +257,114 @@ detect it, even though "unique name" is a documented merge gate.
 
 ---
 
+## D5 — The reference roster is a difficulty ladder · `IMPLEMENTED`
+
+The four shipped players are difficulty *levels*, not named algorithms:
+
+| Name | Strategy | Depth |
+|---|---|---|
+| `random` | uniform random legal move | — |
+| `easy` | empties the largest row | — |
+| `medium` | negamax + alpha-beta, total-sticks heuristic | 2 |
+| `hard` | negamax + alpha-beta, endgame oracle, steer-to-known heuristic | 4 |
+
+Strategies moved out of `players/` into `nimarena.bots`, which is **public API**: a
+submission may import one and configure it instead of writing a search. Each file
+in `players/` is now only identity plus configuration. Every class in
+`nimarena.bots` stays abstract (it declares no identity), so none can be entered in
+a tournament by accident.
+
+`medium` and `hard` share one search. The engine
+(`nimarena.bots.minimax.MinimaxBot`) holds **no NIM knowledge at all** — just
+negamax with alpha-beta and two hooks, `evaluate` and `known_value`.
+
+### Why an oracle rather than a transposition table
+
+Memoizing *search results* under alpha-beta is unsound: a pruned search returns a
+bound, not a value, so correctness needs `EXACT`/`LOWER`/`UPPER` flags plus a depth
+check on every entry. An oracle of values known *independently of the search* —
+a hand-written table, or a structural rule — is exact by construction, so it is
+safe to consult at any node and any window. That is why `known_value` is checked
+*before* the depth cutoff and returns only certainties.
+
+### `hard`'s knowledge, and why it is still beatable
+
+Four rules, all exact, all special cases of "nim-sum zero means the mover loses":
+a single non-empty row is a win; an all-ones board is decided by parity; a board
+whose row counts all appear an even number of times is lost; and three tabulated
+triples are lost.
+
+Recognising *shapes* is not computing the XOR. Measured, this is the whole point:
+
+| Board | `hard` vs a perfect nim-sum player |
+|---|---|
+| `[3, 5, 7]`, `[1, 3, 5, 7]`, `[5, 7, 9]` | 50% — plays **optimally**, would only tie |
+| `[7, 9, 11]`, `[1, 3, 5, 7, 9]`, `[9, 11, 13]` | 0% — genuinely beatable |
+
+In NIM there is no "slightly imperfect": one mistake against a perfect opponent
+loses the game, so the result is either 50% (optimal, splitting by who moves first)
+or ~0%. On small boards a depth-4 search plus endgame knowledge *is* optimal.
+
+So `[7, 9, 11]` was added to `DEFAULT_STARTING_STATES`. Without it the top of the
+ladder does not discriminate and the planned nim-sum submission could only draw
+with `hard`. Cost: ~120 ms for the slowest move, against a 2000 ms budget.
+
+### `easy` is not reliably better than `random`
+
+Measured over 400 games per pairing: `easy` beats `random` head-to-head (53.5%) but
+scores *worse* overall, because `random` occasionally stumbles into a good move
+against `medium` while `easy` loses to it every time. Emptying the largest row is
+not a strategy in NIM. The two are therefore **deliberately not ordered** against
+each other, in the docs or in the tests.
+
+### The XOR player is deliberately absent
+
+No perfect player ships. It is reserved as the first Pull Request, both to
+demonstrate the submission flow end-to-end and to verify the review gate on a real
+change. It should land clearly at the top of the ladder.
+
+---
+
 ## Blast radius of D2–D4
 
 A breaking change to the player contract. Correct time to make it: **no student bots
 exist yet** (0 PRs on the repo).
 
-| Area | Work |
+D1, D4 and D5 have landed. **D2 has not**, and D3 depends on it.
+
+| Area | Status |
 |---|---|
-| `src/nimarena/player.py` | the new ABC |
-| `players/*.py` (4 bots) | add the three accessors; `PerfectBot`/`GreedyBot` need no `create` |
-| `src/nimarena/tournament.py` | fork-per-game worker, shared-memory accounting, specs instead of instances, `std`, delete the two dead `to_dict`s |
-| `src/nimarena/manifest.py` | admission-list schema, validation build, name-uniqueness check |
-| `src/nimarena/registry.py` | keyed by `get_name()`; drop `replace=True` at the call site |
-| `players.yaml` | drop `name` / `author` |
-| `web/webglue.py`, `web/app.js` | build via `create(seed)`; read metadata from the class |
-| `docs/player-api.md`, `docs/submit-a-player.md`, `players/README.md`, `CONTRIBUTING.md`, `.github/PULL_REQUEST_TEMPLATE/new_player.md` | the contract changed in all five |
-| `tests/` | new tests for budgets, hang attribution, metadata enforcement, `create(seed)` variation |
+| `src/nimarena/player.py` | ✅ new ABC: three abstract accessors + `create(seed)` |
+| `src/nimarena/bots/` | ✅ new package: generic engine + 4 strategies |
+| `players/*.py` | ✅ four metadata-only wrappers; old bots deleted |
+| `src/nimarena/manifest.py` | ✅ admission-list schema, validation build, duplicate-name rejection |
+| `players.yaml` | ✅ `file` + `class` only |
+| `src/nimarena/tournament.py` | ✅ `create(seed)` roster, `std`, dead `to_dict`s deleted, third board — ❌ still forks per move |
+| `web/webglue.py`, `web/app.js` | ✅ metadata exposed, terminal guard, registry guard |
+| docs + PR template | ✅ all updated |
+| `tests/` | ✅ 87 cases incl. metadata enforcement, oracle rules, seed variation — ❌ nothing yet for budgets or hang attribution |
+
+**Still open (D2):** per-game forking, the two time budgets, shared-memory hang
+attribution, and D3's specification-based roster.
 
 ### Verification that must accompany it
 
 - Two runs of the same seeded tournament are byte-identical (reproducible), **and**
   the repetitions within one run are **not** identical — the matchup scores must
   stop being multiples of `--repetitions`.
+
+  Measured now, one matchup over 12 games on `[7, 9, 11]`, which isolates the
+  defect precisely to the fork granularity:
+
+  | Mode | Distinct move sequences |
+  |---|---|
+  | `use_subprocess=True` (the CI default) | **2** of 12 |
+  | `use_subprocess=False` | **12** of 12 |
+
+  Two, not one, because the first-mover order alternates; within one order all six
+  repetitions are byte-identical. Roster-level seeding *does* work — `random#0` and
+  `random#1` differ — because `build_roster` gives each copy its own seed. What
+  fails is variation between the repetitions of a single match.
 - A bot that hangs in `choose_move` loses *that game* and is correctly attributed;
   the tournament completes.
 - A bot that hangs in `create` loses on the build budget and is correctly

@@ -42,8 +42,8 @@ directly and enforces no timeout, by design.
 
 from __future__ import annotations
 
-import inspect
 import multiprocessing as mp
+import statistics
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -55,7 +55,14 @@ from .game import Move, State
 from .player import Player
 
 #: Boards every match is played on, unless the caller overrides them.
-DEFAULT_STARTING_STATES: list[State] = [[3, 5, 7], [1, 3, 5, 7]]
+#:
+#: ``[7, 9, 11]`` is deliberately larger than the two classic boards. On small
+#: boards a depth-4 search with endgame knowledge plays *optimally*, so every
+#: strong player ties and the top of the ranking stops discriminating. This board
+#: is big enough that the search cannot reach the endgame from the opening, which
+#: is what keeps the leaderboard meaningful at the top. It costs ~120 ms for the
+#: slowest move, well inside the per-move budget.
+DEFAULT_STARTING_STATES: list[State] = [[3, 5, 7], [1, 3, 5, 7], [7, 9, 11]]
 #: Per-move time budget, in milliseconds, used by the low-level match runner.
 DEFAULT_MOVE_TIMEOUT_MS = 1000
 #: Per-move time budget, in seconds, used as the CLI default.
@@ -172,15 +179,6 @@ class MoveRecord:
     move: Move | None
     elapsed_ms: float
 
-    def to_dict(self) -> dict[str, object]:
-        """Return a JSON-serializable dict for this move record."""
-        return {
-            "player": self.player,
-            "state_before": self.state_before,
-            "move": list(self.move) if self.move is not None else None,
-            "elapsed_ms": round(self.elapsed_ms, _ROUND_DIGITS),
-        }
-
 
 @dataclass
 class MatchResult:
@@ -209,18 +207,6 @@ class MatchResult:
     def loser(self) -> str:
         """Name of the losing player."""
         return self.player_second if self.winner == self.player_first else self.player_first
-
-    def to_dict(self) -> dict[str, object]:
-        """Return a JSON-serializable dict for this game result."""
-        return {
-            "player_first": self.player_first,
-            "player_second": self.player_second,
-            "start_state": self.start_state,
-            "winner": self.winner,
-            "result": self.result,
-            "detail": self.detail,
-            "moves": [m.to_dict() for m in self.moves],
-        }
 
 
 @dataclass
@@ -274,7 +260,12 @@ class Matchup:
         ]
 
     def to_dict(self) -> dict[str, object]:
-        """Return a JSON-serializable, per-game-averaged summary of the match."""
+        """Return a JSON-serializable, aggregated summary of the match.
+
+        Timing is reported as **aggregates only** — mean, standard deviation and
+        maximum per player. There is deliberately no per-move array: see
+        ``devs/DESIGN_DECISIONS.md`` (D1).
+        """
         a_times = self._move_times(self.player_a)
         b_times = self._move_times(self.player_b)
         return {
@@ -288,6 +279,8 @@ class Matchup:
             "forfeits": self.forfeits,
             "a_avg_move_ms": round(_mean(a_times), _ROUND_DIGITS),
             "b_avg_move_ms": round(_mean(b_times), _ROUND_DIGITS),
+            "a_std_move_ms": round(_stdev(a_times), _ROUND_DIGITS),
+            "b_std_move_ms": round(_stdev(b_times), _ROUND_DIGITS),
             "a_max_move_ms": round(max(a_times, default=0.0), _ROUND_DIGITS),
             "b_max_move_ms": round(max(b_times, default=0.0), _ROUND_DIGITS),
         }
@@ -296,6 +289,18 @@ class Matchup:
 def _mean(values: list[float]) -> float:
     """Return the arithmetic mean of ``values`` (0.0 for an empty list)."""
     return sum(values) / len(values) if values else 0.0
+
+
+def _stdev(values: list[float]) -> float:
+    """Return the population standard deviation of ``values``.
+
+    Population (not sample) deviation, because the list *is* the whole population
+    of moves played — there is nothing being estimated. Returns 0.0 for fewer than
+    two values, where spread is undefined rather than infinite.
+    """
+    if len(values) < 2:
+        return 0.0
+    return statistics.pstdev(values)
 
 
 # --------------------------------------------------------------------------- #
@@ -417,11 +422,10 @@ def build_roster(
 
     A round-robin never lets a player face itself, so to make each *kind* of bot
     compete against its own kind we enter ``repetition`` independent copies of
-    each. For bots whose constructor accepts a ``seed`` (the random-dependent
-    ones), the copies are seeded with ``0, 1, ..., repetition - 1`` — giving
-    behavior that is both varied *and* reproducible from run to run.
-    Deterministic bots ignore the seed but are still duplicated so their kind
-    plays itself.
+    each, built through :meth:`~nimarena.player.Player.create` with the seeds
+    ``0, 1, ..., repetition - 1``. Every player accepts a seed, so this needs no
+    inspection of constructor signatures; a deterministic bot simply ignores it
+    but is still duplicated so its kind plays itself.
 
     Each copy is renamed ``"<name>#<seed>"`` so the copies stay distinct in the
     registry key space and the standings.
@@ -441,10 +445,9 @@ def build_roster(
     roster: list[Player] = []
     for player in players:
         cls = type(player)
-        base_name = player.name
-        accepts_seed = "seed" in inspect.signature(cls).parameters
+        base_name = cls.get_name()
         for seed in range(repetition):
-            copy = cls(**{"seed": seed}) if accepts_seed else cls()
+            copy = cls.create(seed=seed)
             copy.name = f"{base_name}#{seed}"
             roster.append(copy)
     return roster
@@ -488,6 +491,11 @@ class _Stats:
     def avg_move_ms(self) -> float:
         """Mean time per completed move in milliseconds (0.0 if none)."""
         return _mean(self.move_ms)
+
+    @property
+    def std_move_ms(self) -> float:
+        """Population standard deviation of completed move times, in ms."""
+        return _stdev(self.move_ms)
 
     @property
     def max_move_ms(self) -> float:
@@ -564,6 +572,7 @@ def _standings(stats: dict[str, _Stats], *, use_elo: bool) -> list[dict[str, obj
             "games": s.games,
             "win_rate": round(s.win_rate, _ROUND_DIGITS),
             "avg_move_ms": round(s.avg_move_ms, _ROUND_DIGITS),
+            "std_move_ms": round(s.std_move_ms, _ROUND_DIGITS),
             "max_move_ms": round(s.max_move_ms, _ROUND_DIGITS),
         }
         if use_elo:
@@ -590,6 +599,7 @@ def _player_stats(stats: dict[str, _Stats], *, use_elo: bool) -> list[dict[str, 
             "win_rate": round(s.win_rate, _ROUND_DIGITS),
             "moves_made": len(s.move_ms),
             "avg_move_ms": round(s.avg_move_ms, _ROUND_DIGITS),
+            "std_move_ms": round(s.std_move_ms, _ROUND_DIGITS),
             "max_move_ms": round(s.max_move_ms, _ROUND_DIGITS),
             "total_move_ms": round(sum(s.move_ms), _ROUND_DIGITS),
             "opponents": opponents,

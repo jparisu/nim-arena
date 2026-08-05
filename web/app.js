@@ -62,18 +62,27 @@ function setupNav() {
 }
 
 /* ---------------- setup / seats ---------------- */
+/* Preferred default opponent, best first — the first one present is used. */
+const DEFAULT_OPPONENTS = ["medium", "hard", "easy", "random"];
+
 function populateSeatSelects() {
-  const names = window.NIM.playerNames();
+  const players = window.NIM.players();
+  const names = players.map((p) => p.name);
+  const byName = new Map(players.map((p) => [p.name, p]));
+  const preferred = DEFAULT_OPPONENTS.find((n) => names.includes(n));
   for (const i of [0, 1]) {
     const sel = $(`seat-${i}`);
     sel.innerHTML = "";
     for (const opt of [HUMAN, ...names]) {
       const o = el("option", null, opt);
       o.value = opt;
+      // The player's own description, shown on hover.
+      const meta = byName.get(opt);
+      if (meta) o.title = `${meta.description}\nBy: ${meta.authors.join(", ")}`;
       sel.appendChild(o);
     }
-    // Default: seat 0 Human, seat 1 PerfectBot (if available).
-    sel.value = i === 1 && names.includes("PerfectBot") ? "PerfectBot" : HUMAN;
+    // Default: seat 0 Human, seat 1 a mid-strength bot so a first game is winnable.
+    sel.value = i === 1 && preferred ? preferred : HUMAN;
     G.seats[i] = sel.value;
     sel.onchange = () => {
       G.seats[i] = sel.value;

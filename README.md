@@ -62,11 +62,11 @@ from nimarena import game
 from nimarena.manifest import load_players
 
 reg = load_players()
-perfect = reg.get("PerfectBot")
+hard = reg.get("hard")
 
 state = [3, 5, 7]
 while not game.is_terminal(state):
-    move = perfect.choose_move(state)
+    move = hard.choose_move(state)
     print(state, "->", move)
     state = game.apply_move(state, move)
 ```
@@ -83,23 +83,28 @@ python -m http.server -d web 8000    # open http://localhost:8000
 
 ## The reference players
 
-Three leveled AIs plus `GreedyBot`, a worked example you copy to start your own.
-All four are registered in [`players.yaml`](players.yaml) and compete in the
-tournament.
+A four-rung difficulty ladder, all registered in [`players.yaml`](players.yaml)
+and competing in the tournament. Each is a thin wrapper naming a strategy from
+[`nimarena.bots`](src/nimarena/bots/) — identity and a depth, nothing more.
 
-| Level | Player | Strategy | Strength |
-|-------|--------|----------|----------|
-| 1 | `RandomBot` | uniform random legal move | baseline / template |
-| — | `GreedyBot` | empties the largest row | worked example, clearly beatable |
-| 2 | `MinimaxBot` | depth-5 minimax, non-nim-sum heuristic | strong endgame, errs early |
-| 3 | `PerfectBot` | nim-sum (XOR) — optimal | never loses from a won position |
+| Name | Strategy | Strength |
+|------|----------|----------|
+| `random` | uniform random legal move | the baseline |
+| `easy` | empties the largest row | barely better than random |
+| `medium` | depth-2 minimax, alpha-beta, total-sticks heuristic | solid endgame, errs early |
+| `hard` | depth-4 minimax, alpha-beta, endgame oracle | strong, but not perfect |
+
+Measured: `hard` > `medium` > `easy` ≈ `random`. There is deliberately **no
+perfect (nim-sum) player** — that slot at the top of the ladder is still open.
 
 ## Add your own AI (by Pull Request)
 
-1. Copy [`players/random_bot.py`](players/random_bot.py) to `players/<your_bot>.py`.
-2. Subclass [`Player`](src/nimarena/player.py), set a unique `name`, implement `choose_move(state) -> (row, count)`.
-3. Add one line to [`players.yaml`](players.yaml).
-4. Open a PR — CI runs the tests. A player that errors or times out is not merged.
+1. Copy [`players/random.py`](players/random.py) to `players/<your_bot>.py`.
+2. Subclass [`Player`](src/nimarena/player.py), fill in `get_name` / `get_authors` /
+   `get_description`, and implement `choose_move(state) -> (row, count)`.
+3. Add one entry to [`players.yaml`](players.yaml) — just `file` and `class`.
+4. Open a PR — CI runs the tests. A player that errors, times out, or reuses an
+   existing name is not merged.
 
 Full guide: [CONTRIBUTING.md](CONTRIBUTING.md) ·
 [docs](https://nim-arena.readthedocs.io/en/latest/submit-a-player/).
@@ -108,6 +113,7 @@ Full guide: [CONTRIBUTING.md](CONTRIBUTING.md) ·
 
 ```
 src/nimarena/   game engine, Player API, registry, manifest loader, tournament
+src/nimarena/bots/  reusable strategies the reference players are built from
 players/        reference + community player files (one .py each)
 players.yaml    the manifest — the single list of admitted players
 results/        leaderboard.json, written by the tournament workflow

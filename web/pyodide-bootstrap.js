@@ -42,13 +42,13 @@ async function bootNim(onStatus = () => {}) {
 
   onStatus("Registering players…");
   const webglue = pyodide.pyimport("webglue");
-  const playersJson = webglue.init(MOUNT);
-  const players = JSON.parse(playersJson);
+  // init() loads the manifest and returns the same payload as players_json().
+  webglue.init(MOUNT);
 
   // Public API used by app.js. Every call round-trips JSON strings.
   window.NIM = {
     pyodide,
-    players, // [{name}, ...]
+    players: () => JSON.parse(webglue.players_json()), // [{name, authors, description}, ...]
     playerNames: () => JSON.parse(webglue.players_json()).map((p) => p.name),
     legalMoves: (state) => JSON.parse(webglue.legal_moves(JSON.stringify(state))),
     applyMove: (state, move) =>

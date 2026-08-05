@@ -18,12 +18,12 @@ from nimarena import game
 from nimarena.manifest import load_players
 
 registry = load_players()          # reads players.yaml
-perfect = registry.get("PerfectBot")
-random_bot = registry.get("RandomBot")
+hard = registry.get("hard")
+random_bot = registry.get("random")
 
 state = [3, 5, 7]
 turn = 0
-players = [perfect, random_bot]
+players = [hard, random_bot]
 while not game.is_terminal(state):
     move = players[turn].choose_move(state)
     print(f"{players[turn].name} plays {move} on {state}")

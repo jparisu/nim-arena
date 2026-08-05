@@ -22,6 +22,7 @@ and fixed it.
   futures; shared mutable state would be a subtle bug source.
 - **Why is the medium AI depth-limited with a non-nim-sum heuristic?** A full-depth
   minimax would be perfect (NIM is solved); a weak heuristic + shallow depth keeps
-  it genuinely beatable, so `PerfectBot > MinimaxBot > RandomBot` holds.
+  it genuinely beatable, so the ranking held. (Historical: that roster was
+  replaced by the random/easy/medium/hard ladder — see DESIGN_DECISIONS.md D5.)
 - **Why no JS duplication of the rules?** One source of truth — the same Python
   runs in CI and in the browser via Pyodide; two copies would silently drift.

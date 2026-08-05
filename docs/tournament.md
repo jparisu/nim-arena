@@ -12,7 +12,7 @@ Before any games are played, the roster is built by
 kind compete against *itself* (a round-robin never pairs an instance with itself)
 and, crucially, makes runs **reproducible**: every copy of a random-dependent bot
 (one whose constructor accepts a `seed`) is seeded with `0, 1, …, N-1`. Copies
-are named `RandomBot#0`, `RandomBot#1`, and so on.
+are named `random#0`, `random#1`, and so on.
 
 ## A "match" is many games
 
@@ -130,14 +130,22 @@ the order is fully deterministic). Across enough games the reference players lan
 in the expected order:
 
 ```
-PerfectBot  >  MinimaxBot  >  GreedyBot  ≈  RandomBot
+hard  >  medium  >  easy  ≈  random
 ```
 
-`PerfectBot` plays provably optimally (nim-sum) and never loses from a winning
-start. `MinimaxBot` searches only ~5 plies with a deliberately weak, non-nim-sum
-heuristic, so it is strong near the endgame but errs earlier — beatable by
-`PerfectBot`, stronger than the rest. `GreedyBot` (empty the largest row) and
-`RandomBot` are the weak baselines at the bottom.
+`hard` searches 4 plies with alpha-beta and recognises several endgames outright,
+which makes it strong — but it cannot compute the nim-sum, so it is still
+beatable. `medium` runs the same search at 2 plies with a deliberately weak
+total-sticks heuristic: solid right at the end of a game, unreliable before that.
+
+`easy` and `random` are deliberately **not** ordered against each other. Emptying
+the largest row is barely better than random in NIM, and which of the two lands
+ahead depends on the draw. If they swap places between runs, nothing is wrong.
+
+!!! note "Points and rank can disagree"
+    In `league` mode the rank comes from Elo while the table also shows points, so
+    a player with more points can sit *below* one with fewer. That is Elo working
+    as intended — it weights *who* you beat, not just how often.
 
 ::: nimarena.tournament.run_tournament
 

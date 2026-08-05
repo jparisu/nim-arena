@@ -7,13 +7,18 @@ single diff, both the new file and the one line that admits it. That legibility
 *is* the security gate; auto-importing a directory would hide what is being
 admitted and would run a stranger's top-level code merely to discover it.
 
-Manifest format (``players.yaml`` at the repo root)::
+The manifest is purely an **admission list**: which file, and which class in it.
+Nothing else::
 
     players:
-      - name: RandomBot          # unique, human-readable; must match Player.name
-        author: NIM Arena Team   # who wrote it (shown for credit)
-        file: random_bot.py      # path to the .py file (see resolution below)
-        class: RandomBot         # the Player subclass to instantiate
+      - file: random.py    # path to the .py file (see resolution below)
+        class: Random      # the Player subclass to admit
+
+A player's *identity* — name, authors, description — is declared by the class
+itself, via :meth:`~nimarena.player.Player.get_name` and friends. Keeping it there
+rather than here means there is exactly one source of truth: a submission cannot
+claim one name in the manifest and another in the code, and there is nothing to
+drift. The manifest answers "is this admitted?"; the class answers "what is it?".
 
 Path resolution for ``file``:
 
@@ -49,10 +54,13 @@ DEFAULT_PLAYERS_DIR = REPO_ROOT / "players"
 
 @dataclass
 class ManifestEntry:
-    """One line of the manifest, already parsed and validated."""
+    """One line of the manifest, already parsed and validated.
 
-    name: str
-    author: str
+    Attributes:
+        file: the ``file`` field, verbatim (not yet resolved to a path).
+        cls: name of the :class:`~nimarena.player.Player` subclass to admit.
+    """
+
     file: str
     cls: str
 
@@ -87,14 +95,7 @@ def parse_manifest(manifest_path: str | Path) -> list[ManifestEntry]:
         if not isinstance(raw, dict):
             raise ManifestError(f"players[{i}] must be a mapping")
         try:
-            entries.append(
-                ManifestEntry(
-                    name=str(raw["name"]),
-                    author=str(raw.get("author", "unknown")),
-                    file=str(raw["file"]),
-                    cls=str(raw["class"]),
-                )
-            )
+            entries.append(ManifestEntry(file=str(raw["file"]), cls=str(raw["class"])))
         except KeyError as exc:
             raise ManifestError(f"players[{i}] is missing required field {exc}") from exc
     return entries
@@ -134,6 +135,48 @@ def _load_class_from_file(path: Path, class_name: str) -> type[Player]:
     return obj
 
 
+def _build_and_validate(cls: type[Player], path: Path) -> Player:
+    """Construct ``cls`` via its factory and check it declares a usable identity.
+
+    ``ABCMeta`` already refuses to instantiate a subclass that has not implemented
+    the abstract accessors — that check happens here, on ``create``. But it only
+    guards *instantiation*: reading ``cls.get_name()`` statically on a subclass
+    that skipped it returns ``None`` silently. Since the tournament, the docs and
+    the web app all read metadata without constructing, validate it once here so a
+    bad submission fails loudly at load time instead of leaking a ``None`` into
+    the scoreboard.
+
+    Raises:
+        ManifestError: if construction fails or any accessor returns something
+            unusable.
+    """
+    try:
+        instance = cls.create(seed=0)
+    except TypeError as exc:
+        # The overwhelmingly common cause is an unimplemented abstract accessor.
+        raise ManifestError(f"{cls.__name__} in {path} could not be created: {exc}") from exc
+
+    name = cls.get_name()
+    if not isinstance(name, str) or not name.strip():
+        raise ManifestError(f"{cls.__name__} in {path}: get_name() must return a non-empty str")
+
+    authors = cls.get_authors()
+    if not isinstance(authors, list) or not authors or not all(
+        isinstance(a, str) and a.strip() for a in authors
+    ):
+        raise ManifestError(
+            f"{cls.__name__} in {path}: get_authors() must return a non-empty list of names"
+        )
+
+    description = cls.get_description()
+    if not isinstance(description, str) or not description.strip():
+        raise ManifestError(
+            f"{cls.__name__} in {path}: get_description() must return a non-empty str"
+        )
+
+    return instance
+
+
 def load_players(
     manifest_path: str | Path = DEFAULT_MANIFEST,
     players_dir: str | Path = DEFAULT_PLAYERS_DIR,
@@ -142,6 +185,11 @@ def load_players(
     strict: bool = False,
 ) -> Registry:
     """Load every player named in the manifest into a registry.
+
+    Each admitted class is constructed once through
+    :meth:`~nimarena.player.Player.create` and its identity is validated, so a
+    submission that forgets an accessor, cannot be built, or reuses an existing
+    player's name fails here rather than midway through a tournament.
 
     Args:
         manifest_path: path to ``players.yaml``.
@@ -154,6 +202,9 @@ def load_players(
 
     Returns:
         The populated registry.
+
+    Raises:
+        ManifestError: in ``strict`` mode, for any unusable entry.
     """
     if registry is None:
         registry = REGISTRY
@@ -164,16 +215,22 @@ def load_players(
     entries = parse_manifest(manifest_path)
 
     for entry in entries:
+        label = f"{entry.file}:{entry.cls}"
         try:
             path = _resolve_file(entry.file, players_dir, repo_root)
             cls = _load_class_from_file(path, entry.cls)
-            instance = cls()
-            if instance.name != entry.name:
-                # Keep the manifest name authoritative and visible.
-                instance.name = entry.name
-            registry.register(instance, replace=True)
+            instance = _build_and_validate(cls, path)
+            # No `replace=True`: a duplicate name must be a hard error. "Unique
+            # name" is a documented merge gate, and silently overwriting let one
+            # submission shadow another with no output at all.
+            registry.register(instance)
+        except ValueError as exc:
+            # Registry rejected the name (already taken).
+            if strict:
+                raise ManifestError(f"{label}: {exc}") from exc
+            print(f"[manifest] skipping {label}: {exc}", file=sys.stderr)
         except Exception as exc:  # noqa: BLE001 - one bad bot must not stop the rest
             if strict:
                 raise
-            print(f"[manifest] skipping {entry.name!r}: {exc}", file=sys.stderr)
+            print(f"[manifest] skipping {label}: {exc}", file=sys.stderr)
     return registry

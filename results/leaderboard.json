@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-03T09:49:50Z",
+  "generated_at": "2026-08-05T11:29:39Z",
   "config": {
     "tournament": "league",
     "starting_states": [
@@ -13,9 +13,14 @@
         3,
         5,
         7
+      ],
+      [
+        7,
+        9,
+        11
       ]
     ],
-    "repetitions": 10,
+    "repetitions": 3,
     "move_timeout_ms": 2000,
     "elo": true,
     "time_limit_s": 2.0,
@@ -24,914 +29,986 @@
   "standings": [
     {
       "rank": 1,
-      "player": "PerfectBot#0",
-      "points": 260,
-      "wins": 260,
-      "losses": 20,
+      "player": "hard#0",
+      "points": 117,
+      "wins": 117,
+      "losses": 9,
       "forfeits": 0,
-      "games": 280,
+      "games": 126,
       "win_rate": 0.929,
-      "avg_move_ms": 0.035,
-      "max_move_ms": 0.148,
-      "elo": 2302.605
+      "avg_move_ms": 16.192,
+      "std_move_ms": 40.149,
+      "max_move_ms": 199.091,
+      "elo": 2022.836
     },
     {
       "rank": 2,
-      "player": "PerfectBot#1",
-      "points": 260,
-      "wins": 260,
-      "losses": 20,
+      "player": "hard#1",
+      "points": 117,
+      "wins": 117,
+      "losses": 9,
       "forfeits": 0,
-      "games": 280,
+      "games": 126,
       "win_rate": 0.929,
-      "avg_move_ms": 0.032,
-      "max_move_ms": 0.073,
-      "elo": 2189.459
+      "avg_move_ms": 16.158,
+      "std_move_ms": 39.287,
+      "max_move_ms": 190.448,
+      "elo": 1979.018
     },
     {
       "rank": 3,
-      "player": "MinimaxBot#1",
-      "points": 200,
-      "wins": 200,
-      "losses": 80,
+      "player": "medium#1",
+      "points": 72,
+      "wins": 72,
+      "losses": 54,
       "forfeits": 0,
-      "games": 280,
-      "win_rate": 0.714,
-      "avg_move_ms": 10.19,
-      "max_move_ms": 51.641,
-      "elo": 1692.152
+      "games": 126,
+      "win_rate": 0.571,
+      "avg_move_ms": 0.458,
+      "std_move_ms": 0.311,
+      "max_move_ms": 1.679,
+      "elo": 1587.588
     },
     {
       "rank": 4,
-      "player": "MinimaxBot#0",
-      "points": 160,
-      "wins": 160,
-      "losses": 120,
+      "player": "medium#0",
+      "points": 72,
+      "wins": 72,
+      "losses": 54,
       "forfeits": 0,
-      "games": 280,
+      "games": 126,
       "win_rate": 0.571,
-      "avg_move_ms": 8.741,
-      "max_move_ms": 49.948,
-      "elo": 1437.273
+      "avg_move_ms": 0.466,
+      "std_move_ms": 0.314,
+      "max_move_ms": 1.772,
+      "elo": 1506.305
     },
     {
       "rank": 5,
-      "player": "GreedyBot#1",
-      "points": 70,
-      "wins": 70,
-      "losses": 210,
+      "player": "easy#1",
+      "points": 36,
+      "wins": 36,
+      "losses": 90,
       "forfeits": 0,
-      "games": 280,
-      "win_rate": 0.25,
-      "avg_move_ms": 0.02,
-      "max_move_ms": 0.101,
-      "elo": 1228.494
+      "games": 126,
+      "win_rate": 0.286,
+      "avg_move_ms": 0.027,
+      "std_move_ms": 0.006,
+      "max_move_ms": 0.055,
+      "elo": 1284.716
     },
     {
       "rank": 6,
-      "player": "GreedyBot#0",
-      "points": 70,
-      "wins": 70,
-      "losses": 210,
+      "player": "random#1",
+      "points": 15,
+      "wins": 15,
+      "losses": 111,
       "forfeits": 0,
-      "games": 280,
-      "win_rate": 0.25,
-      "avg_move_ms": 0.019,
-      "max_move_ms": 0.052,
-      "elo": 1166.777
+      "games": 126,
+      "win_rate": 0.119,
+      "avg_move_ms": 0.082,
+      "std_move_ms": 0.021,
+      "max_move_ms": 0.169,
+      "elo": 1251.599
     },
     {
       "rank": 7,
-      "player": "RandomBot#0",
-      "points": 90,
-      "wins": 90,
-      "losses": 190,
+      "player": "easy#0",
+      "points": 36,
+      "wins": 36,
+      "losses": 90,
       "forfeits": 0,
-      "games": 280,
-      "win_rate": 0.321,
-      "avg_move_ms": 0.038,
-      "max_move_ms": 0.221,
-      "elo": 1038.169
+      "games": 126,
+      "win_rate": 0.286,
+      "avg_move_ms": 0.028,
+      "std_move_ms": 0.007,
+      "max_move_ms": 0.056,
+      "elo": 1203.27
     },
     {
       "rank": 8,
-      "player": "RandomBot#1",
-      "points": 10,
-      "wins": 10,
-      "losses": 270,
+      "player": "random#0",
+      "points": 39,
+      "wins": 39,
+      "losses": 87,
       "forfeits": 0,
-      "games": 280,
-      "win_rate": 0.036,
-      "avg_move_ms": 0.04,
-      "max_move_ms": 0.889,
-      "elo": 945.073
+      "games": 126,
+      "win_rate": 0.31,
+      "avg_move_ms": 0.086,
+      "std_move_ms": 0.022,
+      "max_move_ms": 0.181,
+      "elo": 1164.667
     }
   ],
   "matches": [
     {
-      "player_a": "RandomBot#0",
-      "player_b": "RandomBot#1",
+      "player_a": "random#0",
+      "player_b": "random#1",
       "phase": "round-robin",
-      "games": 40,
-      "a_wins": 30,
-      "b_wins": 10,
-      "winner": "RandomBot#0",
+      "games": 18,
+      "a_wins": 15,
+      "b_wins": 3,
+      "winner": "random#0",
       "forfeits": 0,
-      "a_avg_move_ms": 0.035,
-      "b_avg_move_ms": 0.033,
-      "a_max_move_ms": 0.086,
-      "b_max_move_ms": 0.059
-    },
-    {
-      "player_a": "RandomBot#0",
-      "player_b": "GreedyBot#0",
-      "phase": "round-robin",
-      "games": 40,
-      "a_wins": 30,
-      "b_wins": 10,
-      "winner": "RandomBot#0",
-      "forfeits": 0,
-      "a_avg_move_ms": 0.036,
-      "b_avg_move_ms": 0.019,
-      "a_max_move_ms": 0.072,
-      "b_max_move_ms": 0.035
-    },
-    {
-      "player_a": "RandomBot#0",
-      "player_b": "GreedyBot#1",
-      "phase": "round-robin",
-      "games": 40,
-      "a_wins": 30,
-      "b_wins": 10,
-      "winner": "RandomBot#0",
-      "forfeits": 0,
-      "a_avg_move_ms": 0.035,
-      "b_avg_move_ms": 0.019,
-      "a_max_move_ms": 0.129,
-      "b_max_move_ms": 0.048
-    },
-    {
-      "player_a": "RandomBot#0",
-      "player_b": "MinimaxBot#0",
-      "phase": "round-robin",
-      "games": 40,
-      "a_wins": 0,
-      "b_wins": 40,
-      "winner": "MinimaxBot#0",
-      "forfeits": 0,
-      "a_avg_move_ms": 0.037,
-      "b_avg_move_ms": 6.404,
-      "a_max_move_ms": 0.221,
-      "b_max_move_ms": 48.404
-    },
-    {
-      "player_a": "RandomBot#0",
-      "player_b": "MinimaxBot#1",
-      "phase": "round-robin",
-      "games": 40,
-      "a_wins": 0,
-      "b_wins": 40,
-      "winner": "MinimaxBot#1",
-      "forfeits": 0,
-      "a_avg_move_ms": 0.038,
-      "b_avg_move_ms": 7.661,
-      "a_max_move_ms": 0.073,
-      "b_max_move_ms": 50.561
-    },
-    {
-      "player_a": "RandomBot#0",
-      "player_b": "PerfectBot#0",
-      "phase": "round-robin",
-      "games": 40,
-      "a_wins": 0,
-      "b_wins": 40,
-      "winner": "PerfectBot#0",
-      "forfeits": 0,
-      "a_avg_move_ms": 0.042,
-      "b_avg_move_ms": 0.037,
-      "a_max_move_ms": 0.09,
+      "a_avg_move_ms": 0.07,
+      "b_avg_move_ms": 0.07,
+      "a_std_move_ms": 0.011,
+      "b_std_move_ms": 0.013,
+      "a_max_move_ms": 0.104,
       "b_max_move_ms": 0.118
     },
     {
-      "player_a": "RandomBot#0",
-      "player_b": "PerfectBot#1",
+      "player_a": "random#0",
+      "player_b": "easy#0",
       "phase": "round-robin",
-      "games": 40,
-      "a_wins": 0,
-      "b_wins": 40,
-      "winner": "PerfectBot#1",
-      "forfeits": 0,
-      "a_avg_move_ms": 0.041,
-      "b_avg_move_ms": 0.033,
-      "a_max_move_ms": 0.07,
-      "b_max_move_ms": 0.064
-    },
-    {
-      "player_a": "RandomBot#1",
-      "player_b": "GreedyBot#0",
-      "phase": "round-robin",
-      "games": 40,
-      "a_wins": 0,
-      "b_wins": 40,
-      "winner": "GreedyBot#0",
-      "forfeits": 0,
-      "a_avg_move_ms": 0.037,
-      "b_avg_move_ms": 0.021,
-      "a_max_move_ms": 0.053,
-      "b_max_move_ms": 0.052
-    },
-    {
-      "player_a": "RandomBot#1",
-      "player_b": "GreedyBot#1",
-      "phase": "round-robin",
-      "games": 40,
-      "a_wins": 0,
-      "b_wins": 40,
-      "winner": "GreedyBot#1",
-      "forfeits": 0,
-      "a_avg_move_ms": 0.04,
-      "b_avg_move_ms": 0.021,
-      "a_max_move_ms": 0.123,
-      "b_max_move_ms": 0.101
-    },
-    {
-      "player_a": "RandomBot#1",
-      "player_b": "MinimaxBot#0",
-      "phase": "round-robin",
-      "games": 40,
-      "a_wins": 0,
-      "b_wins": 40,
-      "winner": "MinimaxBot#0",
-      "forfeits": 0,
-      "a_avg_move_ms": 0.036,
-      "b_avg_move_ms": 9.002,
-      "a_max_move_ms": 0.106,
-      "b_max_move_ms": 48.756
-    },
-    {
-      "player_a": "RandomBot#1",
-      "player_b": "MinimaxBot#1",
-      "phase": "round-robin",
-      "games": 40,
-      "a_wins": 0,
-      "b_wins": 40,
-      "winner": "MinimaxBot#1",
-      "forfeits": 0,
-      "a_avg_move_ms": 0.041,
-      "b_avg_move_ms": 12.731,
-      "a_max_move_ms": 0.082,
-      "b_max_move_ms": 49.296
-    },
-    {
-      "player_a": "RandomBot#1",
-      "player_b": "PerfectBot#0",
-      "phase": "round-robin",
-      "games": 40,
-      "a_wins": 0,
-      "b_wins": 40,
-      "winner": "PerfectBot#0",
-      "forfeits": 0,
-      "a_avg_move_ms": 0.054,
-      "b_avg_move_ms": 0.041,
-      "a_max_move_ms": 0.889,
-      "b_max_move_ms": 0.07
-    },
-    {
-      "player_a": "RandomBot#1",
-      "player_b": "PerfectBot#1",
-      "phase": "round-robin",
-      "games": 40,
-      "a_wins": 0,
-      "b_wins": 40,
-      "winner": "PerfectBot#1",
-      "forfeits": 0,
-      "a_avg_move_ms": 0.035,
-      "b_avg_move_ms": 0.03,
-      "a_max_move_ms": 0.061,
-      "b_max_move_ms": 0.065
-    },
-    {
-      "player_a": "GreedyBot#0",
-      "player_b": "GreedyBot#1",
-      "phase": "round-robin",
-      "games": 40,
-      "a_wins": 20,
-      "b_wins": 20,
+      "games": 18,
+      "a_wins": 9,
+      "b_wins": 9,
       "winner": "",
       "forfeits": 0,
-      "a_avg_move_ms": 0.018,
-      "b_avg_move_ms": 0.018,
-      "a_max_move_ms": 0.035,
-      "b_max_move_ms": 0.021
+      "a_avg_move_ms": 0.077,
+      "b_avg_move_ms": 0.023,
+      "a_std_move_ms": 0.017,
+      "b_std_move_ms": 0.003,
+      "a_max_move_ms": 0.157,
+      "b_max_move_ms": 0.033
     },
     {
-      "player_a": "GreedyBot#0",
-      "player_b": "MinimaxBot#0",
+      "player_a": "random#0",
+      "player_b": "easy#1",
       "phase": "round-robin",
-      "games": 40,
-      "a_wins": 0,
-      "b_wins": 40,
-      "winner": "MinimaxBot#0",
+      "games": 18,
+      "a_wins": 9,
+      "b_wins": 9,
+      "winner": "",
       "forfeits": 0,
-      "a_avg_move_ms": 0.02,
-      "b_avg_move_ms": 7.308,
-      "a_max_move_ms": 0.042,
-      "b_max_move_ms": 48.689
+      "a_avg_move_ms": 0.083,
+      "b_avg_move_ms": 0.026,
+      "a_std_move_ms": 0.011,
+      "b_std_move_ms": 0.006,
+      "a_max_move_ms": 0.114,
+      "b_max_move_ms": 0.055
     },
     {
-      "player_a": "GreedyBot#0",
-      "player_b": "MinimaxBot#1",
+      "player_a": "random#0",
+      "player_b": "medium#0",
       "phase": "round-robin",
-      "games": 40,
-      "a_wins": 0,
-      "b_wins": 40,
-      "winner": "MinimaxBot#1",
+      "games": 18,
+      "a_wins": 3,
+      "b_wins": 15,
+      "winner": "medium#0",
       "forfeits": 0,
-      "a_avg_move_ms": 0.019,
-      "b_avg_move_ms": 7.448,
-      "a_max_move_ms": 0.028,
-      "b_max_move_ms": 48.772
+      "a_avg_move_ms": 0.098,
+      "b_avg_move_ms": 0.503,
+      "a_std_move_ms": 0.023,
+      "b_std_move_ms": 0.354,
+      "a_max_move_ms": 0.181,
+      "b_max_move_ms": 1.59
     },
     {
-      "player_a": "GreedyBot#0",
-      "player_b": "PerfectBot#0",
+      "player_a": "random#0",
+      "player_b": "medium#1",
       "phase": "round-robin",
-      "games": 40,
-      "a_wins": 0,
-      "b_wins": 40,
-      "winner": "PerfectBot#0",
+      "games": 18,
+      "a_wins": 3,
+      "b_wins": 15,
+      "winner": "medium#1",
       "forfeits": 0,
-      "a_avg_move_ms": 0.019,
-      "b_avg_move_ms": 0.033,
-      "a_max_move_ms": 0.051,
-      "b_max_move_ms": 0.06
+      "a_avg_move_ms": 0.094,
+      "b_avg_move_ms": 0.452,
+      "a_std_move_ms": 0.02,
+      "b_std_move_ms": 0.29,
+      "a_max_move_ms": 0.136,
+      "b_max_move_ms": 1.671
     },
     {
-      "player_a": "GreedyBot#0",
-      "player_b": "PerfectBot#1",
+      "player_a": "random#0",
+      "player_b": "hard#0",
       "phase": "round-robin",
-      "games": 40,
+      "games": 18,
       "a_wins": 0,
-      "b_wins": 40,
-      "winner": "PerfectBot#1",
+      "b_wins": 18,
+      "winner": "hard#0",
       "forfeits": 0,
-      "a_avg_move_ms": 0.018,
-      "b_avg_move_ms": 0.029,
-      "a_max_move_ms": 0.026,
-      "b_max_move_ms": 0.04
+      "a_avg_move_ms": 0.107,
+      "b_avg_move_ms": 16.919,
+      "a_std_move_ms": 0.018,
+      "b_std_move_ms": 40.223,
+      "a_max_move_ms": 0.156,
+      "b_max_move_ms": 190.825
     },
     {
-      "player_a": "GreedyBot#1",
-      "player_b": "MinimaxBot#0",
+      "player_a": "random#0",
+      "player_b": "hard#1",
       "phase": "round-robin",
-      "games": 40,
+      "games": 18,
       "a_wins": 0,
-      "b_wins": 40,
-      "winner": "MinimaxBot#0",
+      "b_wins": 18,
+      "winner": "hard#1",
       "forfeits": 0,
-      "a_avg_move_ms": 0.021,
-      "b_avg_move_ms": 7.441,
-      "a_max_move_ms": 0.063,
-      "b_max_move_ms": 49.948
+      "a_avg_move_ms": 0.077,
+      "b_avg_move_ms": 18.414,
+      "a_std_move_ms": 0.018,
+      "b_std_move_ms": 42.742,
+      "a_max_move_ms": 0.146,
+      "b_max_move_ms": 190.448
     },
     {
-      "player_a": "GreedyBot#1",
-      "player_b": "MinimaxBot#1",
+      "player_a": "random#1",
+      "player_b": "easy#0",
       "phase": "round-robin",
-      "games": 40,
+      "games": 18,
       "a_wins": 0,
-      "b_wins": 40,
-      "winner": "MinimaxBot#1",
+      "b_wins": 18,
+      "winner": "easy#0",
       "forfeits": 0,
-      "a_avg_move_ms": 0.02,
-      "b_avg_move_ms": 7.503,
-      "a_max_move_ms": 0.051,
-      "b_max_move_ms": 51.641
+      "a_avg_move_ms": 0.08,
+      "b_avg_move_ms": 0.025,
+      "a_std_move_ms": 0.023,
+      "b_std_move_ms": 0.009,
+      "a_max_move_ms": 0.127,
+      "b_max_move_ms": 0.056
     },
     {
-      "player_a": "GreedyBot#1",
-      "player_b": "PerfectBot#0",
+      "player_a": "random#1",
+      "player_b": "easy#1",
       "phase": "round-robin",
-      "games": 40,
+      "games": 18,
       "a_wins": 0,
-      "b_wins": 40,
-      "winner": "PerfectBot#0",
+      "b_wins": 18,
+      "winner": "easy#1",
       "forfeits": 0,
-      "a_avg_move_ms": 0.018,
-      "b_avg_move_ms": 0.032,
-      "a_max_move_ms": 0.026,
-      "b_max_move_ms": 0.065
+      "a_avg_move_ms": 0.074,
+      "b_avg_move_ms": 0.022,
+      "a_std_move_ms": 0.01,
+      "b_std_move_ms": 0.003,
+      "a_max_move_ms": 0.093,
+      "b_max_move_ms": 0.03
     },
     {
-      "player_a": "GreedyBot#1",
-      "player_b": "PerfectBot#1",
+      "player_a": "random#1",
+      "player_b": "medium#0",
       "phase": "round-robin",
-      "games": 40,
-      "a_wins": 0,
-      "b_wins": 40,
-      "winner": "PerfectBot#1",
+      "games": 18,
+      "a_wins": 6,
+      "b_wins": 12,
+      "winner": "medium#0",
       "forfeits": 0,
-      "a_avg_move_ms": 0.019,
-      "b_avg_move_ms": 0.03,
+      "a_avg_move_ms": 0.069,
+      "b_avg_move_ms": 0.415,
+      "a_std_move_ms": 0.011,
+      "b_std_move_ms": 0.27,
+      "a_max_move_ms": 0.098,
+      "b_max_move_ms": 1.198
+    },
+    {
+      "player_a": "random#1",
+      "player_b": "medium#1",
+      "phase": "round-robin",
+      "games": 18,
+      "a_wins": 6,
+      "b_wins": 12,
+      "winner": "medium#1",
+      "forfeits": 0,
+      "a_avg_move_ms": 0.083,
+      "b_avg_move_ms": 0.454,
+      "a_std_move_ms": 0.02,
+      "b_std_move_ms": 0.324,
+      "a_max_move_ms": 0.154,
+      "b_max_move_ms": 1.479
+    },
+    {
+      "player_a": "random#1",
+      "player_b": "hard#0",
+      "phase": "round-robin",
+      "games": 18,
+      "a_wins": 0,
+      "b_wins": 18,
+      "winner": "hard#0",
+      "forfeits": 0,
+      "a_avg_move_ms": 0.086,
+      "b_avg_move_ms": 17.951,
+      "a_std_move_ms": 0.018,
+      "b_std_move_ms": 39.77,
+      "a_max_move_ms": 0.135,
+      "b_max_move_ms": 199.091
+    },
+    {
+      "player_a": "random#1",
+      "player_b": "hard#1",
+      "phase": "round-robin",
+      "games": 18,
+      "a_wins": 0,
+      "b_wins": 18,
+      "winner": "hard#1",
+      "forfeits": 0,
+      "a_avg_move_ms": 0.101,
+      "b_avg_move_ms": 18.262,
+      "a_std_move_ms": 0.022,
+      "b_std_move_ms": 36.991,
+      "a_max_move_ms": 0.169,
+      "b_max_move_ms": 180.953
+    },
+    {
+      "player_a": "easy#0",
+      "player_b": "easy#1",
+      "phase": "round-robin",
+      "games": 18,
+      "a_wins": 9,
+      "b_wins": 9,
+      "winner": "",
+      "forfeits": 0,
+      "a_avg_move_ms": 0.026,
+      "b_avg_move_ms": 0.026,
+      "a_std_move_ms": 0.007,
+      "b_std_move_ms": 0.006,
+      "a_max_move_ms": 0.055,
+      "b_max_move_ms": 0.042
+    },
+    {
+      "player_a": "easy#0",
+      "player_b": "medium#0",
+      "phase": "round-robin",
+      "games": 18,
+      "a_wins": 0,
+      "b_wins": 18,
+      "winner": "medium#0",
+      "forfeits": 0,
+      "a_avg_move_ms": 0.03,
+      "b_avg_move_ms": 0.491,
+      "a_std_move_ms": 0.006,
+      "b_std_move_ms": 0.349,
       "a_max_move_ms": 0.043,
-      "b_max_move_ms": 0.058
+      "b_max_move_ms": 1.772
     },
     {
-      "player_a": "MinimaxBot#0",
-      "player_b": "MinimaxBot#1",
+      "player_a": "easy#0",
+      "player_b": "medium#1",
       "phase": "round-robin",
-      "games": 40,
+      "games": 18,
       "a_wins": 0,
-      "b_wins": 40,
-      "winner": "MinimaxBot#1",
+      "b_wins": 18,
+      "winner": "medium#1",
       "forfeits": 0,
-      "a_avg_move_ms": 10.453,
-      "b_avg_move_ms": 8.389,
-      "a_max_move_ms": 48.437,
-      "b_max_move_ms": 48.677
+      "a_avg_move_ms": 0.03,
+      "b_avg_move_ms": 0.467,
+      "a_std_move_ms": 0.004,
+      "b_std_move_ms": 0.331,
+      "a_max_move_ms": 0.04,
+      "b_max_move_ms": 1.545
     },
     {
-      "player_a": "MinimaxBot#0",
-      "player_b": "PerfectBot#0",
+      "player_a": "easy#0",
+      "player_b": "hard#0",
       "phase": "round-robin",
-      "games": 40,
+      "games": 18,
       "a_wins": 0,
-      "b_wins": 40,
-      "winner": "PerfectBot#0",
+      "b_wins": 18,
+      "winner": "hard#0",
       "forfeits": 0,
-      "a_avg_move_ms": 9.853,
-      "b_avg_move_ms": 0.033,
-      "a_max_move_ms": 48.976,
-      "b_max_move_ms": 0.07
+      "a_avg_move_ms": 0.031,
+      "b_avg_move_ms": 15.53,
+      "a_std_move_ms": 0.006,
+      "b_std_move_ms": 41.414,
+      "a_max_move_ms": 0.046,
+      "b_max_move_ms": 179.462
     },
     {
-      "player_a": "MinimaxBot#0",
-      "player_b": "PerfectBot#1",
+      "player_a": "easy#0",
+      "player_b": "hard#1",
       "phase": "round-robin",
-      "games": 40,
+      "games": 18,
       "a_wins": 0,
-      "b_wins": 40,
-      "winner": "PerfectBot#1",
+      "b_wins": 18,
+      "winner": "hard#1",
       "forfeits": 0,
-      "a_avg_move_ms": 9.85,
-      "b_avg_move_ms": 0.033,
-      "a_max_move_ms": 49.331,
-      "b_max_move_ms": 0.073
+      "a_avg_move_ms": 0.034,
+      "b_avg_move_ms": 15.896,
+      "a_std_move_ms": 0.005,
+      "b_std_move_ms": 41.679,
+      "a_max_move_ms": 0.05,
+      "b_max_move_ms": 177.847
     },
     {
-      "player_a": "MinimaxBot#1",
-      "player_b": "PerfectBot#0",
+      "player_a": "easy#1",
+      "player_b": "medium#0",
       "phase": "round-robin",
-      "games": 40,
+      "games": 18,
       "a_wins": 0,
-      "b_wins": 40,
-      "winner": "PerfectBot#0",
+      "b_wins": 18,
+      "winner": "medium#0",
       "forfeits": 0,
-      "a_avg_move_ms": 12.845,
-      "b_avg_move_ms": 0.037,
-      "a_max_move_ms": 48.809,
-      "b_max_move_ms": 0.148
+      "a_avg_move_ms": 0.028,
+      "b_avg_move_ms": 0.439,
+      "a_std_move_ms": 0.007,
+      "b_std_move_ms": 0.312,
+      "a_max_move_ms": 0.047,
+      "b_max_move_ms": 1.485
     },
     {
-      "player_a": "MinimaxBot#1",
-      "player_b": "PerfectBot#1",
+      "player_a": "easy#1",
+      "player_b": "medium#1",
       "phase": "round-robin",
-      "games": 40,
+      "games": 18,
       "a_wins": 0,
-      "b_wins": 40,
-      "winner": "PerfectBot#1",
+      "b_wins": 18,
+      "winner": "medium#1",
       "forfeits": 0,
-      "a_avg_move_ms": 12.815,
-      "b_avg_move_ms": 0.034,
-      "a_max_move_ms": 48.122,
-      "b_max_move_ms": 0.071
+      "a_avg_move_ms": 0.026,
+      "b_avg_move_ms": 0.434,
+      "a_std_move_ms": 0.004,
+      "b_std_move_ms": 0.31,
+      "a_max_move_ms": 0.034,
+      "b_max_move_ms": 1.463
     },
     {
-      "player_a": "PerfectBot#0",
-      "player_b": "PerfectBot#1",
+      "player_a": "easy#1",
+      "player_b": "hard#0",
       "phase": "round-robin",
-      "games": 40,
-      "a_wins": 20,
-      "b_wins": 20,
+      "games": 18,
+      "a_wins": 0,
+      "b_wins": 18,
+      "winner": "hard#0",
+      "forfeits": 0,
+      "a_avg_move_ms": 0.031,
+      "b_avg_move_ms": 15.531,
+      "a_std_move_ms": 0.006,
+      "b_std_move_ms": 41.129,
+      "a_max_move_ms": 0.051,
+      "b_max_move_ms": 175.744
+    },
+    {
+      "player_a": "easy#1",
+      "player_b": "hard#1",
+      "phase": "round-robin",
+      "games": 18,
+      "a_wins": 0,
+      "b_wins": 18,
+      "winner": "hard#1",
+      "forfeits": 0,
+      "a_avg_move_ms": 0.029,
+      "b_avg_move_ms": 15.405,
+      "a_std_move_ms": 0.006,
+      "b_std_move_ms": 41.224,
+      "a_max_move_ms": 0.047,
+      "b_max_move_ms": 176.866
+    },
+    {
+      "player_a": "medium#0",
+      "player_b": "medium#1",
+      "phase": "round-robin",
+      "games": 18,
+      "a_wins": 9,
+      "b_wins": 9,
       "winner": "",
       "forfeits": 0,
-      "a_avg_move_ms": 0.033,
-      "b_avg_move_ms": 0.031,
-      "a_max_move_ms": 0.07,
-      "b_max_move_ms": 0.063
+      "a_avg_move_ms": 0.425,
+      "b_avg_move_ms": 0.418,
+      "a_std_move_ms": 0.309,
+      "b_std_move_ms": 0.295,
+      "a_max_move_ms": 1.423,
+      "b_max_move_ms": 1.394
+    },
+    {
+      "player_a": "medium#0",
+      "player_b": "hard#0",
+      "phase": "round-robin",
+      "games": 18,
+      "a_wins": 0,
+      "b_wins": 18,
+      "winner": "hard#0",
+      "forfeits": 0,
+      "a_avg_move_ms": 0.485,
+      "b_avg_move_ms": 14.414,
+      "a_std_move_ms": 0.305,
+      "b_std_move_ms": 42.284,
+      "a_max_move_ms": 1.693,
+      "b_max_move_ms": 198.221
+    },
+    {
+      "player_a": "medium#0",
+      "player_b": "hard#1",
+      "phase": "round-robin",
+      "games": 18,
+      "a_wins": 0,
+      "b_wins": 18,
+      "winner": "hard#1",
+      "forfeits": 0,
+      "a_avg_move_ms": 0.501,
+      "b_avg_move_ms": 13.534,
+      "a_std_move_ms": 0.288,
+      "b_std_move_ms": 38.374,
+      "a_max_move_ms": 1.478,
+      "b_max_move_ms": 177.282
+    },
+    {
+      "player_a": "medium#1",
+      "player_b": "hard#0",
+      "phase": "round-robin",
+      "games": 18,
+      "a_wins": 0,
+      "b_wins": 18,
+      "winner": "hard#0",
+      "forfeits": 0,
+      "a_avg_move_ms": 0.484,
+      "b_avg_move_ms": 13.996,
+      "a_std_move_ms": 0.32,
+      "b_std_move_ms": 40.785,
+      "a_max_move_ms": 1.679,
+      "b_max_move_ms": 198.987
+    },
+    {
+      "player_a": "medium#1",
+      "player_b": "hard#1",
+      "phase": "round-robin",
+      "games": 18,
+      "a_wins": 0,
+      "b_wins": 18,
+      "winner": "hard#1",
+      "forfeits": 0,
+      "a_avg_move_ms": 0.487,
+      "b_avg_move_ms": 13.377,
+      "a_std_move_ms": 0.298,
+      "b_std_move_ms": 38.337,
+      "a_max_move_ms": 1.476,
+      "b_max_move_ms": 176.146
+    },
+    {
+      "player_a": "hard#0",
+      "player_b": "hard#1",
+      "phase": "round-robin",
+      "games": 18,
+      "a_wins": 9,
+      "b_wins": 9,
+      "winner": "",
+      "forfeits": 0,
+      "a_avg_move_ms": 17.672,
+      "b_avg_move_ms": 16.832,
+      "a_std_move_ms": 36.324,
+      "b_std_move_ms": 36.69,
+      "a_max_move_ms": 174.926,
+      "b_max_move_ms": 179.534
     }
   ],
   "player_stats": [
     {
-      "player": "PerfectBot#0",
-      "wins": 260,
-      "losses": 20,
+      "player": "hard#0",
+      "wins": 117,
+      "losses": 9,
       "forfeits": 0,
-      "games": 280,
+      "games": 126,
       "win_rate": 0.929,
-      "moves_made": 1180,
-      "avg_move_ms": 0.035,
-      "max_move_ms": 0.148,
-      "total_move_ms": 41.415,
+      "moves_made": 450,
+      "avg_move_ms": 16.192,
+      "std_move_ms": 40.149,
+      "max_move_ms": 199.091,
+      "total_move_ms": 7286.287,
       "opponents": [
         {
-          "opponent": "GreedyBot#0",
-          "wins": 40,
+          "opponent": "easy#0",
+          "wins": 18,
           "losses": 0
         },
         {
-          "opponent": "GreedyBot#1",
-          "wins": 40,
+          "opponent": "easy#1",
+          "wins": 18,
           "losses": 0
         },
         {
-          "opponent": "MinimaxBot#0",
-          "wins": 40,
+          "opponent": "hard#1",
+          "wins": 9,
+          "losses": 9
+        },
+        {
+          "opponent": "medium#0",
+          "wins": 18,
           "losses": 0
         },
         {
-          "opponent": "MinimaxBot#1",
-          "wins": 40,
+          "opponent": "medium#1",
+          "wins": 18,
           "losses": 0
         },
         {
-          "opponent": "PerfectBot#1",
-          "wins": 20,
-          "losses": 20
-        },
-        {
-          "opponent": "RandomBot#0",
-          "wins": 40,
+          "opponent": "random#0",
+          "wins": 18,
           "losses": 0
         },
         {
-          "opponent": "RandomBot#1",
-          "wins": 40,
+          "opponent": "random#1",
+          "wins": 18,
           "losses": 0
         }
       ],
-      "elo": 2302.605
+      "elo": 2022.836
     },
     {
-      "player": "PerfectBot#1",
-      "wins": 260,
-      "losses": 20,
+      "player": "hard#1",
+      "wins": 117,
+      "losses": 9,
       "forfeits": 0,
-      "games": 280,
+      "games": 126,
       "win_rate": 0.929,
-      "moves_made": 1180,
-      "avg_move_ms": 0.032,
-      "max_move_ms": 0.073,
-      "total_move_ms": 37.418,
+      "moves_made": 447,
+      "avg_move_ms": 16.158,
+      "std_move_ms": 39.287,
+      "max_move_ms": 190.448,
+      "total_move_ms": 7222.77,
       "opponents": [
         {
-          "opponent": "GreedyBot#0",
-          "wins": 40,
+          "opponent": "easy#0",
+          "wins": 18,
           "losses": 0
         },
         {
-          "opponent": "GreedyBot#1",
-          "wins": 40,
+          "opponent": "easy#1",
+          "wins": 18,
           "losses": 0
         },
         {
-          "opponent": "MinimaxBot#0",
-          "wins": 40,
+          "opponent": "hard#0",
+          "wins": 9,
+          "losses": 9
+        },
+        {
+          "opponent": "medium#0",
+          "wins": 18,
           "losses": 0
         },
         {
-          "opponent": "MinimaxBot#1",
-          "wins": 40,
+          "opponent": "medium#1",
+          "wins": 18,
           "losses": 0
         },
         {
-          "opponent": "PerfectBot#0",
-          "wins": 20,
-          "losses": 20
-        },
-        {
-          "opponent": "RandomBot#0",
-          "wins": 40,
+          "opponent": "random#0",
+          "wins": 18,
           "losses": 0
         },
         {
-          "opponent": "RandomBot#1",
-          "wins": 40,
+          "opponent": "random#1",
+          "wins": 18,
           "losses": 0
         }
       ],
-      "elo": 2189.459
+      "elo": 1979.018
     },
     {
-      "player": "MinimaxBot#1",
-      "wins": 200,
-      "losses": 80,
+      "player": "medium#1",
+      "wins": 72,
+      "losses": 54,
       "forfeits": 0,
-      "games": 280,
-      "win_rate": 0.714,
-      "moves_made": 1120,
-      "avg_move_ms": 10.19,
-      "max_move_ms": 51.641,
-      "total_move_ms": 11413.351,
-      "opponents": [
-        {
-          "opponent": "GreedyBot#0",
-          "wins": 40,
-          "losses": 0
-        },
-        {
-          "opponent": "GreedyBot#1",
-          "wins": 40,
-          "losses": 0
-        },
-        {
-          "opponent": "MinimaxBot#0",
-          "wins": 40,
-          "losses": 0
-        },
-        {
-          "opponent": "PerfectBot#0",
-          "wins": 0,
-          "losses": 40
-        },
-        {
-          "opponent": "PerfectBot#1",
-          "wins": 0,
-          "losses": 40
-        },
-        {
-          "opponent": "RandomBot#0",
-          "wins": 40,
-          "losses": 0
-        },
-        {
-          "opponent": "RandomBot#1",
-          "wins": 40,
-          "losses": 0
-        }
-      ],
-      "elo": 1692.152
-    },
-    {
-      "player": "MinimaxBot#0",
-      "wins": 160,
-      "losses": 120,
-      "forfeits": 0,
-      "games": 280,
+      "games": 126,
       "win_rate": 0.571,
-      "moves_made": 1090,
-      "avg_move_ms": 8.741,
-      "max_move_ms": 49.948,
-      "total_move_ms": 9527.465,
+      "moves_made": 324,
+      "avg_move_ms": 0.458,
+      "std_move_ms": 0.311,
+      "max_move_ms": 1.679,
+      "total_move_ms": 148.327,
       "opponents": [
         {
-          "opponent": "GreedyBot#0",
-          "wins": 40,
+          "opponent": "easy#0",
+          "wins": 18,
           "losses": 0
         },
         {
-          "opponent": "GreedyBot#1",
-          "wins": 40,
+          "opponent": "easy#1",
+          "wins": 18,
           "losses": 0
         },
         {
-          "opponent": "MinimaxBot#1",
+          "opponent": "hard#0",
           "wins": 0,
-          "losses": 40
+          "losses": 18
         },
         {
-          "opponent": "PerfectBot#0",
+          "opponent": "hard#1",
           "wins": 0,
-          "losses": 40
+          "losses": 18
         },
         {
-          "opponent": "PerfectBot#1",
-          "wins": 0,
-          "losses": 40
+          "opponent": "medium#0",
+          "wins": 9,
+          "losses": 9
         },
         {
-          "opponent": "RandomBot#0",
-          "wins": 40,
-          "losses": 0
+          "opponent": "random#0",
+          "wins": 15,
+          "losses": 3
         },
         {
-          "opponent": "RandomBot#1",
-          "wins": 40,
-          "losses": 0
+          "opponent": "random#1",
+          "wins": 12,
+          "losses": 6
         }
       ],
-      "elo": 1437.273
+      "elo": 1587.588
     },
     {
-      "player": "GreedyBot#1",
-      "wins": 70,
-      "losses": 210,
+      "player": "medium#0",
+      "wins": 72,
+      "losses": 54,
       "forfeits": 0,
-      "games": 280,
-      "win_rate": 0.25,
-      "moves_made": 640,
-      "avg_move_ms": 0.02,
-      "max_move_ms": 0.101,
-      "total_move_ms": 12.504,
+      "games": 126,
+      "win_rate": 0.571,
+      "moves_made": 324,
+      "avg_move_ms": 0.466,
+      "std_move_ms": 0.314,
+      "max_move_ms": 1.772,
+      "total_move_ms": 150.973,
       "opponents": [
         {
-          "opponent": "GreedyBot#0",
-          "wins": 20,
-          "losses": 20
+          "opponent": "easy#0",
+          "wins": 18,
+          "losses": 0
         },
         {
-          "opponent": "MinimaxBot#0",
+          "opponent": "easy#1",
+          "wins": 18,
+          "losses": 0
+        },
+        {
+          "opponent": "hard#0",
           "wins": 0,
-          "losses": 40
+          "losses": 18
         },
         {
-          "opponent": "MinimaxBot#1",
+          "opponent": "hard#1",
           "wins": 0,
-          "losses": 40
+          "losses": 18
         },
         {
-          "opponent": "PerfectBot#0",
+          "opponent": "medium#1",
+          "wins": 9,
+          "losses": 9
+        },
+        {
+          "opponent": "random#0",
+          "wins": 15,
+          "losses": 3
+        },
+        {
+          "opponent": "random#1",
+          "wins": 12,
+          "losses": 6
+        }
+      ],
+      "elo": 1506.305
+    },
+    {
+      "player": "easy#1",
+      "wins": 36,
+      "losses": 90,
+      "forfeits": 0,
+      "games": 126,
+      "win_rate": 0.286,
+      "moves_made": 264,
+      "avg_move_ms": 0.027,
+      "std_move_ms": 0.006,
+      "max_move_ms": 0.055,
+      "total_move_ms": 7.079,
+      "opponents": [
+        {
+          "opponent": "easy#0",
+          "wins": 9,
+          "losses": 9
+        },
+        {
+          "opponent": "hard#0",
           "wins": 0,
-          "losses": 40
+          "losses": 18
         },
         {
-          "opponent": "PerfectBot#1",
+          "opponent": "hard#1",
           "wins": 0,
-          "losses": 40
+          "losses": 18
         },
         {
-          "opponent": "RandomBot#0",
-          "wins": 10,
-          "losses": 30
+          "opponent": "medium#0",
+          "wins": 0,
+          "losses": 18
         },
         {
-          "opponent": "RandomBot#1",
-          "wins": 40,
+          "opponent": "medium#1",
+          "wins": 0,
+          "losses": 18
+        },
+        {
+          "opponent": "random#0",
+          "wins": 9,
+          "losses": 9
+        },
+        {
+          "opponent": "random#1",
+          "wins": 18,
           "losses": 0
         }
       ],
-      "elo": 1228.494
+      "elo": 1284.716
     },
     {
-      "player": "GreedyBot#0",
-      "wins": 70,
-      "losses": 210,
+      "player": "random#1",
+      "wins": 15,
+      "losses": 111,
       "forfeits": 0,
-      "games": 280,
-      "win_rate": 0.25,
-      "moves_made": 640,
-      "avg_move_ms": 0.019,
-      "max_move_ms": 0.052,
-      "total_move_ms": 12.279,
+      "games": 126,
+      "win_rate": 0.119,
+      "moves_made": 378,
+      "avg_move_ms": 0.082,
+      "std_move_ms": 0.021,
+      "max_move_ms": 0.169,
+      "total_move_ms": 31.041,
       "opponents": [
         {
-          "opponent": "GreedyBot#1",
-          "wins": 20,
-          "losses": 20
-        },
-        {
-          "opponent": "MinimaxBot#0",
+          "opponent": "easy#0",
           "wins": 0,
-          "losses": 40
+          "losses": 18
         },
         {
-          "opponent": "MinimaxBot#1",
+          "opponent": "easy#1",
           "wins": 0,
-          "losses": 40
+          "losses": 18
         },
         {
-          "opponent": "PerfectBot#0",
+          "opponent": "hard#0",
           "wins": 0,
-          "losses": 40
+          "losses": 18
         },
         {
-          "opponent": "PerfectBot#1",
+          "opponent": "hard#1",
           "wins": 0,
-          "losses": 40
+          "losses": 18
         },
         {
-          "opponent": "RandomBot#0",
-          "wins": 10,
-          "losses": 30
+          "opponent": "medium#0",
+          "wins": 6,
+          "losses": 12
         },
         {
-          "opponent": "RandomBot#1",
-          "wins": 40,
+          "opponent": "medium#1",
+          "wins": 6,
+          "losses": 12
+        },
+        {
+          "opponent": "random#0",
+          "wins": 3,
+          "losses": 15
+        }
+      ],
+      "elo": 1251.599
+    },
+    {
+      "player": "easy#0",
+      "wins": 36,
+      "losses": 90,
+      "forfeits": 0,
+      "games": 126,
+      "win_rate": 0.286,
+      "moves_made": 264,
+      "avg_move_ms": 0.028,
+      "std_move_ms": 0.007,
+      "max_move_ms": 0.056,
+      "total_move_ms": 7.502,
+      "opponents": [
+        {
+          "opponent": "easy#1",
+          "wins": 9,
+          "losses": 9
+        },
+        {
+          "opponent": "hard#0",
+          "wins": 0,
+          "losses": 18
+        },
+        {
+          "opponent": "hard#1",
+          "wins": 0,
+          "losses": 18
+        },
+        {
+          "opponent": "medium#0",
+          "wins": 0,
+          "losses": 18
+        },
+        {
+          "opponent": "medium#1",
+          "wins": 0,
+          "losses": 18
+        },
+        {
+          "opponent": "random#0",
+          "wins": 9,
+          "losses": 9
+        },
+        {
+          "opponent": "random#1",
+          "wins": 18,
           "losses": 0
         }
       ],
-      "elo": 1166.777
+      "elo": 1203.27
     },
     {
-      "player": "RandomBot#0",
-      "wins": 90,
-      "losses": 190,
+      "player": "random#0",
+      "wins": 39,
+      "losses": 87,
       "forfeits": 0,
-      "games": 280,
-      "win_rate": 0.321,
-      "moves_made": 840,
-      "avg_move_ms": 0.038,
-      "max_move_ms": 0.221,
-      "total_move_ms": 31.686,
+      "games": 126,
+      "win_rate": 0.31,
+      "moves_made": 351,
+      "avg_move_ms": 0.086,
+      "std_move_ms": 0.022,
+      "max_move_ms": 0.181,
+      "total_move_ms": 30.302,
       "opponents": [
         {
-          "opponent": "GreedyBot#0",
-          "wins": 30,
-          "losses": 10
+          "opponent": "easy#0",
+          "wins": 9,
+          "losses": 9
         },
         {
-          "opponent": "GreedyBot#1",
-          "wins": 30,
-          "losses": 10
+          "opponent": "easy#1",
+          "wins": 9,
+          "losses": 9
         },
         {
-          "opponent": "MinimaxBot#0",
+          "opponent": "hard#0",
           "wins": 0,
-          "losses": 40
+          "losses": 18
         },
         {
-          "opponent": "MinimaxBot#1",
+          "opponent": "hard#1",
           "wins": 0,
-          "losses": 40
+          "losses": 18
         },
         {
-          "opponent": "PerfectBot#0",
-          "wins": 0,
-          "losses": 40
+          "opponent": "medium#0",
+          "wins": 3,
+          "losses": 15
         },
         {
-          "opponent": "PerfectBot#1",
-          "wins": 0,
-          "losses": 40
+          "opponent": "medium#1",
+          "wins": 3,
+          "losses": 15
         },
         {
-          "opponent": "RandomBot#1",
-          "wins": 30,
-          "losses": 10
+          "opponent": "random#1",
+          "wins": 15,
+          "losses": 3
         }
       ],
-      "elo": 1038.169
-    },
-    {
-      "player": "RandomBot#1",
-      "wins": 10,
-      "losses": 270,
-      "forfeits": 0,
-      "games": 280,
-      "win_rate": 0.036,
-      "moves_made": 840,
-      "avg_move_ms": 0.04,
-      "max_move_ms": 0.889,
-      "total_move_ms": 33.508,
-      "opponents": [
-        {
-          "opponent": "GreedyBot#0",
-          "wins": 0,
-          "losses": 40
-        },
-        {
-          "opponent": "GreedyBot#1",
-          "wins": 0,
-          "losses": 40
-        },
-        {
-          "opponent": "MinimaxBot#0",
-          "wins": 0,
-          "losses": 40
-        },
-        {
-          "opponent": "MinimaxBot#1",
-          "wins": 0,
-          "losses": 40
-        },
-        {
-          "opponent": "PerfectBot#0",
-          "wins": 0,
-          "losses": 40
-        },
-        {
-          "opponent": "PerfectBot#1",
-          "wins": 0,
-          "losses": 40
-        },
-        {
-          "opponent": "RandomBot#0",
-          "wins": 10,
-          "losses": 30
-        }
-      ],
-      "elo": 945.073
+      "elo": 1164.667
     }
   ],
   "totals": {
     "players": 8,
     "matches": 28,
-    "games": 1120,
-    "total_moves": 7530,
-    "avg_game_moves": 6.723,
-    "longest_game_moves": 14,
+    "games": 504,
+    "total_moves": 2802,
+    "avg_game_moves": 5.56,
+    "longest_game_moves": 11,
     "forfeits": 0,
-    "total_move_time_ms": 21109.627
+    "total_move_time_ms": 14884.282
   },
   "structure": {
     "type": "league",

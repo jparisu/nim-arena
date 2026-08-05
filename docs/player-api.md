@@ -2,7 +2,7 @@
 
 This is the **spine of the project**. Everything — the tournament, the web page,
 and every externally submitted bot — depends on it. It is deliberately
-**minimal**: a player carries a `name` and implements one method.
+**minimal**: a player says who it is, and implements one method.
 
 ## The interface
 
@@ -12,18 +12,62 @@ A player is a subclass of `nimarena.player.Player`:
 from abc import ABC, abstractmethod
 
 class Player(ABC):
-    #: Human-readable, unique player name. Shown in the UI and the scoreboard.
-    name: str = "unnamed"
-
+    # --- identity: readable without constructing the player ---
+    @classmethod
     @abstractmethod
-    def choose_move(self, state: list[int]) -> tuple[int, int]:
-        ...
+    def get_name(cls) -> str: ...
+
+    @classmethod
+    @abstractmethod
+    def get_authors(cls) -> list[str]: ...
+
+    @classmethod
+    @abstractmethod
+    def get_description(cls) -> str: ...
+
+    # --- construction: the tournament's only entry point ---
+    @classmethod
+    def create(cls, seed: int) -> "Player":
+        return cls()          # override if your bot takes arguments
+
+    # --- playing ---
+    @abstractmethod
+    def choose_move(self, state: list[int]) -> tuple[int, int]: ...
 ```
 
-You implement exactly two things:
+You implement exactly four things:
 
-1. a class attribute **`name`** — unique and human-readable;
-2. the method **`choose_move(self, state)`**.
+1. **`get_name()`** — unique across every admitted player;
+2. **`get_authors()`** — a non-empty list of names;
+3. **`get_description()`** — a sentence or two about your *strategy*;
+4. **`choose_move(self, state)`** — the actual decision.
+
+`create(seed)` is optional: the default calls `cls()`.
+
+!!! note "Why the identity is on classmethods"
+    The tournament, the docs and the web app all need to label a player *without
+    building one*. Because they are abstract, Python itself refuses to instantiate
+    a subclass that forgot one:
+
+    ```text
+    TypeError: Can't instantiate abstract class MyBot without an
+               implementation for abstract method 'get_name'
+    ```
+
+## Seeds, and why `create` exists
+
+The tournament builds every player through `create(seed)` and never by calling the
+class directly. You get a seed whether or not you want one — ignore it if your bot
+is deterministic:
+
+```python
+@classmethod
+def create(cls, seed: int) -> "MyBot":
+    return cls(depth=4, seed=seed)
+```
+
+Because `create` is a classmethod, the seed can also change how your bot is
+*configured*, not just how it breaks ties.
 
 ## Exact types and conventions
 
@@ -68,7 +112,17 @@ from nimarena.player import Player
 
 
 class OneStickBot(Player):
-    name = "OneStickBot"
+    @classmethod
+    def get_name(cls) -> str:
+        return "OneStickBot"
+
+    @classmethod
+    def get_authors(cls) -> list[str]:
+        return ["your name"]
+
+    @classmethod
+    def get_description(cls) -> str:
+        return "Always takes a single stick from the first non-empty row."
 
     def choose_move(self, state: State) -> tuple[int, int]:
         for row, sticks in enumerate(state):
@@ -77,47 +131,48 @@ class OneStickBot(Player):
         raise AssertionError("never called on an empty board")
 ```
 
-## A full worked example
+## Reusing a shipped strategy
 
-`GreedyBot` empties the largest row in a single move — simple, legal, and clearly
-beatable. This is the file
-[`players/greedy_bot.py`](https://github.com/jparisu/nim-arena/blob/main/players/greedy_bot.py)
-that ships with the project:
-
-```python
-from nimarena.game import State
-from nimarena.player import Player
-
-
-class GreedyBot(Player):
-    """Removes every stick from the currently largest row."""
-
-    name = "GreedyBot"
-
-    def choose_move(self, state: State) -> tuple[int, int]:
-        row = max(range(len(state)), key=lambda i: state[i])
-        return (row, state[row])
-```
-
-A slightly smarter example that uses the game helpers to pick a random legal
-move (this is `RandomBot`, the recommended template):
+The searches behind the reference players are public API in
+[`nimarena.bots`](code-structure.md). If you want to compete on *evaluation*
+rather than rewrite a search, inherit one and override its hooks. This is the
+whole of `players/hard.py`:
 
 ```python
-import random
+from nimarena.bots import SmartMinimaxBot
 
-from nimarena.game import State, legal_moves
-from nimarena.player import Player
+DEPTH = 4
 
 
-class RandomBot(Player):
-    name = "RandomBot"
+class Hard(SmartMinimaxBot):
+    @classmethod
+    def get_name(cls) -> str:
+        return "hard"
 
-    def __init__(self, seed: int | None = None) -> None:
-        self._rng = random.Random(seed)
+    @classmethod
+    def get_authors(cls) -> list[str]:
+        return ["jparisu"]
 
-    def choose_move(self, state: State) -> tuple[int, int]:
-        return self._rng.choice(legal_moves(state))
+    @classmethod
+    def get_description(cls) -> str:
+        return f"Minimax with alpha-beta pruning, searching {DEPTH} plies."
+
+    @classmethod
+    def create(cls, seed: int) -> "Hard":
+        return cls(depth=DEPTH, seed=seed)
 ```
+
+`MinimaxBot` gives you negamax with alpha-beta and two hooks to override:
+
+| Hook | Return | Meaning |
+|------|--------|---------|
+| `evaluate(state)` | float strictly inside `(LOSS, WIN)` | score a position at the depth limit |
+| `known_value(state)` | float, or `None` | the **exact** value of a position you already know |
+
+`known_value` is consulted at every node before the depth cutoff, so a recognised
+position ends that branch immediately. It must be exact — never a guess — because
+an exact value is safe to use at any alpha-beta window, whereas a cached *search*
+result is not.
 
 ## Helpers you may use
 
@@ -134,10 +189,9 @@ Your player may import pure helpers from `nimarena.game`:
 
 ## Optional extras (not part of the contract)
 
-The contract is only `name` + `choose_move`. Anything else is optional. The
-reference `MinimaxBot` and `PerfectBot` set a `self.last_info` dict after each
-move — `MinimaxBot` records the searched depth, score and node count, and
-`PerfectBot` records the nim-sum before/after — which the web app reads for the
+Beyond the identity accessors and `choose_move`, everything is optional. The
+minimax-based players set a `self.last_info` dict after each move recording the
+searched depth, the score and the node count, which the web app reads for its
 "Why did it do that?" panel. You are free to do the same, but you never have to —
 the tournament ignores it.
 

@@ -21,10 +21,11 @@ git checkout -b add-my-bot
 ## Step 2 — Add your player file
 
 Create `players/<your_bot>.py`. The easiest start is to copy
-[`players/random_bot.py`](player-api.md). Your class must:
+[`players/random.py`](player-api.md). Your class must:
 
 - subclass `nimarena.player.Player`,
-- set a **unique** `name`,
+- implement `get_name`, `get_authors` and `get_description` — the name must be
+  **unique** across every admitted player,
 - implement `choose_move(self, state) -> (row, count)` returning a **legal** move.
 
 ```python
@@ -34,7 +35,17 @@ from nimarena.player import Player
 
 
 class CornerBot(Player):
-    name = "CornerBot"
+    @classmethod
+    def get_name(cls) -> str:
+        return "corner"
+
+    @classmethod
+    def get_authors(cls) -> list[str]:
+        return ["your-github-handle"]
+
+    @classmethod
+    def get_description(cls) -> str:
+        return "Reduces a row to leave a zero nim-sum whenever one exists."
 
     def choose_move(self, state: State) -> tuple[int, int]:
         # Try to leave a zero nim-sum; otherwise take a single stick.
@@ -51,11 +62,13 @@ class CornerBot(Player):
 Add **exactly one entry** to [`players.yaml`](https://github.com/jparisu/nim-arena/blob/main/players.yaml):
 
 ```yaml
-  - name: CornerBot
-    author: your-github-handle
-    file: corner_bot.py
+  - file: corner_bot.py
     class: CornerBot
 ```
+
+The manifest is only an admission list — which file, and which class. Your name,
+authors and description come from the class itself, so there is nothing here to
+keep in step with your code.
 
 Fields:
 
@@ -105,6 +118,7 @@ explicit, documented gate:
 
 - Output a legal move `(row, count)`.
 - Do not mutate `state`.
+- Declare a unique name; CI rejects a name that an admitted player already uses.
 - No external dependencies beyond the standard library and `nimarena`.
 - No network / filesystem / subprocess access — be a pure function of the board.
 - Be fast: the tournament enforces a per-move timeout **measured on GitHub's
