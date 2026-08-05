@@ -444,8 +444,9 @@ def test_player_state_survives_across_moves_in_one_game():
 
 def test_repeated_games_differ_when_the_player_is_stochastic():
     """The whole point of D2: repetitions must not be byte-identical."""
-    from nimarena.tournament import play_matchup
     from players.random import Random
+
+    from nimarena.tournament import play_matchup
 
     mu = play_matchup(
         PlayerSpec(Random, 0, "random_0"),
@@ -507,8 +508,9 @@ def test_championship_rejects_degenerate_group_settings(group_size, advance):
 
 def test_a_whole_run_is_reproducible_despite_varying_games():
     """Games within a match differ, yet the run repeats byte-for-byte."""
-    from nimarena.tournament import play_matchup
     from players.random import Random
+
+    from nimarena.tournament import play_matchup
 
     def signatures():
         mu = play_matchup(
