@@ -31,5 +31,5 @@ this checklist into your PR description.
 <!--
 A player that errors or times out will not be merged — robustness is the
 submitter's responsibility. See CONTRIBUTING.md and
-https://nimarena.readthedocs.io/en/latest/submit-a-player/
+https://nim-arena.readthedocs.io/en/latest/submit-a-player/
 -->

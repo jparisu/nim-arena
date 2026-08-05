@@ -1,8 +1,8 @@
 site_name: NIM Arena
 site_description: Parametrized NIM — game engine, player API, three AIs, tournament, and a Pyodide web app.
-site_url: https://nimarena.readthedocs.io
-repo_url: https://github.com/jparisu/nimarena
-repo_name: jparisu/nimarena
+site_url: https://nim-arena.readthedocs.io
+repo_url: https://github.com/jparisu/nim-arena
+repo_name: jparisu/nim-arena
 edit_uri: edit/main/docs/
 
 theme:
@@ -41,7 +41,17 @@ nav:
 
 markdown_extensions:
   - admonition
+  # attr_list + md_in_html are what make Material's `<div class="grid cards" markdown>`
+  # blocks render (see docs/index.md). Without them the block is emitted as a raw
+  # <div> wrapping unprocessed Markdown — and MkDocs reports no warning, so even
+  # `mkdocs build --strict` stays green while the page is visibly broken.
+  - attr_list
+  - md_in_html
   - pymdownx.details
+  # Renders `:material-xxx:` shortcodes as inline SVG icons instead of literal text.
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - pymdownx.superfences
   - pymdownx.highlight:
       anchor_linenums: true

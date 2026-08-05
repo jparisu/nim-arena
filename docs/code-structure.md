@@ -1,7 +1,7 @@
 # Code structure
 
 ```
-nimarena/
+nim-arena/
 ├── pyproject.toml          # packaging, dependencies, tooling config
 ├── players.yaml            # THE manifest: the single list of admitted players
 ├── src/nimarena/

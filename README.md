@@ -1,8 +1,8 @@
 # NIM Arena 🎯
 
-[![Tests](https://github.com/jparisu/nimarena/actions/workflows/tests.yml/badge.svg)](https://github.com/jparisu/nimarena/actions/workflows/tests.yml)
-[![Tournament](https://github.com/jparisu/nimarena/actions/workflows/tournament.yml/badge.svg)](https://github.com/jparisu/nimarena/actions/workflows/tournament.yml)
-[![Docs](https://readthedocs.org/projects/nimarena/badge/?version=latest)](https://nimarena.readthedocs.io)
+[![Tests](https://github.com/jparisu/nim-arena/actions/workflows/tests.yml/badge.svg)](https://github.com/jparisu/nim-arena/actions/workflows/tests.yml)
+[![Tournament](https://github.com/jparisu/nim-arena/actions/workflows/tournament.yml/badge.svg)](https://github.com/jparisu/nim-arena/actions/workflows/tournament.yml)
+[![Docs](https://readthedocs.org/projects/nim-arena/badge/?version=latest)](https://nim-arena.readthedocs.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 A complete, self-contained project built entirely on GitHub, centered on the
@@ -10,12 +10,12 @@ game of **NIM**:
 
 - 🐍 a **Python library** — a parametrized game engine, a clean player API, three
   leveled reference AIs (plus a worked-example bot), and a robust tournament runner;
-- 🌐 a **static web page** ([live demo](https://jparisu.github.io/nimarena)) where
+- 🌐 a **static web page** ([live demo](https://jparisu.github.io/nim-arena)) where
   you play NIM against a human or any AI — running the *actual Python AI code in
   the browser* via **Pyodide**;
 - 🏆 an **automatic tournament** (GitHub Actions) that pits the AIs against each
   other and publishes a ranked [scoreboard](results/leaderboard.json);
-- 📚 **documentation** ([Read the Docs](https://nimarena.readthedocs.io)) — most
+- 📚 **documentation** ([Read the Docs](https://nim-arena.readthedocs.io)) — most
   importantly, how an outsider can submit a new AI player by Pull Request.
 
 The elegance: the game rules and AIs are written **once, in Python**, and that
@@ -30,13 +30,13 @@ On each turn a player removes one or more sticks from a **single** row.
 **The player who removes the last stick wins**.
 
 Full rules and the winning (nim-sum / XOR) strategy: see the
-[docs](https://nimarena.readthedocs.io/en/latest/rules/).
+[docs](https://nim-arena.readthedocs.io/en/latest/rules/).
 
 ## Install & play locally
 
 ```bash
-git clone https://github.com/jparisu/nimarena
-cd nimarena
+git clone https://github.com/jparisu/nim-arena
+cd nim-arena
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 
@@ -53,7 +53,7 @@ nim-tournament --tournament championship --time-limit 2.0
 Every bot kind is entered **twice** (seeded copies) so it competes against
 itself and runs stay reproducible. Choose the format with `--tournament`
 (`simple` · `league` · `championship`); see the
-[tournament docs](https://nimarena.readthedocs.io/en/latest/tournament/).
+[tournament docs](https://nim-arena.readthedocs.io/en/latest/tournament/).
 
 Play a quick game in Python:
 
@@ -102,7 +102,7 @@ tournament.
 4. Open a PR — CI runs the tests. A player that errors or times out is not merged.
 
 Full guide: [CONTRIBUTING.md](CONTRIBUTING.md) ·
-[docs](https://nimarena.readthedocs.io/en/latest/submit-a-player/).
+[docs](https://nim-arena.readthedocs.io/en/latest/submit-a-player/).
 
 ## Repository layout
 

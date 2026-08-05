@@ -5,8 +5,8 @@
 Requires Python 3.10+.
 
 ```bash
-git clone https://github.com/jparisu/nimarena
-cd nimarena
+git clone https://github.com/jparisu/nim-arena
+cd nim-arena
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 ```

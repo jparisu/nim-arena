@@ -66,6 +66,11 @@ def main() -> int:
             if path.is_file():
                 zf.write(path, path.relative_to(STAGE))
 
+    # The staging tree has served its purpose. Remove it: the Pages workflow
+    # uploads the whole of web/ as the site root, so leaving it behind published
+    # an unzipped duplicate of the entire package at /py/ alongside py.zip.
+    shutil.rmtree(STAGE)
+
     # 5. Leaderboard for the scoreboard (best-effort).
     leaderboard = REPO_ROOT / "results" / "leaderboard.json"
     if leaderboard.exists():

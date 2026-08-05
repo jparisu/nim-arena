@@ -22,7 +22,9 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  # false, per GitHub's own Pages guidance: cancelling mid-publish can leave the
+  # deployment in a half-applied state. Queue instead.
+  cancel-in-progress: false
 
 jobs:
   build:

@@ -1,6 +1,6 @@
 # The web app
 
-The [live page](https://jparisu.github.io/nimarena) is a **static site** served
+The [live page](https://jparisu.github.io/nim-arena) is a **static site** served
 by GitHub Pages. It loads [Pyodide](https://pyodide.org) (Python compiled to
 WebAssembly) and runs the **same** Python game engine and AI players in your
 browser. JavaScript's job is deliberately thin: draw the board, handle clicks,

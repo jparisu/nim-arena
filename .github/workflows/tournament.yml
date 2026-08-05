@@ -58,6 +58,12 @@ jobs:
             echo "Leaderboard unchanged; nothing to commit."
           else
             git add results/leaderboard.json
-            git commit -m "chore(tournament): update leaderboard [skip ci]"
+            # No "[skip ci]" here: the Pages workflow watches
+            # results/leaderboard.json precisely so a fresh result redeploys the
+            # scoreboard, and "[skip ci]" suppresses *every* workflow on the push
+            # — which silently froze the published scoreboard. Tests and Docs
+            # ignore results/** via paths-ignore instead, so this commit only
+            # wakes Pages.
+            git commit -m "chore(tournament): update leaderboard"
             git push
           fi

@@ -13,6 +13,13 @@ Configure under **Settings → Branches → Add rule** for `main`:
 - ✅ **Require branches to be up to date before merging.**
 - ✅ **Do not allow bypassing the above settings** (optional but recommended).
 
+> **Never add a `paths:` filter to the `pull_request` trigger of a workflow you
+> mark as a required check.** GitHub reports a required check that did not run as
+> permanently "Expected", which blocks the merge with no way to clear it. A
+> new-player PR touches only `players/` and `players.yaml`, so a `docs/**` filter
+> on `Docs` would make every student submission unmergeable. Both `Tests` and
+> `Docs` therefore run unconditionally on pull requests.
+
 This makes the PR review the real gate: nothing lands on `main` without passing
 CI and a human review.
 
@@ -21,11 +28,44 @@ CI and a human review.
 **Settings → Pages → Build and deployment → Source: GitHub Actions.** The
 [`pages.yml`](workflows/pages.yml) workflow assembles and deploys the site.
 
+> **It must be "GitHub Actions", not "Deploy from a branch".** Branch-based
+> serving can only publish files committed to the repo, and the browser bundle
+> `web/py.zip` is *generated* by [`build_web.py`](../scripts/build_web.py) and is
+> git-ignored. Point Pages at a branch and you get the README rendered by Jekyll
+> at the root and a permanent 404 on `py.zip`, so the app never boots. If
+> `deploy-pages` fails with "Get Pages site failed", this setting is why.
+
+## Read the Docs
+
+The docs are published by Read the Docs, configured by
+[`.readthedocs.yaml`](../.readthedocs.yaml). RTD only builds a repository that has
+been **imported once, by hand** — there is no way to do this from the repo:
+
+1. Sign in at [readthedocs.org](https://readthedocs.org) and **Import a Project**.
+2. Pick `jparisu/nim-arena`. Accept the webhook it offers.
+3. Note the **slug** it assigns (currently `nim-arena`) — it becomes the hostname
+   `https://<slug>.readthedocs.io`. If the slug is not `nim-arena`, update
+   `site_url` in [`mkdocs.yml`](../mkdocs.yml), the `Documentation` URL in
+   [`pyproject.toml`](../pyproject.toml), the README badge, and the links in
+   `.github/ISSUE_TEMPLATE/config.yml`.
+
+Note that [`docs.yml`](workflows/docs.yml) only *builds* the site as a fast CI
+check (`mkdocs build --strict`) and discards the output. RTD is the sole publisher,
+so if RTD is not imported, there are **no published docs at all** even with a green
+`Docs` workflow.
+
+## Keeping the scheduled tournament alive
+
+GitHub **disables `schedule:` triggers after 60 days of repository inactivity**
+and emails the owner. Over a long vacation the weekly tournament will silently
+stop; re-enable it from the Actions tab (or push any commit) when the course
+resumes.
+
 ## Reviewing a new-player PR
 
 Every submission runs untrusted-but-reviewed code. Your review is the security
 and correctness gate. Check the acceptance criteria from
-[submit-a-player](https://nimarena.readthedocs.io/en/latest/submit-a-player/):
+[submit-a-player](https://nim-arena.readthedocs.io/en/latest/submit-a-player/):
 
 1. **Design** — one file in `players/`, one manifest line, subclasses `Player`,
    unique `name`.
@@ -38,7 +78,6 @@ and correctness gate. Check the acceptance criteria from
 A player that errors or times out is **not merged**, even if the tournament would
 survive it.
 
-!!! note
-    PRs from forks run with a **read-only token and no secrets**, so a submitted
-    bot cannot damage the repo during CI — but it *does execute*, which is exactly
-    why the tournament's timeouts and forfeit handling are mandatory.
+> **Note.** PRs from forks run with a **read-only token and no secrets**, so a
+> submitted bot cannot damage the repo during CI — but it *does execute*, which is
+> exactly why the tournament's timeouts and forfeit handling are mandatory.

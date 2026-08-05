@@ -21,4 +21,4 @@ Every NIM Arena player lives here as a single `.py` file that subclasses
 4. Open a Pull Request.
 
 Full walkthrough: **[CONTRIBUTING.md](../CONTRIBUTING.md)** and the
-[online docs](https://nimarena.readthedocs.io/en/latest/submit-a-player/).
+[online docs](https://nim-arena.readthedocs.io/en/latest/submit-a-player/).

@@ -7,12 +7,12 @@ maintainer reviews and merges. Your code only runs *after* a human accepts the P
 
 ## Step 1 — Fork and branch
 
-Fork [`jparisu/nimarena`](https://github.com/jparisu/nimarena), clone your fork,
+Fork [`jparisu/nim-arena`](https://github.com/jparisu/nim-arena), clone your fork,
 and create a branch:
 
 ```bash
-git clone https://github.com/<you>/nimarena
-cd nimarena
+git clone https://github.com/<you>/nim-arena
+cd nim-arena
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 git checkout -b add-my-bot
@@ -48,7 +48,7 @@ class CornerBot(Player):
 
 ## Step 3 — Register it in the manifest
 
-Add **exactly one entry** to [`players.yaml`](https://github.com/jparisu/nimarena/blob/main/players.yaml):
+Add **exactly one entry** to [`players.yaml`](https://github.com/jparisu/nim-arena/blob/main/players.yaml):
 
 ```yaml
   - name: CornerBot

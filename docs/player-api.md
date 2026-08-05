@@ -81,7 +81,7 @@ class OneStickBot(Player):
 
 `GreedyBot` empties the largest row in a single move — simple, legal, and clearly
 beatable. This is the file
-[`players/greedy_bot.py`](https://github.com/jparisu/nimarena/blob/main/players/greedy_bot.py)
+[`players/greedy_bot.py`](https://github.com/jparisu/nim-arena/blob/main/players/greedy_bot.py)
 that ships with the project:
 
 ```python

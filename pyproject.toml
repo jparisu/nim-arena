@@ -33,10 +33,10 @@ docs = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/jparisu/nimarena"
-Documentation = "https://nimarena.readthedocs.io"
-Repository = "https://github.com/jparisu/nimarena"
-"Live demo" = "https://jparisu.github.io/nimarena"
+Homepage = "https://github.com/jparisu/nim-arena"
+Documentation = "https://nim-arena.readthedocs.io"
+Repository = "https://github.com/jparisu/nim-arena"
+"Live demo" = "https://jparisu.github.io/nim-arena"
 
 [project.scripts]
 nim-tournament = "nimarena.tournament:main"

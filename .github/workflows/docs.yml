@@ -5,12 +5,22 @@ name: Docs
 on:
   push:
     branches: [main]
+    # Skip the scheduled leaderboard commits, which cannot affect the docs.
+    paths-ignore:
+      - "results/**"
+  # Deliberately NOT path-filtered. This workflow is a required status check
+  # (see MAINTAINING.md), and a filtered workflow that does not run leaves its
+  # check permanently "expected" — which blocks the merge forever. A new-player
+  # PR touches only players/ and players.yaml, so a docs/** filter here would
+  # make every single student submission unmergeable. The build takes ~25s.
   pull_request:
-    paths:
-      - "docs/**"
-      - "mkdocs.yml"
-      - "src/**"
-      - ".readthedocs.yaml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-docs:
@@ -21,6 +31,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: pip
 
       - name: Install
         run: |

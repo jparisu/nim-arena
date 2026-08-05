@@ -8,7 +8,7 @@ The project has four visible faces:
 - 🐍 a **Python library** — a parametrized game engine, a clean player API, three
   leveled reference AIs (plus a worked-example bot), and a robust tournament
   runner (simple / league / championship formats);
-- 🌐 a **static web page** ([live demo](https://jparisu.github.io/nimarena)) that
+- 🌐 a **static web page** ([live demo](https://jparisu.github.io/nim-arena)) that
   runs the *actual Python AI code in the browser* via
   [Pyodide](https://pyodide.org);
 - 🏆 an **automatic tournament** (GitHub Actions) that publishes a ranked
