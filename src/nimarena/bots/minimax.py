@@ -34,6 +34,7 @@ is brought back to the parent.
 from __future__ import annotations
 
 import random
+from typing import Any
 
 from ..game import Move, State, apply_move, is_terminal, legal_moves
 from ..player import Player
@@ -76,8 +77,9 @@ class MinimaxBot(Player):
         self.depth = depth
         self._rng = random.Random(seed)
         #: Populated after each search, for the web "Why did it do that?" panel.
-        #: An optional extra, not part of the Player contract.
-        self.last_info: dict[str, object] = {}
+        #: An optional extra, not part of the Player contract. ``Any`` because it
+        #: is serialised straight to JSON and crosses into JavaScript.
+        self.last_info: dict[str, Any] = {}
         self._nodes = 0
 
     # ------------------------------------------------------------------ #

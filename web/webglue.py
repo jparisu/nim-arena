@@ -130,8 +130,12 @@ def perfect_analysis(state_json: str) -> str:
     """
     state = json.loads(state_json)
     total_xor = game.nim_sum(state)
-    result = {"nim_sum": total_xor, "winning": total_xor != 0,
-              "move": None, "target_row": None}
+    result: dict[str, object] = {
+        "nim_sum": total_xor,
+        "winning": total_xor != 0,
+        "move": None,
+        "target_row": None,
+    }
     if total_xor != 0:
         for row, sticks in enumerate(state):
             target = sticks ^ total_xor

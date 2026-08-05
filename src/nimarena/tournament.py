@@ -81,12 +81,17 @@ import time
 from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Protocol
+from typing import TYPE_CHECKING, Any, Protocol
 
 from . import game
 from .elo import DEFAULT_INITIAL_RATING, updated_ratings
 from .game import Move, State
 from .player import Player
+
+if TYPE_CHECKING:
+    # Only the concrete contexts declare `Process`; BaseContext does not. This one
+    # exists solely on POSIX, which is exactly where the fork path applies.
+    from multiprocessing.context import ForkContext
 
 #: Boards every match is played on, unless the caller overrides them.
 #:
@@ -118,6 +123,20 @@ DEFAULT_GROUP_SIZE = 4
 DEFAULT_ADVANCE_PER_GROUP = 2
 #: The tournament formats understood by :func:`run_tournament`.
 TOURNAMENT_MODES = ("simple", "league", "championship")
+
+#: One JSON object in the results payload.
+#:
+#: ``Any`` rather than ``object`` is deliberate, and rather than a ``TypedDict``
+#: too. This is a JSON boundary: the payload is written to
+#: ``results/leaderboard.json`` and consumed by a web page, its shape varies by
+#: tournament mode, and several keys (``elo``) are present only conditionally.
+#: Modelling that precisely needs ``NotRequired``, which is not in ``typing``
+#: until 3.11 — so on the 3.10 floor it would mean adding ``typing_extensions``
+#: as a runtime dependency of the package, to describe a dict that is validated
+#: by tests against the schema documented in ``docs/tournament.md``. Not worth it.
+#: Every *function* here is still fully annotated; only the payload's interior is
+#: dynamic, which is the truth about JSON.
+JsonDict = dict[str, Any]
 
 #: Milliseconds per second, used to convert measured/allotted times.
 _MS_PER_SECOND = 1000.0
@@ -251,7 +270,7 @@ _ST_SLOTS = 3
 _PHASE_BUILD, _PHASE_PLAY, _PHASE_DONE = 0, 1, 2
 
 
-def _fork_context() -> mp.context.BaseContext | None:
+def _fork_context() -> ForkContext | None:
     """Return a ``fork`` context, or ``None`` where forking is unavailable.
 
     Only ``fork`` is used. Under ``spawn`` the child would have to unpickle the
@@ -386,7 +405,7 @@ class Matchup:
             if rec.player == name and rec.move is not None
         ]
 
-    def to_dict(self) -> dict[str, object]:
+    def to_dict(self) -> JsonDict:
         """Return a JSON-serializable, aggregated summary of the match.
 
         Timing is reported as **aggregates only** — mean, standard deviation and
@@ -951,12 +970,12 @@ def _rank_names(stats: dict[str, _Stats], *, use_elo: bool) -> list[str]:
     return sorted(stats, key=key)
 
 
-def _standings(stats: dict[str, _Stats], *, use_elo: bool) -> list[dict[str, object]]:
+def _standings(stats: dict[str, _Stats], *, use_elo: bool) -> list[JsonDict]:
     """Build the ranked, JSON-serializable classification (right-column data)."""
-    standings: list[dict[str, object]] = []
+    standings: list[JsonDict] = []
     for rank, name in enumerate(_rank_names(stats, use_elo=use_elo), start=1):
         s = stats[name]
-        row: dict[str, object] = {
+        row: JsonDict = {
             "rank": rank,
             "player": name,
             "points": s.points,
@@ -975,16 +994,16 @@ def _standings(stats: dict[str, _Stats], *, use_elo: bool) -> list[dict[str, obj
     return standings
 
 
-def _player_stats(stats: dict[str, _Stats], *, use_elo: bool) -> list[dict[str, object]]:
+def _player_stats(stats: dict[str, _Stats], *, use_elo: bool) -> list[JsonDict]:
     """Build the detailed per-player stats block (with head-to-head breakdown)."""
-    rows: list[dict[str, object]] = []
+    rows: list[JsonDict] = []
     for name in _rank_names(stats, use_elo=use_elo):
         s = stats[name]
         opponents = [
             {"opponent": opp, "wins": wl[0], "losses": wl[1]}
             for opp, wl in sorted(s.opponents.items())
         ]
-        row: dict[str, object] = {
+        row: JsonDict = {
             "player": name,
             "wins": s.wins,
             "losses": s.losses,
@@ -1009,7 +1028,7 @@ def _player_stats(stats: dict[str, _Stats], *, use_elo: bool) -> list[dict[str, 
 
 def _totals(
     all_games: list[MatchResult], num_matches: int, num_players: int
-) -> dict[str, object]:
+) -> JsonDict:
     """Build the overview totals block for the whole tournament."""
     total_moves = sum(len(g.moves) for g in all_games)
     total_time_ms = sum(sum(g.spent_ms.values()) for g in all_games)
@@ -1072,7 +1091,7 @@ def _round_name(num_participants: int) -> str:
 
 def _group_table(
     members: list[str], stats: dict[str, _Stats]
-) -> list[dict[str, object]]:
+) -> list[JsonDict]:
     """Rank a group's members by points and return a JSON-serializable table."""
     ordered = sorted(
         members,
@@ -1130,7 +1149,7 @@ def _run_championship(
     use_subprocess: bool,
     group_size: int,
     advance_per_group: int,
-) -> tuple[list[Matchup], dict[str, object]]:
+) -> tuple[list[Matchup], JsonDict]:
     """Run a group phase then a knockout bracket.
 
     Returns:
@@ -1158,7 +1177,7 @@ def _run_championship(
     for index, spec in enumerate(roster):
         groups[index % num_groups].append(spec)
     matchups: list[Matchup] = []
-    group_blocks: list[dict[str, object]] = []
+    group_blocks: list[JsonDict] = []
     seeds_by_place: list[list[str]] = [[] for _ in range(advance_per_group)]
 
     for g_index, members in enumerate(groups):
@@ -1185,13 +1204,13 @@ def _run_championship(
     seeds: list[str] = [name for place in seeds_by_place for name in place]
 
     # --- Knockout bracket ---------------------------------------------------
-    rounds: list[dict[str, object]] = []
+    rounds: list[JsonDict] = []
     champion = seeds[0] if seeds else ""
     current = seeds
     while len(current) > 1:
         round_name = _round_name(len(current))
         pairs = _seed_bracket_pairs(current)
-        ties: list[dict[str, object]] = []
+        ties: list[JsonDict] = []
         winners: list[str] = []
         for high, low in pairs:
             if low is None:  # bye: the seed advances unopposed
@@ -1215,7 +1234,7 @@ def _run_championship(
         champion = winners[0] if len(winners) == 1 else champion
         current = winners
 
-    structure: dict[str, object] = {
+    structure: JsonDict = {
         "type": "championship",
         "group_size": group_size,
         "advance_per_group": advance_per_group,
@@ -1229,13 +1248,16 @@ def _run_championship(
 # Top-level tournament runner                                                  #
 # --------------------------------------------------------------------------- #
 
-def validate_starting_states(states: Sequence[State]) -> list[State]:
+def validate_starting_states(states: Sequence[Sequence[int]]) -> list[State]:
     """Return ``states`` as clean boards, or explain why they are unplayable.
 
     Nothing downstream can cope with a nonsense board: an all-zero board is
     already over, so the game would end with nobody having taken the last stick,
     and a negative row makes ``legal_moves`` return nothing so the first player
     forfeits for no reason.
+
+    Accepts any sequence of sequences — a tuple of tuples is fine — and always
+    returns fresh ``list[int]`` boards, so callers cannot alias what they passed in.
 
     Raises:
         ValueError: if any board is empty, holds a non-integer or negative row, or
@@ -1259,14 +1281,14 @@ def validate_starting_states(states: Sequence[State]) -> list[State]:
     return cleaned
 
 
-def _player_directory(specs: Sequence[PlayerSpec]) -> list[dict[str, object]]:
+def _player_directory(specs: Sequence[PlayerSpec]) -> list[JsonDict]:
     """Return one identity entry per player *kind* in the roster.
 
     Keyed by the kind's own name (``"hard"``), not by roster entry (``"hard_0"``),
     so this stays O(kinds) rather than O(roster) and nothing is repeated on every
     standings row. The scoreboard strips the ``_<n>`` suffix to look a player up.
     """
-    seen: dict[str, dict[str, object]] = {}
+    seen: dict[str, JsonDict] = {}
     for spec in specs:
         name = spec.cls.get_name()
         if name not in seen:
@@ -1291,8 +1313,8 @@ def run_tournament(
     group_size: int = DEFAULT_GROUP_SIZE,
     advance_per_group: int = DEFAULT_ADVANCE_PER_GROUP,
     now: Callable[[], datetime] | None = None,
-    extra_config: dict[str, object] | None = None,
-) -> dict[str, object]:
+    extra_config: JsonDict | None = None,
+) -> JsonDict:
     """Run a tournament in the requested ``mode`` and return the results dict.
 
     Args:
@@ -1365,7 +1387,7 @@ def run_tournament(
     if use_elo:
         _apply_elo(stats, all_games)
 
-    config: dict[str, object] = {
+    config: JsonDict = {
         "tournament": mode,
         "starting_states": [list(s) for s in starting_states],
         "repetitions": repetitions,
@@ -1500,7 +1522,6 @@ def main(argv: list[str] | None = None) -> int:
     """
     import json
     from pathlib import Path
-    from typing import Any, cast
 
     from .manifest import ManifestError, load_players
 
@@ -1567,8 +1588,8 @@ def main(argv: list[str] | None = None) -> int:
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(leaderboard, indent=2) + "\n", encoding="utf-8")
 
-    standings = cast("list[dict[str, Any]]", leaderboard["standings"])
-    use_elo = bool(cast("dict[str, Any]", leaderboard["config"])["elo"])
+    standings = leaderboard["standings"]
+    use_elo = bool(leaderboard["config"]["elo"])
     print(f"\nClassification (written to {out_path}):")
     for row in standings:
         score = f"elo {row['elo']}" if use_elo else f"{row['points']} pts"

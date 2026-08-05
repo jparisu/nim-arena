@@ -68,7 +68,14 @@ ignore = ["E501"]
 [tool.mypy]
 # 3.10 is the floor pyproject promises, so check against it.
 python_version = "3.10"
-files = ["src", "players", "scripts", "web", "conftest.py"]
+files = ["src", "players", "scripts", "web", "tests", "conftest.py"]
+# Without these, mypy derives a module name from the bare filename, so
+# players/random.py becomes module `random` and SHADOWS the standard library —
+# every `import random` in the package then resolved to the player class.
+# Naming the roots explicitly makes it `players.random`, as it is at runtime.
+mypy_path = "src:."
+explicit_package_bases = true
+namespace_packages = true
 # Everything shipped must be annotated. `strict` is deliberately NOT used: it also
 # demands TypedDicts for the JSON result payloads, which would be a large refactor
 # for little gain — the payload is validated by tests against a documented schema.
@@ -84,8 +91,18 @@ show_error_codes = true
 pretty = true
 
 [[tool.mypy.overrides]]
-# The tests are checked (see the CI step) but not required to annotate every
-# fixture and stub; that is noise, not safety.
-module = ["tests.*"]
+# The tests ARE checked, but not required to annotate every fixture and stub —
+# that is noise, not safety.
+module = ["tests.*", "conftest"]
 disallow_untyped_defs = false
 disallow_incomplete_defs = false
+
+[[tool.mypy.overrides]]
+# pytest ships py.typed, so mypy follows into _pytest internals, which import
+# numpy. numpy's stubs use 3.12 `type` aliases and cannot parse under
+# python_version 3.10; and in CI numpy is not installed at all, so it would fail
+# there for the opposite reason. Neither is this project's code — do not analyse
+# the test runner's own internals.
+module = ["numpy.*", "_pytest.*", "pytest.*"]
+follow_imports = "skip"
+follow_imports_for_stubs = true
