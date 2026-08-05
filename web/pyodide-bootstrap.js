@@ -60,6 +60,15 @@ async function bootNim(onStatus = () => {}) {
       JSON.parse(webglue.ask_move(name, JSON.stringify(state))),
     perfectAnalysis: (state) =>
       JSON.parse(webglue.perfect_analysis(JSON.stringify(state))),
+
+    // Tournament bracket: each slot gets its own seeded instance, so the same
+    // kind can enter several times without the copies sharing state.
+    resetEntrants: () => webglue.reset_entrants(),
+    createEntrant: (id, kind, seed) => webglue.create_entrant(id, kind, seed),
+    entrantMove: (id, state) =>
+      JSON.parse(webglue.entrant_move(id, JSON.stringify(state))),
+    playAuto: (aId, bId, state) =>
+      JSON.parse(webglue.play_auto(aId, bId, JSON.stringify(state))),
   };
 
   onStatus("Ready.");

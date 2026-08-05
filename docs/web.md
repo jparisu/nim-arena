@@ -43,6 +43,13 @@ of ints, moves are `[row, count]`. No custom objects.
   perfect player under the hood).
 - **Speed readout** — each AI move's think-time is displayed, mirroring the
   tournament's per-move timing.
+- **Tournament page** — build your own single-elimination bracket of 4, 8 or 16
+  entrants. Any bot may enter several times (each copy gets its own seed, so they
+  are genuinely independent), and humans can enter under a name. Bot-vs-bot
+  matches play themselves; a match involving a human opens the same board the
+  Play screen uses, minus the hints and reasoning panel. The tree fills in as the
+  bracket advances, any finished match can be replayed move by move, and the
+  final produces a podium. The whole bracket is reproducible from its seed.
 - **Shareable game** — the move history is encoded in the URL so a game can be
   replayed by sharing a link. Pure static, no backend.
 

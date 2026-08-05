@@ -520,3 +520,138 @@ main { flex: 1; padding: 1.4rem; max-width: 1200px; margin: 0 auto; width: 100%;
 
 /* ---------- about: author ---------- */
 .author { font-size: 1.05rem; }
+
+/* ---------- tournament: setup ---------- */
+.tsetup { margin-bottom: 1rem; }
+.tsetup-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 0.8rem;
+  margin-bottom: 0.9rem;
+}
+.tslots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 0.9rem;
+}
+.tslot {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.45rem;
+  align-items: center;
+  padding: 0.4rem 0.5rem;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+}
+.tslot-no {
+  width: 1.6rem;
+  text-align: center;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+}
+.tslot-kind, .tslot-name { width: 100%; min-width: 0; }
+/* The name input sits under the picker, spanning both columns. */
+.tslot-name { grid-column: 2; }
+
+/* ---------- tournament: bracket ---------- */
+.tbracket-wrap { margin-bottom: 1rem; }
+.tbracket-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.6rem;
+}
+.tbracket-head h3 { margin: 0; }
+.t-tie { transition: border-color 0.15s ease, transform 0.15s ease; }
+.t-tie.t-done { cursor: pointer; }
+.t-tie.t-done:hover { border-color: var(--accent); transform: translateY(-1px); }
+/* The match about to be played. */
+.t-tie.t-next {
+  border-color: var(--accent);
+  box-shadow: var(--glow);
+}
+.t-tie.t-viewing { border-color: var(--accent-2); }
+
+/* ---------- tournament: live/replay match ---------- */
+.tmatch { margin-bottom: 1rem; }
+.tmatch-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+.tmatch-title { font-size: 1.05rem; font-weight: 600; }
+
+/* ---------- tournament: champion ---------- */
+.tchampion { position: relative; overflow: hidden; padding: 0.5rem 0 1.5rem; }
+.tchampion-card {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.4rem 1rem;
+  box-shadow: var(--shadow);
+}
+.tchampion-card h2 { margin: 0.2rem 0 1.2rem; }
+.tchampion-crown { font-size: 2.6rem; animation: crown-pop 0.6s ease-out both; }
+@keyframes crown-pop {
+  from { transform: scale(0.3) rotate(-25deg); opacity: 0; }
+  to   { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+.podium {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.6rem;
+  margin: 0 auto;
+  max-width: 520px;
+}
+.podium-step { flex: 1 1 0; display: flex; flex-direction: column; align-items: center; gap: 0.25rem; }
+.podium-medal { font-size: 1.5rem; }
+.podium-name { font-size: 0.9rem; overflow-wrap: anywhere; }
+.podium-block {
+  width: 100%;
+  border-radius: 8px 8px 0 0;
+  color: #10131c;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  animation: podium-rise 0.5s ease-out both;
+}
+.podium-step.gold   .podium-block { height: 92px; background: linear-gradient(180deg, #ffd76a, #e8a33d); animation-delay: 0.05s; }
+.podium-step.silver .podium-block { height: 66px; background: linear-gradient(180deg, #dbe3f2, #a9b4cc); animation-delay: 0.15s; }
+.podium-step.bronze .podium-block { height: 48px; background: linear-gradient(180deg, #e0a273, #b67a4a); animation-delay: 0.25s; }
+@keyframes podium-rise {
+  from { transform: scaleY(0); transform-origin: bottom; }
+  to   { transform: scaleY(1); transform-origin: bottom; }
+}
+
+/* Confetti: a CSS/emoji shower rather than an animated GIF, so it needs no
+   external asset, scales cleanly and respects the reduced-motion preference. */
+.confetti { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.confetti span {
+  position: absolute;
+  top: -8%;
+  left: calc(var(--i) * 3.5%);
+  font-size: 1.1rem;
+  animation: confetti-fall 2.6s linear infinite;
+  animation-delay: calc(var(--i) * -0.13s);
+}
+@keyframes confetti-fall {
+  0%   { transform: translateY(-10%) rotate(0deg); opacity: 0; }
+  10%  { opacity: 1; }
+  100% { transform: translateY(560px) rotate(540deg); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .confetti { display: none; }
+  .tchampion-crown, .podium-block { animation: none; }
+}
