@@ -28,6 +28,8 @@ def test_every_player_declares_its_identity(registry, name):
     authors = cls.get_authors()
     assert isinstance(authors, list) and authors and all(a.strip() for a in authors)
     assert cls.get_description().strip()
+    icon = cls.get_icon()
+    assert isinstance(icon, str) and icon.strip(), f"{name} declares no icon"
 
 
 @pytest.mark.parametrize("name", LADDER)
@@ -105,9 +107,9 @@ def test_ranking_order_follows_the_difficulty_ladder(registry):
         use_subprocess=False,
     )
     rank = {row["player"]: row["rank"] for row in lb["standings"]}
-    assert rank["hard#0"] < rank["medium#0"], "hard must outrank medium"
-    assert rank["medium#0"] < rank["easy#0"], "medium must outrank easy"
-    assert rank["medium#0"] < rank["random#0"], "medium must outrank random"
+    assert rank["hard_0"] < rank["medium_0"], "hard must outrank medium"
+    assert rank["medium_0"] < rank["easy_0"], "medium must outrank easy"
+    assert rank["medium_0"] < rank["random_0"], "medium must outrank random"
     # `easy` and `random` are deliberately NOT ordered against each other: greedy
     # play is only marginally better than random in NIM, and which one lands ahead
     # depends on the draw. See devs/DESIGN_DECISIONS.md (D5).
@@ -124,3 +126,26 @@ def test_hard_recognises_the_endgames_it_claims_to(registry):
     # An odd number of single sticks is a win; take one and leave an even count.
     row, count = hard.choose_move([1, 1, 1])
     assert count == 1
+
+
+def test_every_player_has_a_distinct_icon(registry):
+    """Icons are how a player is recognised at a glance, so they must not collide."""
+    icons = [type(registry.get(n)).get_icon() for n in LADDER]
+    assert len(set(icons)) == len(icons), f"duplicate icons: {icons}"
+
+
+def test_leaderboard_carries_a_player_directory(registry):
+    """The scoreboard reads identity from the leaderboard, not the live registry."""
+    lb = run_tournament(
+        build_roster(registry.all(), 2),
+        starting_states=[[1, 2, 3]], repetitions=1,
+        budgets=UNLIMITED, use_subprocess=False,
+    )
+    directory = {p["name"]: p for p in lb["players"]}
+    assert set(directory) == set(LADDER), "one entry per kind, not per roster copy"
+    for entry in directory.values():
+        assert entry["icon"].strip()
+        assert entry["authors"]
+        assert entry["description"].strip()
+    # Roster names carry an underscore suffix the web app renders as a subscript.
+    assert all("_" in r["player"] for r in lb["standings"])

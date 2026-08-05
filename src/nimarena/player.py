@@ -78,6 +78,17 @@ class Player(ABC):
         describe the *strategy*, not the implementation.
         """
 
+    @classmethod
+    @abstractmethod
+    def get_icon(cls) -> str:
+        """Return a single emoji shown beside this player's name.
+
+        Emoji rather than an image because it needs to work in three places that
+        cannot all render markup: the scoreboard, a native ``<select>`` option in
+        the web app (which renders text only), and plain-text docs. Keep it to one
+        glyph — two-glyph sequences break table alignment.
+        """
+
     # ----------------------------------------------------------------- #
     # Construction — the tournament's only entry point                  #
     # ----------------------------------------------------------------- #

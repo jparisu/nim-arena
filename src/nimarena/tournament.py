@@ -87,12 +87,16 @@ from .player import Player
 
 #: Boards every match is played on, unless the caller overrides them.
 #:
-#: ``[7, 9, 11]`` is deliberately larger than the two classic boards. On small
-#: boards a depth-4 search with endgame knowledge plays *optimally*, so every
-#: strong player ties and the top of the ranking stops discriminating. This board
-#: is big enough that the search cannot reach the endgame from the opening, which
-#: is what keeps the leaderboard meaningful at the top.
-DEFAULT_STARTING_STATES: list[State] = [[3, 5, 7], [1, 3, 5, 7], [7, 9, 11]]
+#: Three deliberately different shapes: the classic 3-row board, a 5-row
+#: staircase, and a wide 6-row board of 39 sticks. The last one matters because a
+#: depth-limited search cannot reach the endgame from its opening, which is what
+#: keeps the top of the ranking discriminating instead of every strong player
+#: tying. Every match plays ``repetitions`` games on each board, from each side.
+DEFAULT_STARTING_STATES: list[State] = [
+    [3, 5, 7],
+    [1, 2, 3, 4, 5],
+    [4, 5, 6, 7, 8, 9],
+]
 #: Per-player, per-game thinking budget in milliseconds.
 DEFAULT_GAME_BUDGET_MS = 2000
 #: Per-player budget for :meth:`~nimarena.player.Player.create`, in milliseconds.
@@ -766,8 +770,8 @@ def build_roster(
     constructor signatures is needed; a deterministic bot ignores it but is still
     duplicated so its kind plays itself.
 
-    Each copy is named ``"<name>#<seed>"`` so the copies stay distinct in the
-    standings.
+    Each copy is named ``"<name>_<seed>"`` so the copies stay distinct in the
+    standings. The web app renders that suffix as a subscript.
 
     Args:
         players: one entry per kind (typically ``registry.all()``).
@@ -786,7 +790,7 @@ def build_roster(
         spec = _as_spec(entry)
         base_name = spec.cls.get_name()
         for seed in range(repetition):
-            roster.append(PlayerSpec(cls=spec.cls, seed=seed, name=f"{base_name}#{seed}"))
+            roster.append(PlayerSpec(cls=spec.cls, seed=seed, name=f"{base_name}_{seed}"))
     return roster
 
 
@@ -1234,6 +1238,26 @@ def validate_starting_states(states: Sequence[State]) -> list[State]:
     return cleaned
 
 
+def _player_directory(specs: Sequence[PlayerSpec]) -> list[dict[str, object]]:
+    """Return one identity entry per player *kind* in the roster.
+
+    Keyed by the kind's own name (``"hard"``), not by roster entry (``"hard_0"``),
+    so this stays O(kinds) rather than O(roster) and nothing is repeated on every
+    standings row. The scoreboard strips the ``_<n>`` suffix to look a player up.
+    """
+    seen: dict[str, dict[str, object]] = {}
+    for spec in specs:
+        name = spec.cls.get_name()
+        if name not in seen:
+            seen[name] = {
+                "name": name,
+                "icon": spec.cls.get_icon(),
+                "authors": list(spec.cls.get_authors()),
+                "description": spec.cls.get_description(),
+            }
+    return [seen[k] for k in sorted(seen)]
+
+
 def run_tournament(
     roster: Sequence[Player | PlayerSpec],
     *,
@@ -1335,6 +1359,7 @@ def run_tournament(
     return {
         "generated_at": now().strftime("%Y-%m-%dT%H:%M:%SZ"),
         "config": config,
+        "players": _player_directory(specs),
         "standings": _standings(stats, use_elo=use_elo),
         "matches": [mu.to_dict() for mu in matchups],
         "player_stats": _player_stats(stats, use_elo=use_elo),

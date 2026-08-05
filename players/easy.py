@@ -17,6 +17,10 @@ class Easy(GreedyBot):
         return ["jparisu"]
 
     @classmethod
+    def get_icon(cls) -> str:
+        return "🌱"
+
+    @classmethod
     def get_description(cls) -> str:
         return (
             "Always empties the largest row. A plausible-looking rule that is "

@@ -140,9 +140,36 @@
 
         <div id="sb-empty" class="sb-empty hidden"></div>
 
+        <!-- Player filter: everything below reacts to this selection. -->
+        <div class="sb-filterbar" id="sb-filterbar">
+          <details class="sb-filter" id="sb-filter">
+            <summary class="btn">
+              <span>Players</span>
+              <span class="sb-filter-count" id="sb-filter-count"></span>
+              <span class="sb-filter-caret">▾</span>
+            </summary>
+            <div class="sb-filter-panel">
+              <div class="sb-filter-actions">
+                <button class="btn small" id="sb-filter-all">Select all</button>
+                <button class="btn small" id="sb-filter-none">Deselect all</button>
+              </div>
+              <div class="sb-filter-list" id="sb-filter-list"></div>
+            </div>
+          </details>
+          <span class="muted small" id="sb-filter-hint"></span>
+        </div>
+
         <div class="sb-layout" id="sb-layout">
           <!-- Center: collapsible blocks -->
           <div class="sb-center">
+            <details class="sb-block" id="sb-block-radar" open>
+              <summary>
+                <span class="sb-block-title">Player comparison</span>
+                <span class="sb-sub" id="sb-radar-sub"></span>
+              </summary>
+              <div class="sb-block-body" id="sb-radar"></div>
+            </details>
+
             <details class="sb-block" id="sb-block-structure" open>
               <summary>
                 <span class="sb-block-title">Tournament</span>
@@ -223,6 +250,16 @@
             <a href="https://nim-arena.readthedocs.io" target="_blank" rel="noopener">documentation</a>
             and the
             <a href="https://github.com/jparisu/nim-arena" target="_blank" rel="noopener">repository</a>.
+          </p>
+
+          <h2>Author</h2>
+          <p class="author">
+            Built by <strong>Javier Paris</strong> —
+            <a href="https://github.com/jparisu" target="_blank" rel="noopener">github.com/jparisu</a>
+          </p>
+          <p class="muted small">
+            Source, issues and pull requests:
+            <a href="https://github.com/jparisu/nim-arena" target="_blank" rel="noopener">jparisu/nim-arena</a>
           </p>
         </div>
       </section>

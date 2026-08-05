@@ -5,18 +5,22 @@
 [![Docs](https://readthedocs.org/projects/nim-arena/badge/?version=latest)](https://nim-arena.readthedocs.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+### ▶️ &nbsp;[**Play it now**](https://jparisu.github.io/nim-arena) &nbsp;·&nbsp; 📚 &nbsp;[**Read the docs**](https://nim-arena.readthedocs.io) &nbsp;·&nbsp; 🚀 &nbsp;[**Submit your own AI**](https://nim-arena.readthedocs.io/en/latest/submit-a-player/)
+
+---
+
 A complete, self-contained project built entirely on GitHub, centered on the
 game of **NIM**:
 
-- 🐍 a **Python library** — a parametrized game engine, a clean player API, three
-  leveled reference AIs (plus a worked-example bot), and a robust tournament runner;
-- 🌐 a **static web page** ([live demo](https://jparisu.github.io/nim-arena)) where
-  you play NIM against a human or any AI — running the *actual Python AI code in
-  the browser* via **Pyodide**;
+- 🐍 a **Python library** — a parametrized game engine, a clean player API, a
+  four-rung difficulty ladder of reference AIs, and a robust tournament runner;
+- 🌐 a **static web page** — [**jparisu.github.io/nim-arena**](https://jparisu.github.io/nim-arena) —
+  where you play NIM against a human or any AI, running the *actual Python AI code
+  in the browser* via **Pyodide**;
 - 🏆 an **automatic tournament** (GitHub Actions) that pits the AIs against each
   other and publishes a ranked [scoreboard](results/leaderboard.json);
-- 📚 **documentation** ([Read the Docs](https://nim-arena.readthedocs.io)) — most
-  importantly, how an outsider can submit a new AI player by Pull Request.
+- 📚 **documentation** — [**nim-arena.readthedocs.io**](https://nim-arena.readthedocs.io) —
+  most importantly, how an outsider can submit a new AI player by Pull Request.
 
 The elegance: the game rules and AIs are written **once, in Python**, and that
 exact code runs both in the graded tournament (CI) and live in the browser

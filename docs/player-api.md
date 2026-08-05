@@ -25,6 +25,10 @@ class Player(ABC):
     @abstractmethod
     def get_description(cls) -> str: ...
 
+    @classmethod
+    @abstractmethod
+    def get_icon(cls) -> str: ...          # one emoji
+
     # --- construction: the tournament's only entry point ---
     @classmethod
     def create(cls, seed: int) -> "Player":
@@ -35,12 +39,19 @@ class Player(ABC):
     def choose_move(self, state: list[int]) -> tuple[int, int]: ...
 ```
 
-You implement exactly four things:
+You implement exactly five things:
 
 1. **`get_name()`** — unique across every admitted player;
 2. **`get_authors()`** — a non-empty list of names;
 3. **`get_description()`** — a sentence or two about your *strategy*;
-4. **`choose_move(self, state)`** — the actual decision.
+4. **`get_icon()`** — a single emoji shown beside your name;
+5. **`choose_move(self, state)`** — the actual decision.
+
+`get_icon` is emoji rather than an image because it has to render in three places
+that cannot all handle markup: the scoreboard, a native `<select>` option in the web
+app (text only), and plain-text docs. Keep it to **one** glyph — two-glyph sequences
+break table alignment. The shipped players use 🎲 `random`, 🌱 `easy`, 🧠 `medium`,
+⚔️ `hard`.
 
 `create(seed)` is optional: the default calls `cls()`.
 
@@ -124,6 +135,10 @@ class OneStickBot(Player):
     def get_description(cls) -> str:
         return "Always takes a single stick from the first non-empty row."
 
+    @classmethod
+    def get_icon(cls) -> str:
+        return "🪄"
+
     def choose_move(self, state: State) -> tuple[int, int]:
         for row, sticks in enumerate(state):
             if sticks > 0:
@@ -156,6 +171,10 @@ class Hard(SmartMinimaxBot):
     @classmethod
     def get_description(cls) -> str:
         return f"Minimax with alpha-beta pruning, searching {DEPTH} plies."
+
+    @classmethod
+    def get_icon(cls) -> str:
+        return "⚔️"
 
     @classmethod
     def create(cls, seed: int) -> "Hard":

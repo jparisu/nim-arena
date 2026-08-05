@@ -38,6 +38,10 @@ which is exactly why review is the security and correctness gate.
        def get_description(cls) -> str:
            return "Takes one stick from the first non-empty row."
 
+       @classmethod
+       def get_icon(cls) -> str:
+           return "🪄"          # one emoji, shown beside your name
+
        def choose_move(self, state: State) -> tuple[int, int]:
            # state[i] = sticks in row i. Return (row, count):
            # 0 <= row < len(state) and 1 <= count <= state[row].

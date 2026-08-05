@@ -21,6 +21,10 @@ class Medium(BasicMinimaxBot):
         return ["jparisu"]
 
     @classmethod
+    def get_icon(cls) -> str:
+        return "🧠"
+
+    @classmethod
     def get_description(cls) -> str:
         return (
             f"Minimax with alpha-beta pruning, searching {DEPTH} plies and then "

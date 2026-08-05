@@ -58,6 +58,7 @@ def players_json() -> str:
         [
             {
                 "name": type(p).get_name(),
+                "icon": type(p).get_icon(),
                 "authors": type(p).get_authors(),
                 "description": type(p).get_description(),
             }

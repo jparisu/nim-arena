@@ -17,6 +17,10 @@ class Random(RandomBot):
         return ["jparisu"]
 
     @classmethod
+    def get_icon(cls) -> str:
+        return "🎲"
+
+    @classmethod
     def get_description(cls) -> str:
         return (
             "Picks uniformly at random among all legal moves. No strategy at all "

@@ -27,6 +27,10 @@ class _Meta:
     def get_description(cls) -> str:
         return f"Test subject {cls.__name__}."
 
+    @classmethod
+    def get_icon(cls) -> str:
+        return "🧪"
+
 
 class Plain(_Meta, MinimaxBot):
     pass

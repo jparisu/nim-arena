@@ -24,8 +24,8 @@ Create `players/<your_bot>.py`. The easiest start is to copy
 [`players/random.py`](player-api.md). Your class must:
 
 - subclass `nimarena.player.Player`,
-- implement `get_name`, `get_authors` and `get_description` — the name must be
-  **unique** across every admitted player,
+- implement `get_name`, `get_authors`, `get_description` and `get_icon` — the name
+  must be **unique** across every admitted player, and the icon is one emoji,
 - implement `choose_move(self, state) -> (row, count)` returning a **legal** move.
 
 ```python
@@ -46,6 +46,10 @@ class CornerBot(Player):
     @classmethod
     def get_description(cls) -> str:
         return "Reduces a row to leave a zero nim-sum whenever one exists."
+
+    @classmethod
+    def get_icon(cls) -> str:
+        return "📐"
 
     def choose_move(self, state: State) -> tuple[int, int]:
         # Try to leave a zero nim-sum; otherwise take a single stick.

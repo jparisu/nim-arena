@@ -30,6 +30,12 @@ const el = (tag, cls, txt) => {
   return e;
 };
 
+/* Defined up here because playerHtml() below needs it, and a `const` arrow is
+   unusable until its own line has been evaluated. */
+const esc = (s) =>
+  String(s).replace(/[&<>"]/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
 function toast(msg) {
   const t = $("toast");
   t.textContent = msg;
@@ -61,23 +67,67 @@ function setupNav() {
   } catch {}
 }
 
+/* ---------------- player identity ---------------- */
+/* name -> {icon, authors, description}, keyed by KIND ("hard"), not roster entry
+   ("hard_0"). Populated from the live registry on the Play screen and from the
+   leaderboard's `players` block on the Scoreboard, which may not be the same set:
+   a player can be removed from the repo after a tournament ran. */
+const META = new Map();
+
+const SUB_DIGITS = "₀₁₂₃₄₅₆₇₈₉";
+/* Silhouette for a human seat; every bot supplies its own icon. */
+const HUMAN_ICON = "👤";
+/* Fallback when the leaderboard predates icons, or a kind is unknown. */
+const BOT_ICON = "🤖";
+
+/* Split a roster name into its kind and copy index: "hard_0" -> ["hard", "0"]. */
+function splitPlayer(name) {
+  const m = /^(.*)_(\d+)$/.exec(String(name));
+  return m ? [m[1], m[2]] : [String(name), null];
+}
+
+function playerIcon(name) {
+  const [kind] = splitPlayer(name);
+  return META.get(kind)?.icon || BOT_ICON;
+}
+
+/* Plain-text label — for <option>, tooltips and anywhere markup is not allowed.
+   Uses Unicode subscript digits, since <sub> cannot render inside <option>. */
+function playerText(name) {
+  const [kind, idx] = splitPlayer(name);
+  const sub = idx == null ? "" : [...idx].map((d) => SUB_DIGITS[+d]).join("");
+  return `${playerIcon(name)} ${kind}${sub}`;
+}
+
+/* HTML label — real <sub> markup, for everywhere else. */
+function playerHtml(name) {
+  const [kind, idx] = splitPlayer(name);
+  return (
+    `<span class="p-icon">${esc(playerIcon(name))}</span>` +
+    `<span class="p-name">${esc(kind)}` +
+    (idx == null ? "" : `<sub>${esc(idx)}</sub>`) +
+    `</span>`
+  );
+}
+
 /* ---------------- setup / seats ---------------- */
 /* Preferred default opponent, best first — the first one present is used. */
 const DEFAULT_OPPONENTS = ["medium", "hard", "easy", "random"];
 
 function populateSeatSelects() {
   const players = window.NIM.players();
+  for (const p of players) META.set(p.name, p);
   const names = players.map((p) => p.name);
-  const byName = new Map(players.map((p) => [p.name, p]));
   const preferred = DEFAULT_OPPONENTS.find((n) => names.includes(n));
   for (const i of [0, 1]) {
     const sel = $(`seat-${i}`);
     sel.innerHTML = "";
     for (const opt of [HUMAN, ...names]) {
-      const o = el("option", null, opt);
+      // <option> renders text only — no markup, no SVG — so the icon has to be a
+      // glyph and the copy index a Unicode subscript.
+      const o = el("option", null, opt === HUMAN ? `${HUMAN_ICON} ${HUMAN}` : playerText(opt));
       o.value = opt;
-      // The player's own description, shown on hover.
-      const meta = byName.get(opt);
+      const meta = META.get(opt);
       if (meta) o.title = `${meta.description}\nBy: ${meta.authors.join(", ")}`;
       sel.appendChild(o);
     }
@@ -406,9 +456,6 @@ function loadFromHash() {
 
 /* ---------------- scoreboard ---------------- */
 const MEDALS = { 1: "🥇", 2: "🥈", 3: "🥉" };
-const esc = (s) =>
-  String(s).replace(/[&<>"]/g, (c) =>
-    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const fmtMs = (v) => (v == null ? "—" : `${Number(v).toFixed(v < 10 ? 3 : 1)} ms`);
 const MODE_LABEL = { simple: "Simple", league: "League", championship: "Championship" };
 const MODE_BLURB = {
@@ -437,10 +484,22 @@ async function loadScoreboard() {
   }
 }
 
+/* The scoreboard's current view state. `selected` holds roster names ("hard_0"). */
+const SB = { data: null, useElo: false, mode: "simple", selected: new Set() };
+
 function renderScoreboard(data) {
   const cfg = data.config || {};
   const mode = cfg.tournament || "simple";
   const useElo = !!cfg.elo;
+
+  // The leaderboard carries its own player directory, so the scoreboard does not
+  // depend on the live registry still matching the run that produced it.
+  for (const p of data.players || []) META.set(p.name, p);
+
+  SB.data = data;
+  SB.mode = mode;
+  SB.useElo = useElo;
+  SB.selected = new Set((data.standings || []).map((r) => r.player));
 
   $("sb-title").textContent = `${MODE_LABEL[mode] || "Tournament"} results`;
   $("sb-meta").textContent =
@@ -449,11 +508,166 @@ function renderScoreboard(data) {
     `boards ${JSON.stringify(cfg.starting_states)} · ` +
     `budget ${cfg.game_budget_ms != null ? cfg.game_budget_ms + " ms/game" : "none"}`;
 
-  renderStandings(data.standings || [], useElo);
-  renderStructure(data, mode);
-  renderMatches(data.matches || []);
-  renderPlayerStats(data.player_stats || [], useElo);
+  buildPlayerFilter();
+  renderStructure(data, mode);   // tournament-wide: never filtered
   renderTotals(data.totals || {});
+  renderFiltered();
+}
+
+/* Everything that reacts to the player filter. */
+function renderFiltered() {
+  const data = SB.data || {};
+  const keep = (name) => SB.selected.has(name);
+  const standings = (data.standings || []).filter((r) => keep(r.player));
+  const stats = (data.player_stats || []).filter((s) => keep(s.player));
+  // A match is shown only when BOTH sides are selected: half a pairing tells you
+  // nothing, and it would make the score column unreadable.
+  const matches = (data.matches || []).filter((m) => keep(m.player_a) && keep(m.player_b));
+
+  const total = (data.standings || []).length;
+  $("sb-filter-count").textContent = `${SB.selected.size}/${total}`;
+  $("sb-filter-hint").textContent =
+    SB.selected.size === total
+      ? "showing every player"
+      : `showing ${SB.selected.size} of ${total} players`;
+
+  renderStandings(standings, SB.useElo);
+  renderRadar(stats, SB.useElo);
+  renderMatches(matches);
+  renderPlayerStats(stats, SB.useElo);
+}
+
+/* ---------------- player filter ---------------- */
+function buildPlayerFilter() {
+  const list = $("sb-filter-list");
+  list.innerHTML = "";
+  for (const row of SB.data.standings || []) {
+    const name = row.player;
+    const label = el("label", "sb-filter-item");
+    const cb = el("input");
+    cb.type = "checkbox";
+    cb.checked = true;
+    cb.value = name;
+    cb.onchange = () => {
+      if (cb.checked) SB.selected.add(name);
+      else SB.selected.delete(name);
+      renderFiltered();
+    };
+    label.appendChild(cb);
+    const tag = el("span", "sb-filter-name");
+    tag.innerHTML = playerHtml(name);
+    label.appendChild(tag);
+    list.appendChild(label);
+  }
+  const setAll = (on) => {
+    SB.selected = on ? new Set((SB.data.standings || []).map((r) => r.player)) : new Set();
+    for (const cb of list.querySelectorAll("input[type=checkbox]")) cb.checked = on;
+    renderFiltered();
+  };
+  $("sb-filter-all").onclick = (e) => { e.preventDefault(); setAll(true); };
+  $("sb-filter-none").onclick = (e) => { e.preventDefault(); setAll(false); };
+
+  // A <details> dropdown stays open until toggled, which feels broken. Close it
+  // on any click outside. Registered once, not per rebuild.
+  if (!buildPlayerFilter._outsideBound) {
+    document.addEventListener("click", (e) => {
+      const box = $("sb-filter");
+      if (box && box.open && !box.contains(e.target)) box.open = false;
+    });
+    buildPlayerFilter._outsideBound = true;
+  }
+}
+
+/* ---------------- radar chart ---------------- */
+/* Three axes, hand-drawn as SVG: no chart library is available offline, and a
+   triangle needs no more than trigonometry. */
+const RADAR_AXES = [
+  { key: "elo", label: "Elo", higherIsBetter: true },
+  { key: "win_rate", label: "Win rate", higherIsBetter: true },
+  // Faster thinking should read as "better", i.e. further from the centre — so
+  // this axis is inverted. Without that, the slowest bot would look strongest.
+  { key: "avg_move_ms", label: "Avg move", higherIsBetter: false },
+];
+
+function renderRadar(stats, useElo) {
+  const box = $("sb-radar");
+  box.innerHTML = "";
+  const axes = RADAR_AXES.filter((a) => a.key !== "elo" || useElo);
+  $("sb-radar-sub").textContent = `${stats.length} shown · ${axes.map((a) => a.label).join(" · ")}`;
+
+  if (!stats.length) {
+    box.appendChild(el("p", "muted", "No players selected."));
+    return;
+  }
+
+  // Normalise each axis across the *shown* players, so the chart always uses its
+  // full area. A flat axis (everyone equal) sits at mid-radius.
+  const ranges = axes.map((a) => {
+    const vals = stats.map((s) => Number(s[a.key]) || 0);
+    return { min: Math.min(...vals), max: Math.max(...vals) };
+  });
+  const norm = (value, i) => {
+    const { min, max } = ranges[i];
+    if (max === min) return 0.55;
+    const t = (value - min) / (max - min);
+    // Floor at 0.12 so the weakest player is still a visible shape, not a dot.
+    return 0.12 + 0.88 * (axes[i].higherIsBetter ? t : 1 - t);
+  };
+
+  const SIZE = 320, C = SIZE / 2, R = C - 46;
+  const angle = (i) => (Math.PI * 2 * i) / axes.length - Math.PI / 2;
+  const pt = (i, r) => [C + Math.cos(angle(i)) * R * r, C + Math.sin(angle(i)) * R * r];
+
+  const parts = [];
+  // Grid rings + spokes.
+  for (const ring of [0.25, 0.5, 0.75, 1]) {
+    const pts = axes.map((_, i) => pt(i, ring).map((n) => n.toFixed(1)).join(",")).join(" ");
+    parts.push(`<polygon class="radar-grid" points="${pts}"/>`);
+  }
+  axes.forEach((a, i) => {
+    const [x, y] = pt(i, 1);
+    parts.push(`<line class="radar-spoke" x1="${C}" y1="${C}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"/>`);
+    const [lx, ly] = pt(i, 1.2);
+    const anchor = Math.abs(lx - C) < 6 ? "middle" : lx > C ? "start" : "end";
+    parts.push(
+      `<text class="radar-axis" x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" ` +
+      `text-anchor="${anchor}">${esc(a.label)}</text>`
+    );
+  });
+  // One polygon per player.
+  stats.forEach((s, idx) => {
+    const hue = Math.round((360 * idx) / Math.max(1, stats.length));
+    const pts = axes
+      .map((a, i) => pt(i, norm(Number(s[a.key]) || 0, i)).map((n) => n.toFixed(1)).join(","))
+      .join(" ");
+    parts.push(
+      `<polygon class="radar-shape" points="${pts}" ` +
+      `style="stroke:hsl(${hue} 75% 60%);fill:hsl(${hue} 75% 60% / 0.13)"/>`
+    );
+  });
+
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", `0 0 ${SIZE} ${SIZE}`);
+  svg.setAttribute("class", "radar");
+  svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", `Comparison of ${stats.length} players`);
+  svg.innerHTML = parts.join("");
+  const wrap = el("div", "radar-wrap");
+  wrap.appendChild(svg);
+
+  const legend = el("div", "radar-legend");
+  stats.forEach((s, idx) => {
+    const hue = Math.round((360 * idx) / Math.max(1, stats.length));
+    const item = el("span", "radar-legend-item");
+    item.innerHTML =
+      `<span class="radar-swatch" style="background:hsl(${hue} 75% 60%)"></span>` + playerHtml(s.player);
+    legend.appendChild(item);
+  });
+  wrap.appendChild(legend);
+  box.appendChild(wrap);
+  box.appendChild(el("p", "muted small",
+    "Each axis is scaled across the players shown. Avg move is inverted: faster " +
+    "thinking reaches further out."));
 }
 
 /* Right-wing classification column. */
@@ -466,7 +680,7 @@ function renderStandings(standings, useElo) {
     const score = useElo ? Math.round(row.elo) : `${row.points} pts`;
     li.innerHTML =
       `<span class="sb-rank-no">${MEDALS[row.rank] || row.rank}</span>` +
-      `<span class="sb-rank-name">${esc(row.player)}</span>` +
+      `<span class="sb-rank-name">${playerHtml(row.player)}</span>` +
       `<span class="sb-rank-score">${esc(score)}</span>` +
       `<span class="sb-rank-wl">${row.wins}–${row.losses}` +
       `${row.forfeits ? ` · ${row.forfeits} ff` : ""}</span>`;
@@ -502,7 +716,7 @@ function renderStructure(data, mode) {
       const advanced = (g.advance || []).includes(r.player);
       const tr = el("tr", advanced ? "advances" : null);
       tr.innerHTML =
-        `<td>${r.rank}</td><td>${esc(r.player)}${advanced ? " ⬆" : ""}</td>` +
+        `<td>${r.rank}</td><td>${playerHtml(r.player)}${advanced ? " ⬆" : ""}</td>` +
         `<td>${r.points}</td><td>${r.wins}</td><td>${r.losses}</td>`;
       tb.appendChild(tr);
     }
@@ -530,7 +744,9 @@ function renderStructure(data, mode) {
   }
   box.appendChild(brWrap);
   if (bracket.champion) {
-    box.appendChild(el("div", "sb-champion", `🏆 Champion: ${bracket.champion}`));
+    const champ = el("div", "sb-champion");
+    champ.innerHTML = `🏆 Champion: ${playerHtml(bracket.champion)}`;
+    box.appendChild(champ);
   }
 }
 
@@ -540,38 +756,67 @@ function tieSide(name, wins, isWinner, isBye) {
     row.appendChild(el("span", "sb-tie-name muted", "— bye —"));
     return row;
   }
-  row.appendChild(el("span", "sb-tie-name", name));
+  const tieName = el("span", "sb-tie-name");
+  tieName.innerHTML = playerHtml(name);
+  row.appendChild(tieName);
   if (!isBye) row.appendChild(el("span", "sb-tie-score", String(wins)));
   return row;
 }
 
-/* Match summary — one row per match, averaged over its games. */
+/* Match summary — one expandable entry per match, mirroring Player stats. */
 function renderMatches(matches) {
   $("sb-matches-sub").textContent = `${matches.length} matches`;
   const box = $("sb-matches");
   box.innerHTML = "";
-  const table = el("table", "sb-table");
-  table.innerHTML =
-    "<thead><tr><th>Phase</th><th>Match</th><th>Score</th><th>Winner</th>" +
-    "<th>Games</th><th>Avg A</th><th>Avg B</th></tr></thead>";
-  const tb = el("tbody");
-  for (const m of matches) {
-    const tr = el("tr");
-    const score = `${m.a_wins}–${m.b_wins}`;
-    tr.innerHTML =
-      `<td class="muted">${esc(m.phase)}</td>` +
-      `<td>${esc(m.player_a)} <span class="muted">vs</span> ${esc(m.player_b)}</td>` +
-      `<td class="num">${score}</td>` +
-      `<td>${m.winner ? esc(m.winner) : "<span class='muted'>tie</span>"}</td>` +
-      `<td class="num">${m.games}</td>` +
-      `<td class="num">${fmtMs(m.a_avg_move_ms)}</td>` +
-      `<td class="num">${fmtMs(m.b_avg_move_ms)}</td>`;
-    tb.appendChild(tr);
+  if (!matches.length) {
+    box.appendChild(el("p", "muted", "No matches between the selected players."));
+    return;
   }
-  table.appendChild(tb);
-  const wrap = el("div", "table-wrap");
-  wrap.appendChild(table);
-  box.appendChild(wrap);
+  for (const m of matches) {
+    const d = el("details", "sb-match");
+    const summary = el("summary");
+    const decided = m.winner
+      ? `<span class="sb-match-win">${playerHtml(m.winner)}</span>`
+      : `<span class="muted">tie</span>`;
+    summary.innerHTML =
+      `<span class="sb-match-pair">${playerHtml(m.player_a)}` +
+      `<span class="muted"> vs </span>${playerHtml(m.player_b)}</span>` +
+      `<span class="sb-match-score">${m.a_wins}–${m.b_wins}</span>` +
+      `<span class="sb-match-meta">${decided}` +
+      `${m.forfeits ? ` · <span class="warn">${m.forfeits} ff</span>` : ""}</span>`;
+    d.appendChild(summary);
+
+    const body = el("div", "sb-match-body");
+    const tiles = el("div", "sb-tiles");
+    tiles.appendChild(statTile("Phase", m.phase || "—"));
+    tiles.appendChild(statTile("Games", String(m.games)));
+    tiles.appendChild(statTile("Score", `${m.a_wins}–${m.b_wins}`));
+    tiles.appendChild(statTile("Forfeits", String(m.forfeits ?? 0)));
+    body.appendChild(tiles);
+
+    // Per-side timing, which the flat table had no room for.
+    const table = el("table", "sb-mini");
+    table.innerHTML =
+      "<thead><tr><th>Player</th><th>Wins</th><th>Avg move</th>" +
+      "<th>Std</th><th>Max move</th></tr></thead>";
+    const tb = el("tbody");
+    for (const side of ["a", "b"]) {
+      const name = m[`player_${side}`];
+      const tr = el("tr", m.winner === name ? "advances" : null);
+      tr.innerHTML =
+        `<td>${playerHtml(name)}</td>` +
+        `<td class="num">${m[`${side}_wins`]}</td>` +
+        `<td class="num">${fmtMs(m[`${side}_avg_move_ms`])}</td>` +
+        `<td class="num">${fmtMs(m[`${side}_std_move_ms`])}</td>` +
+        `<td class="num">${fmtMs(m[`${side}_max_move_ms`])}</td>`;
+      tb.appendChild(tr);
+    }
+    table.appendChild(tb);
+    body.appendChild(el("h5", "sb-h2h", "Per player"));
+    body.appendChild(table);
+    d.appendChild(body);
+    box.appendChild(d);
+  }
 }
 
 /* Player stats — per-player card with head-to-head breakdown. */
@@ -583,7 +828,7 @@ function renderPlayerStats(stats, useElo) {
     const d = el("details", "sb-player");
     const summary = el("summary");
     summary.innerHTML =
-      `<span class="sb-player-name">${esc(s.player)}</span>` +
+      `<span class="sb-player-name">${playerHtml(s.player)}</span>` +
       `<span class="sb-player-quick">${s.wins}–${s.losses}` +
       `${useElo ? ` · elo ${Math.round(s.elo)}` : ""} · ${(s.win_rate * 100).toFixed(0)}%</span>`;
     d.appendChild(summary);
@@ -594,18 +839,21 @@ function renderPlayerStats(stats, useElo) {
     tiles.appendChild(statTile("Wins / Losses", `${s.wins} / ${s.losses}`));
     tiles.appendChild(statTile("Forfeits", String(s.forfeits)));
     tiles.appendChild(statTile("Avg move", fmtMs(s.avg_move_ms)));
+    tiles.appendChild(statTile("Std move", fmtMs(s.std_move_ms)));
     tiles.appendChild(statTile("Max move", fmtMs(s.max_move_ms)));
     tiles.appendChild(statTile("Moves made", String(s.moves_made)));
     if (useElo) tiles.appendChild(statTile("Elo", String(Math.round(s.elo))));
     body.appendChild(tiles);
 
-    if (s.opponents && s.opponents.length) {
+    // Head-to-head follows the same filter, so a hidden player never appears here.
+    const opponents = (s.opponents || []).filter((o) => SB.selected.has(o.opponent));
+    if (opponents.length) {
       const oppTable = el("table", "sb-mini");
       oppTable.innerHTML = "<thead><tr><th>Opponent</th><th>W</th><th>L</th></tr></thead>";
       const tb = el("tbody");
-      for (const o of s.opponents) {
+      for (const o of opponents) {
         const tr = el("tr");
-        tr.innerHTML = `<td>${esc(o.opponent)}</td><td>${o.wins}</td><td>${o.losses}</td>`;
+        tr.innerHTML = `<td>${playerHtml(o.opponent)}</td><td>${o.wins}</td><td>${o.losses}</td>`;
         tb.appendChild(tr);
       }
       oppTable.appendChild(tb);

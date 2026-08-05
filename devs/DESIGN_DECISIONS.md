@@ -322,9 +322,11 @@ In NIM there is no "slightly imperfect": one mistake against a perfect opponent
 loses the game, so the result is either 50% (optimal, splitting by who moves first)
 or ~0%. On small boards a depth-4 search plus endgame knowledge *is* optimal.
 
-So `[7, 9, 11]` was added to `DEFAULT_STARTING_STATES`. Without it the top of the
-ladder does not discriminate and the planned nim-sum submission could only draw
-with `hard`. Cost: ~120 ms for the slowest move, against a 2000 ms budget.
+So a board the search cannot solve was added to `DEFAULT_STARTING_STATES`. Without
+one, the top of the ladder does not discriminate and the planned nim-sum submission
+could only draw with `hard`. The board set is now `[3,5,7]`, `[1,2,3,4,5]` and
+`[4,5,6,7,8,9]`; the last is 39 sticks over 6 rows and costs ~380 ms for the slowest
+`hard` move, against a 2000 ms per-game budget.
 
 ### `easy` is not reliably better than `random`
 
@@ -339,6 +341,32 @@ each other, in the docs or in the tests.
 No perfect player ships. It is reserved as the first Pull Request, both to
 demonstrate the submission flow end-to-end and to verify the review gate on a real
 change. It should land clearly at the top of the ladder.
+
+---
+
+## D6 — Every player declares an icon; copies render as subscripts · `IMPLEMENTED`
+
+`get_icon()` joins name/authors/description as a **required** abstract classmethod,
+so a submission cannot land without one.
+
+Emoji, not an image, because the icon has to render in three places that cannot all
+handle markup: the scoreboard, a native `<select>` option in the web app, and
+plain-text docs. **`<option>` renders text only** — browsers strip any SVG or HTML
+inside it — so anything richer would have meant replacing the seat dropdowns with a
+custom listbox widget. One glyph keeps every surface working with no widget.
+
+The same constraint drives the naming change. Roster copies are stored as
+`hard_0` rather than `hard#0`: the web app renders the suffix as a real `<sub>` in
+HTML, and as Unicode subscript digits (`hard₀`) in `<option>` text, where markup is
+impossible. `#` had no such subscript form.
+
+Identity reaches the scoreboard through a `players` block in the leaderboard — one
+entry per *kind*, not per roster copy — rather than by asking the live registry. The
+scoreboard is a static page reading a committed artifact, and a player may have been
+removed from the repo since the tournament ran; the run has to describe itself.
+
+Shipped icons: 🎲 `random`, 🌱 `easy`, 🧠 `medium`, ⚔️ `hard`. Uniqueness is tested,
+because an icon that is not unique is worse than no icon.
 
 ---
 
