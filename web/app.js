@@ -143,26 +143,66 @@ function populateSeatSelects() {
   }
 }
 
+/* Hard ceilings for a *playable* board. The renderer builds one element with two
+   listeners per stick, so an unbounded board freezes the tab — and a 60-stick
+   board is unplayable by hand long before that. Rejected rather than silently
+   clamped: quietly changing what someone typed is worse than telling them. */
+const MAX_ROWS = 5;
+const MAX_STICKS_PER_ROW = 10;
+
+/* Return the reason `sticks` is unplayable, or null if it is fine. */
+function boardProblem(sticks) {
+  if (!Array.isArray(sticks) || !sticks.length) return "A board needs at least one row.";
+  if (sticks.length > MAX_ROWS) {
+    return `Too many rows: ${sticks.length}. The maximum is ${MAX_ROWS}.`;
+  }
+  if (!sticks.every((s) => Number.isInteger(s) && s >= 0)) {
+    return "Every row must be a whole number of sticks, zero or more.";
+  }
+  const worst = Math.max(...sticks);
+  if (worst > MAX_STICKS_PER_ROW) {
+    return `Too many sticks in a row: ${worst}. The maximum is ${MAX_STICKS_PER_ROW}.`;
+  }
+  if (!sticks.some((s) => s > 0)) return "That board has no sticks — the game is already over.";
+  return null;
+}
+
+/* Parse the setup inputs. Returns null (after warning) if unplayable. */
 function readConfig() {
-  const rows = Math.max(1, Math.min(8, parseInt($("cfg-rows").value) || 1));
+  const rows = parseInt($("cfg-rows").value) || 0;
   let sticks = $("cfg-sticks").value
     .split(",")
     .map((x) => parseInt(x.trim()))
-    .filter((x) => Number.isFinite(x) && x >= 0);
-  if (sticks.length < rows) {
-    while (sticks.length < rows) sticks.push(sticks.length + 2);
-  } else if (sticks.length > rows) {
-    sticks = sticks.slice(0, rows);
+    .filter((x) => Number.isFinite(x));
+  if (rows > 0 && rows <= MAX_ROWS) {
+    // Reconcile the row count with the list, but never invent an oversized board.
+    while (sticks.length < rows) sticks.push(Math.min(sticks.length + 2, MAX_STICKS_PER_ROW));
+    if (sticks.length > rows) sticks = sticks.slice(0, rows);
   }
-  if (sticks.every((s) => s === 0)) sticks = sticks.map(() => 1);
+  const problem = boardProblem(sticks);
+  if (problem) {
+    toast(problem);
+    return null;
+  }
   $("cfg-sticks").value = sticks.join(",");
+  $("cfg-rows").value = sticks.length;
   return sticks;
 }
 
 /* ---------------- game lifecycle ---------------- */
 function newGame(startSticks, replayMoves) {
+  const requested = startSticks || readConfig();
+  // readConfig() already explained why; a caller-supplied board still has to pass.
+  if (!requested) return;
+  if (startSticks) {
+    const problem = boardProblem(startSticks);
+    if (problem) {
+      toast(problem);
+      return;
+    }
+  }
   clearTimeout(G.aiTimer);
-  G.config.sticks = startSticks || readConfig();
+  G.config.sticks = requested;
   $("cfg-rows").value = G.config.sticks.length;
   $("cfg-sticks").value = G.config.sticks.join(",");
   G.history = [G.config.sticks.slice()];

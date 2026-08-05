@@ -25,10 +25,18 @@ Examples of unacceptable behavior:
 
 ## Enforcement
 
-Instances of abusive or otherwise unacceptable behavior may be reported to the
-project maintainers via a private GitHub issue or direct message. Maintainers
-will review and respond, and may remove content or contributors that violate
-this code.
+Report abusive or otherwise unacceptable behavior by **opening a GitHub issue**:
+
+➡️ **[Open a Code of Conduct report](https://github.com/jparisu/nim-arena/issues/new?template=conduct_report.md&labels=code-of-conduct)**
+
+Maintainers will review and respond, and may edit or remove content, close pull
+requests, or block contributors who violate this code.
+
+> **Note that issues on this repository are public.** There is no private
+> reporting channel. If the incident involves information you should not post
+> publicly — your own or someone else's — describe it only in general terms and say
+> that details are available on request, or contact the maintainer directly through
+> their [GitHub profile](https://github.com/jparisu).
 
 This Code of Conduct is adapted from the
 [Contributor Covenant](https://www.contributor-covenant.org), version 2.1.

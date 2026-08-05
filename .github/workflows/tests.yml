@@ -22,13 +22,13 @@ concurrency:
 jobs:
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     strategy:
       matrix:
-        # Ends of the tested range. NOTE: pyproject still declares
-        # requires-python >=3.10 and ruff targets py310, so 3.10 and 3.11 are
-        # claimed as supported but no longer exercised here. Either add them back
-        # or raise requires-python — the code has no 3.11+ syntax, so both work.
-        python-version: ["3.12", "3.14"]
+        # The floor of the declared support range (pyproject: requires-python
+        # >=3.10, ruff target-version = py310), the current stable, and the
+        # newest. 3.10 matters most: it is what the metadata promises.
+        python-version: ["3.10", "3.12", "3.14"]
     steps:
       - uses: actions/checkout@v4
 
@@ -45,6 +45,9 @@ jobs:
 
       - name: Lint (ruff)
         run: ruff check .
+
+      - name: Type check (mypy)
+        run: mypy
 
       - name: Run tests
         run: pytest -q

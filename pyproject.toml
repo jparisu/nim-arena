@@ -8,12 +8,18 @@ version = "0.1.0"
 description = "Parametrized NIM: a game engine, three reference AIs, a tournament runner, and a clean player API."
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "MIT" }
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [{ name = "jparisu" }]
 keywords = ["nim", "game", "ai", "minimax", "tournament", "education"]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Operating System :: OS Independent",
     "Intended Audience :: Education",
     "Topic :: Games/Entertainment :: Board Games",
 ]
@@ -25,6 +31,8 @@ dependencies = [
 dev = [
     "pytest>=7.0",
     "ruff>=0.4",
+    "mypy>=1.11",
+    "types-PyYAML",
 ]
 docs = [
     "mkdocs>=1.6",
@@ -56,3 +64,28 @@ src = ["src", "tests"]
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "W"]
 ignore = ["E501"]
+
+[tool.mypy]
+# 3.10 is the floor pyproject promises, so check against it.
+python_version = "3.10"
+files = ["src", "players", "scripts", "web", "conftest.py"]
+# Everything shipped must be annotated. `strict` is deliberately NOT used: it also
+# demands TypedDicts for the JSON result payloads, which would be a large refactor
+# for little gain — the payload is validated by tests against a documented schema.
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_unreachable = true
+strict_equality = true
+show_error_codes = true
+pretty = true
+
+[[tool.mypy.overrides]]
+# The tests are checked (see the CI step) but not required to annotate every
+# fixture and stub; that is noise, not safety.
+module = ["tests.*"]
+disallow_untyped_defs = false
+disallow_incomplete_defs = false

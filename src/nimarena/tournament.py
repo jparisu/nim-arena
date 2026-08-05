@@ -72,13 +72,16 @@ enforces no budget, by design.
 
 from __future__ import annotations
 
+import argparse
 import multiprocessing as mp
 import queue as queue_mod
 import statistics
+import sys
 import time
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from typing import Protocol
 
 from . import game
 from .elo import DEFAULT_INITIAL_RATING, updated_ratings
@@ -221,6 +224,20 @@ def _as_spec(entry: Player | PlayerSpec, seed: int = 0) -> PlayerSpec:
 # --------------------------------------------------------------------------- #
 # Shared progress, written by the child and readable after it is killed        #
 # --------------------------------------------------------------------------- #
+
+class _Buffer(Protocol):
+    """A mutable, integer-indexed buffer of numbers.
+
+    Satisfied by both a plain ``list`` (the in-process path) and a
+    :class:`multiprocessing.Array` (the forked path). Neither is nominally a
+    ``MutableSequence``, and ``Sequence`` would forbid the writes, so the shape is
+    stated structurally instead.
+    """
+
+    def __getitem__(self, index: int) -> float: ...
+
+    def __setitem__(self, index: int, value: float) -> None: ...
+
 
 # Cumulative milliseconds, indexed by player position within the game.
 _ACCT_MOVE = (0, 1)
@@ -429,9 +446,12 @@ def _normalize_move(raw: object) -> Move | None:
     Returns:
         The move, or ``None`` if it is not a pair of integers.
     """
+    if not isinstance(raw, Iterable):
+        return None
     try:
-        row, count = raw  # type: ignore[misc]
-    except (TypeError, ValueError):
+        row, count = raw
+    except ValueError:
+        # Right shape of thing, wrong number of items.
         return None
     if isinstance(row, bool) or isinstance(count, bool):
         return None
@@ -447,7 +467,7 @@ def _forfeit(
     result: str,
     detail: str,
     moves: list[MoveRecord],
-    acct: Sequence[float],
+    acct: _Buffer,
 ) -> MatchResult:
     """Build the :class:`MatchResult` for a game lost by player ``culprit``."""
     return MatchResult(
@@ -464,8 +484,8 @@ def _forfeit(
 
 
 def _play_game(
-    acct: Sequence[float],
-    st: Sequence[int],
+    acct: _Buffer,
+    st: _Buffer,
     specs: Sequence[PlayerSpec],
     start_state: State,
     budgets: Budgets,
@@ -572,8 +592,8 @@ def _play_game(
 
 def _game_worker(  # pragma: no cover - runs only in a child process
     result_queue: mp.Queue,
-    acct: Sequence[float],
-    st: Sequence[int],
+    acct: _Buffer,
+    st: _Buffer,
     specs: Sequence[PlayerSpec],
     start_state: State,
     budgets: Budgets,
@@ -588,8 +608,8 @@ def _game_worker(  # pragma: no cover - runs only in a child process
 def _verdict_after_kill(
     specs: Sequence[PlayerSpec],
     start_state: State,
-    acct: Sequence[float],
-    st: Sequence[int],
+    acct: _Buffer,
+    st: _Buffer,
     budgets: Budgets,
     detail_suffix: str = "",
 ) -> MatchResult:
@@ -605,8 +625,9 @@ def _verdict_after_kill(
       mid-move. Its own time was never added to the clock, which is exactly why
       the fallback has to be the *active* player rather than the clocks.
     """
-    phase = st[_ST_PHASE]
-    active = st[_ST_ACTIVE] if st[_ST_ACTIVE] in (0, 1) else 0
+    phase = int(st[_ST_PHASE])
+    raw_active = int(st[_ST_ACTIVE])
+    active = raw_active if raw_active in (0, 1) else 0
 
     if phase == _PHASE_BUILD:
         return _forfeit(
@@ -629,7 +650,7 @@ def _verdict_after_kill(
 
     return _forfeit(
         specs, start_state, active, "forfeit_timeout",
-        f"{specs[active].name} stopped responding after {st[_ST_MOVES]} "
+        f"{specs[active].name} stopped responding after {int(st[_ST_MOVES])} "
         f"move(s) in the game{detail_suffix}",
         [], acct,
     )
@@ -1380,10 +1401,8 @@ def _parse_board(text: str) -> State:
         raise ValueError(f"bad --board {text!r}: expected comma-separated integers") from exc
 
 
-def _build_arg_parser() -> object:
+def _build_arg_parser() -> argparse.ArgumentParser:
     """Build the ``nim-tournament`` argument parser."""
-    import argparse
-
     from .manifest import DEFAULT_MANIFEST, DEFAULT_PLAYERS_DIR
 
     parser = argparse.ArgumentParser(
@@ -1447,9 +1466,9 @@ def _build_arg_parser() -> object:
     return parser
 
 
-def _budgets_from_args(args: object) -> Budgets:
+def _budgets_from_args(args: argparse.Namespace) -> Budgets:
     """Turn the parsed time-limit flags into a :class:`Budgets`."""
-    if args.no_time_limit:  # type: ignore[attr-defined]
+    if args.no_time_limit:
         return UNLIMITED
 
     def to_ms(seconds: float, label: str) -> int:
@@ -1457,9 +1476,9 @@ def _budgets_from_args(args: object) -> Budgets:
             raise ValueError(f"{label} must be greater than 0, got {seconds}")
         return max(1, round(seconds * _MS_PER_SECOND))
 
-    shared = args.time_limit  # type: ignore[attr-defined]
-    game = args.game_time_limit  # type: ignore[attr-defined]
-    build = args.build_time_limit  # type: ignore[attr-defined]
+    shared: float = args.time_limit
+    game: float | None = args.game_time_limit
+    build: float | None = args.build_time_limit
     return Budgets(
         game_ms=to_ms(game if game is not None else shared, "--game-time-limit"),
         build_ms=to_ms(build if build is not None else shared, "--build-time-limit"),
@@ -1485,7 +1504,7 @@ def main(argv: list[str] | None = None) -> int:
 
     from .manifest import ManifestError, load_players
 
-    args = _build_arg_parser().parse_args(argv)  # type: ignore[attr-defined]
+    args = _build_arg_parser().parse_args(argv)
 
     try:
         budgets = _budgets_from_args(args)
@@ -1502,12 +1521,12 @@ def main(argv: list[str] | None = None) -> int:
             print(
                 "error: no players loaded from the manifest; refusing to write an "
                 "empty leaderboard.",
-                file=__import__("sys").stderr,
+                file=sys.stderr,
             )
             return 1
         roster = build_roster(kinds, args.player_repetition)
     except (ManifestError, ValueError) as exc:
-        print(f"error: {exc}", file=__import__("sys").stderr)
+        print(f"error: {exc}", file=sys.stderr)
         return 1
 
     print(
@@ -1541,7 +1560,7 @@ def main(argv: list[str] | None = None) -> int:
             },
         )
     except ValueError as exc:
-        print(f"error: {exc}", file=__import__("sys").stderr)
+        print(f"error: {exc}", file=sys.stderr)
         return 1
 
     out_path = Path(args.out)
