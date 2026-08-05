@@ -13,6 +13,19 @@ on:
       - "results/leaderboard.json"
       - "scripts/build_web.py"
       - ".github/workflows/pages.yml"
+
+  # The scheduled Tournament commits results/leaderboard.json, and the `push`
+  # trigger above lists that path so a fresh result redeploys the scoreboard.
+  # That does NOT work on its own: the Tournament pushes using the default
+  # GITHUB_TOKEN, and GitHub deliberately does not raise `push` events for
+  # commits made with GITHUB_TOKEN (it is how recursive workflow loops are
+  # prevented). So the push trigger is silently dead for exactly the case it was
+  # written for. `workflow_run` is the documented way out: react to the
+  # Tournament *workflow* finishing rather than to its commit.
+  workflow_run:
+    workflows: ["Tournament"]
+    types: [completed]
+
   workflow_dispatch:
 
 permissions:
@@ -29,6 +42,11 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Do not publish a scoreboard from a Tournament that failed. Non-workflow_run
+    # triggers (push, manual dispatch) carry no conclusion, so they always pass.
+    if: >-
+      github.event_name != 'workflow_run' ||
+      github.event.workflow_run.conclusion == 'success'
     steps:
       - uses: actions/checkout@v4
 
