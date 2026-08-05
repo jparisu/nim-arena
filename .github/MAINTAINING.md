@@ -54,6 +54,21 @@ check (`mkdocs build --strict`) and discards the output. RTD is the sole publish
 so if RTD is not imported, there are **no published docs at all** even with a green
 `Docs` workflow.
 
+## Never write a CI-skip token in a commit message
+
+GitHub scans the **whole** commit message — subject *and* body — for
+`[skip ci]`, `[ci skip]`, `[no ci]`, `[skip actions]` and `[actions skip]`, and
+suppresses **every** workflow on that push. It does not care that the token
+appears inside a quotation.
+
+This has already bitten this repo once: the commit that *removed* the skip token
+from [`tournament.yml`](workflows/tournament.yml) quoted the token in its own
+message while explaining the change, so that push ran no CI at all.
+
+When writing about it — in a commit message, a PR description or a release note —
+describe it ("the skip-CI token", "a CI-skip marker") instead of pasting it. The
+token inside a workflow *file* is harmless; only the commit message matters.
+
 ## Keeping the scheduled tournament alive
 
 GitHub **disables `schedule:` triggers after 60 days of repository inactivity**
