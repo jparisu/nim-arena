@@ -121,6 +121,7 @@ explicit, documented gate:
 - Declare a unique name; CI rejects a name that an admitted player already uses.
 - No external dependencies beyond the standard library and `nimarena`.
 - No network / filesystem / subprocess access — be a pure function of the board.
-- Be fast: the tournament enforces a per-move timeout **measured on GitHub's
+- Be fast: the tournament enforces a per-player budget for a whole game, plus a
+  separate one for construction, both **measured on GitHub's
   runners**, which are slower and more variable than your laptop. A bot that
   passes locally can still time out in the graded run — choose efficient code.

@@ -54,8 +54,11 @@ nim-tournament --tournament championship
 # Faster, single-process run (soft timeout — cannot kill a truly hung bot):
 nim-tournament --no-subprocess
 
-# Custom per-move time limit (seconds):
+# Custom per-player budget, in seconds (applies to a whole game AND to building):
 nim-tournament --time-limit 2.0
+
+# Custom boards (repeat the flag):
+nim-tournament --board 3,5,7 --board 7,9,11
 ```
 
 See [The tournament](tournament.md) for what the results file contains and how

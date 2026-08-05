@@ -447,7 +447,7 @@ function renderScoreboard(data) {
     `Generated ${data.generated_at} · ${MODE_LABEL[mode] || mode} · ` +
     `${cfg.player_repetition ?? "?"} per kind · ${cfg.repetitions ?? "?"} reps/board · ` +
     `boards ${JSON.stringify(cfg.starting_states)} · ` +
-    `time limit ${cfg.time_limit_s != null ? cfg.time_limit_s + " s" : (cfg.move_timeout_ms + " ms")}`;
+    `budget ${cfg.game_budget_ms != null ? cfg.game_budget_ms + " ms/game" : "none"}`;
 
   renderStandings(data.standings || [], useElo);
   renderStructure(data, mode);

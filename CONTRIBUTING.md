@@ -72,8 +72,11 @@ which is exactly why review is the security and correctness gate.
 - **No external dependencies** beyond the standard library and `nimarena`.
 - **No network, filesystem, or subprocess access.** Your `choose_move` should be
   a pure function of the board.
-- **Be reasonably fast.** The tournament enforces a per-move timeout *measured on
-  GitHub's runners* (slower than your laptop). A bot that times out forfeits.
+- **Be reasonably fast.** The tournament gives each player a budget for a *whole
+  game* (a chess clock) plus a separate budget for being constructed, both
+  *measured on GitHub's runners*, which are slower than your laptop. Spend it all
+  on one hard move if you like — but a player that runs out, or that hangs,
+  forfeits that game.
 
 ## Acceptance criteria (what the maintainer checks)
 

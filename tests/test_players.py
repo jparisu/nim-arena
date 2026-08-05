@@ -6,7 +6,7 @@ import pytest
 
 from nimarena import game
 from nimarena.manifest import load_players
-from nimarena.tournament import build_roster, play_match, run_tournament
+from nimarena.tournament import UNLIMITED, build_roster, play_match, run_tournament
 
 #: The difficulty ladder, weakest first. One place to edit when a player is added.
 LADDER = ["random", "easy", "medium", "hard"]
@@ -89,7 +89,7 @@ def test_hard_beats_medium_head_to_head(registry):
             for hard_first in (True, False):
                 a, b = hard.create(seed=seed), medium.create(seed=seed + 100)
                 first, second = (a, b) if hard_first else (b, a)
-                result = play_match(first, second, board, move_timeout_ms=None)
+                result = play_match(first, second, board, UNLIMITED)
                 hard_wins += result.winner == "hard"
                 games += 1
     # Measured well above 90%; assert a loose bound so the test is not brittle.
@@ -101,7 +101,7 @@ def test_ranking_order_follows_the_difficulty_ladder(registry):
         build_roster(registry.all(), 1),
         starting_states=[[3, 5, 7], [1, 3, 5, 7], [7, 9, 11]],
         repetitions=1,
-        move_timeout_ms=None,
+        budgets=UNLIMITED,
         use_subprocess=False,
     )
     rank = {row["player"]: row["rank"] for row in lb["standings"]}

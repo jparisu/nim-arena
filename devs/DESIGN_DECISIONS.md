@@ -28,21 +28,23 @@ aggregates, but they are discarded after aggregation and never serialized.
 
 Consequences:
 
-- `results/leaderboard.json` keeps `avg` / `max` and gains `std`. It must **not**
-  grow a `moves` array.
-- `MoveRecord.to_dict` and `MatchResult.to_dict` (`src/nimarena/tournament.py:175`
-  and `:213`) exist only to emit that array. They are already dead code — no caller
-  anywhere in the repo — and should be **deleted**, because their presence is what
-  makes the current output look non-compliant.
+- `results/leaderboard.json` keeps `avg` / `max` and gained `std`, for moves *and*
+  for construction. It must **not** grow a `moves` array.
+- `MoveRecord.to_dict` and `MatchResult.to_dict` existed only to emit that array,
+  with no caller anywhere in the repo. **Deleted** — their presence was what made
+  the output look non-compliant.
 - `MoveRecord` itself stays: it is the input `_tally_game` aggregates from.
+- A game whose child had to be killed reports no per-move samples, because none
+  were ever measured. Its per-player totals survive in `MatchResult.spent_ms`, read
+  back out of shared memory, so time is never simply lost.
 
 ---
 
-## D2 — One fork per game, with a chess-clock budget per player · `DECIDED`
+## D2 — One fork per game, with a chess-clock budget per player · `IMPLEMENTED`
 
-### Why not per move (what the code does today)
+### Why not per move (what the code did before)
 
-`call_move` forks a child process for **every move**. The child mutates its own copy
+The original runner forked a child process for **every move**. The child mutates its own copy
 of the player and returns only `(move, elapsed)`, so the parent's player object is
 never updated. Two fatal consequences:
 
@@ -132,6 +134,21 @@ Also keep the defensive `list(state)` copy on every `choose_move` call. Now that
 player lives for a whole game inside one process, a bot that mutates `state` would
 otherwise corrupt the game rather than harmlessly mutating a throwaway copy.
 
+### The seed must also vary per game
+
+Forking per game lets state survive a game, but every game of a match would still
+be *built* from the same roster seed — so a stochastic player would replay one
+identical game `repetitions` times. Fixing the fork granularity alone did not fix
+the redundancy; measured after that change, a 12-game match still produced only 2
+distinct move sequences.
+
+`_seed_for_game` folds the roster seed and the game index together
+(`seed * 1_000_003 + game_index`) so every game of a match is built with a distinct
+seed, while the whole run stays reproducible — the same match in the same order
+always yields the same seeds. Measured after: **12 of 12 distinct sequences**, and
+the shipped leaderboard's matchup scores are no longer all multiples of
+`--repetitions`.
+
 ### Known scope limit
 
 Memoization spans **moves within a game**, not games. A player is rebuilt per game,
@@ -141,7 +158,7 @@ bot demonstrates the need.
 
 ---
 
-## D3 — Players are specified, not instantiated, by the orchestrator · `DECIDED` (blocked on D2)
+## D3 — Players are specified, not instantiated, by the orchestrator · `IMPLEMENTED`
 
 Because the child builds the players, the parent never holds an instance. A roster
 entry becomes a **specification**:
@@ -330,7 +347,7 @@ change. It should land clearly at the top of the ladder.
 A breaking change to the player contract. Correct time to make it: **no student bots
 exist yet** (0 PRs on the repo).
 
-D1, D4 and D5 have landed. **D2 has not**, and D3 depends on it.
+All of D1–D5 have landed.
 
 | Area | Status |
 |---|---|
@@ -339,13 +356,14 @@ D1, D4 and D5 have landed. **D2 has not**, and D3 depends on it.
 | `players/*.py` | ✅ four metadata-only wrappers; old bots deleted |
 | `src/nimarena/manifest.py` | ✅ admission-list schema, validation build, duplicate-name rejection |
 | `players.yaml` | ✅ `file` + `class` only |
-| `src/nimarena/tournament.py` | ✅ `create(seed)` roster, `std`, dead `to_dict`s deleted, third board — ❌ still forks per move |
+| `src/nimarena/tournament.py` | ✅ fork per game, `Budgets`, shared-memory attribution, `PlayerSpec` roster, per-game seeds, `std`, third board |
 | `web/webglue.py`, `web/app.js` | ✅ metadata exposed, terminal guard, registry guard |
 | docs + PR template | ✅ all updated |
-| `tests/` | ✅ 87 cases incl. metadata enforcement, oracle rules, seed variation — ❌ nothing yet for budgets or hang attribution |
+| `tests/` | ✅ 110 cases incl. budgets, hang attribution, build failures, generator moves, self-rename, validation |
 
-**Still open (D2):** per-game forking, the two time budgets, shared-memory hang
-attribution, and D3's specification-based roster.
+**All of D1–D5 have landed.** Remaining known gaps, none of them blocking: no type
+checker in CI, the web app still enforces no budget (by design), and board size is
+unbounded in the browser UI.
 
 ### Verification that must accompany it
 
@@ -353,18 +371,16 @@ attribution, and D3's specification-based roster.
   the repetitions within one run are **not** identical — the matchup scores must
   stop being multiples of `--repetitions`.
 
-  Measured now, one matchup over 12 games on `[7, 9, 11]`, which isolates the
-  defect precisely to the fork granularity:
+  One matchup over 12 games on `[7, 9, 11]`, before and after:
 
-  | Mode | Distinct move sequences |
+  | | Distinct move sequences |
   |---|---|
-  | `use_subprocess=True` (the CI default) | **2** of 12 |
-  | `use_subprocess=False` | **12** of 12 |
+  | fork per move (original) | **2** of 12 |
+  | fork per game, one seed per match | **2** of 12 |
+  | fork per game + per-game seed (now) | **12** of 12 |
 
-  Two, not one, because the first-mover order alternates; within one order all six
-  repetitions are byte-identical. Roster-level seeding *does* work — `random#0` and
-  `random#1` differ — because `build_roster` gives each copy its own seed. What
-  fails is variation between the repetitions of a single match.
+  The middle row is the point: fixing the fork granularity was necessary but not
+  sufficient. Both changes are needed.
 - A bot that hangs in `choose_move` loses *that game* and is correctly attributed;
   the tournament completes.
 - A bot that hangs in `create` loses on the build budget and is correctly

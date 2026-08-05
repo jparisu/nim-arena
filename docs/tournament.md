@@ -90,7 +90,13 @@ nim-tournament --tournament championship --repetitions 1 --no-subprocess
 | Flag | Default | Meaning |
 |------|---------|---------|
 | `--tournament` | `simple` | `simple`, `league` or `championship` |
-| `--time-limit` | `0.5` | per-move budget, in **seconds** |
+| `--time-limit` | `2.0` | per-player budget in **seconds**, for a whole game *and* for construction |
+| `--game-time-limit` | — | override just the thinking budget |
+| `--build-time-limit` | — | override just the construction budget |
+| `--no-time-limit` | off | enforce nothing (never use with untrusted players) |
+| `--board` | built-in set | a starting board, e.g. `--board 3,5,7`; repeatable |
+| `--group-size` | `4` | championship only: players per group |
+| `--advance-per-group` | `2` | championship only: who advances |
 | `--player-repetition` | `2` | copies of each kind (seeded `0..N-1`) |
 | `--repetitions` | `10` | games per (board, first-mover) in a match |
 | `--elo` / `--no-elo` | on | use Elo for the league classification |
@@ -106,8 +112,9 @@ The tournament writes `results/leaderboard.json`. Its shape adapts to the format
   "generated_at": "2026-03-01T12:00:00Z",
   "config": {
     "tournament": "league", "starting_states": [[3,5,7],[1,3,5,7]],
-    "repetitions": 10, "move_timeout_ms": 500, "elo": true,
-    "time_limit_s": 0.5, "player_repetition": 2
+    "repetitions": 10, "game_budget_ms": 2000, "build_budget_ms": 2000,
+    "elo": true, "hard_timeout": true,
+    "time_limit_s": 2.0, "player_repetition": 2
   },
   "standings":  [ /* ranked classification: rank, player, points, elo?, W/L, ... */ ],
   "matches":    [ /* one entry per match, averaged over its games */ ],
