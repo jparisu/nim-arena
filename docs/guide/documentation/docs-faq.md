@@ -50,6 +50,12 @@ answer links to the page where the topic is covered in full.
     once and falls back to English where a translation is missing. See
     [MkDocs § Two languages from one tree](mkdocs.md#two-languages-from-one-tree).
 
+??? question "Why are the Spanish pages under `/en/latest/es/` and not `/es/`?"
+    Because Read the Docs' `/es/` prefix belongs to a separate *translation
+    project*, not to a folder inside a build. Keeping both languages in one build
+    is what gives you the in-page language switcher; the nested URL is the price.
+    See [Read the Docs § Versions](readthedocs.md#versions).
+
 ??? question "Read the Docs or GitHub Pages?"
     Pages serves one site and you write the build workflow yourself. Read the
     Docs builds from a config file and serves several **versions** at once, with a

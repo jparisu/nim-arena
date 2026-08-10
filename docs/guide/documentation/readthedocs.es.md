@@ -124,10 +124,40 @@ https://nim-arena.readthedocs.io/en/latest/arena/player-api/
 ```
 
 El segmento de idioma está ahí porque Read the Docs entiende los proyectos
-multilingües. Con `mkdocs-static-i18n` gestionando los idiomas dentro de una única
-construcción (véase [MkDocs](mkdocs.md#dos-idiomas-desde-un-solo-arbol)), las
-páginas en español quedan bajo `…/en/latest/es/…` — el segmento exterior es el de
-Read the Docs y el interior el del plugin.
+multilingües — pero significa algo distinto de nuestro propio directorio de
+idioma. Read the Docs sirve un *proyecto*, y el idioma de este proyecto es el
+inglés, así que toda su construcción vive bajo `/en/`. Las páginas en español que
+`mkdocs-static-i18n` deja en `es/` acaban por tanto en `…/en/latest/es/…`: el
+segmento exterior es el de Read the Docs y el interior el del plugin.
+
+Ese es el precio de construir los dos idiomas juntos. Ganas una sola construcción,
+un solo despliegue y un selector de idioma dentro de la página; no obtienes el
+prefijo `/es/` propio de Read the Docs, que está reservado para un *proyecto de
+traducción* aparte. Para un sitio de este tamaño el selector vale más que la URL
+más limpia.
+
+!!! danger "Define `site_url` desde el entorno, o el selector de idioma se rompe"
+    Material construye los `<link rel="alternate">` del selector de idioma a
+    partir de la **ruta** de `site_url`. Si la fijas a la raíz del sitio, el enlace
+    al español se convierte en `/es/` — que Read the Docs lee como un *código de
+    idioma*, no como nuestro subdirectorio. Busca un proyecto de traducción al
+    español, no lo encuentra, y acabas en una página sin estilos y con iconos
+    gigantes: el HTML se renderizó, la hoja de estilos dio 404.
+
+    Read the Docs exporta `READTHEDOCS_CANONICAL_URL` en cada construcción —
+    distinta para cada versión y para cada previsualización de pull request. Léela
+    con la etiqueta `!ENV` de MkDocs y deja un valor de reserva para las
+    construcciones locales:
+
+    ```yaml
+    site_url: !ENV [READTHEDOCS_CANONICAL_URL, "https://nim-arena.readthedocs.io/"]
+    ```
+
+    El selector resuelve entonces a `/en/latest/es/` en producción y a
+    `/en/<numero-de-pr>/es/` dentro de una previsualización, así que nunca te saca
+    de la construcción que estás leyendo. La misma variable arregla el enlace
+    `canonical`, que si no apuntaría todas las páginas de la previsualización a
+    producción.
 
 ## Previsualizaciones de pull request
 

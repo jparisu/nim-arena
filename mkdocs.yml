@@ -3,7 +3,14 @@ site_description: >-
   NIM Arena — the reference manual of the project (game engine, player API,
   reference AIs, tournament and web app) and a student guide to Git, GitHub,
   Python packaging and documentation.
-site_url: https://nim-arena.readthedocs.io
+# Where the built site actually lives. This is NOT cosmetic: the i18n language
+# switcher builds its `<link rel="alternate">` hrefs from the *path* of site_url,
+# so a hardcoded root sends the Spanish link to `/es/` — which on Read the Docs is
+# a language slug, not our subdirectory, and lands on an unstyled 404.
+# Read the Docs exports READTHEDOCS_CANONICAL_URL per build (per version, and per
+# pull-request preview), so the switcher stays inside whatever build you are
+# reading. The fallback is for local `mkdocs serve` / `mkdocs build`.
+site_url: !ENV [READTHEDOCS_CANONICAL_URL, "https://nim-arena.readthedocs.io/"]
 repo_url: https://github.com/jparisu/nim-arena
 repo_name: jparisu/nim-arena
 edit_uri: edit/main/docs/

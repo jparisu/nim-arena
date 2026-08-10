@@ -118,10 +118,37 @@ https://nim-arena.readthedocs.io/en/latest/arena/player-api/
 ```
 
 The language segment is there because Read the Docs understands multilingual
-projects. With `mkdocs-static-i18n` handling the languages inside a single build
-(see [MkDocs](mkdocs.md#two-languages-from-one-tree)), the Spanish pages sit
-under `…/en/latest/es/…` — the outer segment is Read the Docs', the inner one is
-the plugin's.
+projects — but it means something different from our own language directory. Read
+the Docs serves a *project*, and this project's language is English, so its whole
+build lives under `/en/`. The Spanish pages that `mkdocs-static-i18n` puts in
+`es/` therefore end up at `…/en/latest/es/…`: the outer segment is Read the Docs',
+the inner one is the plugin's.
+
+This is the trade-off of building both languages together. You get one build, one
+deploy, and an in-page language switcher; you do not get Read the Docs' own `/es/`
+prefix, which is reserved for a separate *translation project*. For a site this
+size the switcher is worth more than the tidier URL.
+
+!!! danger "Set `site_url` from the environment, or the language switcher breaks"
+    Material builds the language switcher's `<link rel="alternate">` hrefs from
+    the **path** of `site_url`. Hardcode it to the site root and the Spanish link
+    becomes `/es/` — which Read the Docs reads as a *language slug*, not as our
+    subdirectory. It looks for a Spanish translation project, finds none, and you
+    land on an unstyled page of giant icons: the HTML rendered, the stylesheet
+    404ed.
+
+    Read the Docs exports `READTHEDOCS_CANONICAL_URL` on every build — different
+    for each version and for each pull-request preview. Read it with MkDocs'
+    `!ENV` tag and keep a fallback for local builds:
+
+    ```yaml
+    site_url: !ENV [READTHEDOCS_CANONICAL_URL, "https://nim-arena.readthedocs.io/"]
+    ```
+
+    The switcher then resolves to `/en/latest/es/` in production and to
+    `/en/<pr-number>/es/` inside a preview, so it never throws you out of the
+    build you are reading. The same variable fixes the `canonical` link, which
+    would otherwise point every preview page at production.
 
 ## Pull request previews
 

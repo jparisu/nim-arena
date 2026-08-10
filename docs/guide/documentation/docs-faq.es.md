@@ -53,6 +53,13 @@ respuesta enlaza a la página donde el tema se trata por completo.
     declara una vez y recae en el inglés donde falte una traducción. Véase
     [MkDocs § Dos idiomas desde un solo árbol](mkdocs.md#dos-idiomas-desde-un-solo-arbol).
 
+??? question "¿Por qué las páginas en español están en `/en/latest/es/` y no en `/es/`?"
+    Porque el prefijo `/es/` de Read the Docs pertenece a un *proyecto de
+    traducción* aparte, no a una carpeta dentro de una construcción. Mantener los
+    dos idiomas en una sola construcción es lo que te da el selector de idioma
+    dentro de la página; la URL anidada es el precio. Véase
+    [Read the Docs § Versiones](readthedocs.md#versiones).
+
 ??? question "¿Read the Docs o GitHub Pages?"
     Pages sirve un solo sitio y el workflow de construcción lo escribes tú. Read
     the Docs construye desde un archivo de configuración y sirve varias

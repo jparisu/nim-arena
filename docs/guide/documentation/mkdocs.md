@@ -234,6 +234,9 @@ plugins:
 - Order matters: `i18n` reconfigures the search index per language, so `search`
   must already be registered above it.
 
+One build, one deploy, and Material puts a **language switcher** in the header —
+readers change language without leaving the page they are on.
+
 !!! tip "Generated reference pages stay in English"
     A page whose body comes from docstrings renders the same text in every
     locale. Translate the prose around it, and say so with a short banner above

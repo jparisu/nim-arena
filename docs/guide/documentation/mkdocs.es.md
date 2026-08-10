@@ -237,6 +237,9 @@ plugins:
 - El orden importa: `i18n` reconfigura el índice de búsqueda por idioma, así que
   `search` tiene que estar registrado antes.
 
+Una construcción, un despliegue, y Material pone un **selector de idioma** en la
+cabecera — quien lee cambia de idioma sin salir de la página en la que está.
+
 !!! tip "Las páginas de referencia generadas se quedan en inglés"
     Una página cuyo cuerpo sale de los docstrings renderiza el mismo texto en
     todos los idiomas. Traduce la prosa que la rodea y dilo con un aviso corto
