@@ -16,14 +16,43 @@ from pathlib import Path
 import pytest
 
 WEB = Path(__file__).resolve().parent.parent / "web"
-HTML = (WEB / "index.html").read_text(encoding="utf-8")
-APP_JS = (WEB / "app.js").read_text(encoding="utf-8")
+#: The shell plus every screen partial: ids live in the partials now.
+HTML = "\n".join(
+    p.read_text(encoding="utf-8")
+    for p in [WEB / "index.html", *sorted((WEB / "screens").glob("*.html"))]
+)
+#: Every screen script. `main.js` is included: it wires the others.
+APP_JS = "\n".join(p.read_text(encoding="utf-8") for p in sorted((WEB / "js").glob("*.js")))
 BOOT_JS = (WEB / "pyodide-bootstrap.js").read_text(encoding="utf-8")
 
 #: Every ``id="..."`` in the page, in document order.
 IDS = re.findall(r'id="([^"]+)"', HTML)
 #: Every ``$("...")`` lookup in app.js.
 LOOKUPS = set(re.findall(r'\$\("([^"]+)"\)', APP_JS))
+
+
+def test_every_screen_partial_exists():
+    """main.js fetches these by name; a missing file is a blank page."""
+    for name in ("menu", "game", "scoreboard", "tournament", "about"):
+        assert (WEB / "screens" / f"{name}.html").is_file(), f"screens/{name}.html is missing"
+
+
+def test_index_loads_every_script():
+    shell = (WEB / "index.html").read_text(encoding="utf-8")
+    for name in ("core", "play", "scoreboard", "tournament", "main"):
+        assert f"js/{name}.js" in shell, f"index.html does not load js/{name}.js"
+    # core defines the helpers the others use, so it must come first.
+    assert shell.index("js/core.js") < shell.index("js/play.js")
+    assert shell.index("js/main.js") == max(
+        shell.index(f"js/{n}.js") for n in ("core", "play", "scoreboard", "tournament", "main")
+    ), "main.js must be loaded last"
+
+
+def test_every_screen_setup_is_called_by_main():
+    """A screen whose setup never runs has dead controls and no error."""
+    main_js = (WEB / "js" / "main.js").read_text(encoding="utf-8")
+    for fn in ("setupNav", "setupPlay", "setupScoreboard", "setupTournament"):
+        assert fn in main_js, f"main.js never calls {fn}()"
 
 
 def test_no_duplicate_ids():

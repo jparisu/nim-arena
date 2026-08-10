@@ -24,9 +24,15 @@ nim-arena/
 │   └── hard.py             # `hard`   — depth-4 minimax + endgame oracle
 ├── results/leaderboard.json  # written by the tournament workflow
 ├── web/                    # GitHub Pages site (Pyodide + thin JS UI)
-│   ├── index.html
+│   ├── index.html          # shell only: header, nav, boot overlay, script tags
+│   ├── screens/            # one HTML partial per screen, injected at boot
+│   │   ├── menu.html  game.html  scoreboard.html
+│   │   └── tournament.html  about.html
+│   ├── js/                 # one script per screen, plain <script> tags
+│   │   ├── core.js         # helpers, nav, player identity, board renderer
+│   │   ├── play.js  scoreboard.js  tournament.js
+│   │   └── main.js         # loads screens, wires each one, boots the engine
 │   ├── style.css
-│   ├── app.js              # UI: render, clicks, timeline, pacing
 │   ├── pyodide-bootstrap.js# loads Pyodide + the Python bundle
 │   └── webglue.py          # Python<->JS bridge (JSON at the boundary)
 ├── scripts/build_web.py    # bundles the package into web/py.zip

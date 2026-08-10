@@ -655,3 +655,16 @@ main { flex: 1; padding: 1.4rem; max-width: 1200px; margin: 0 auto; width: 100%;
   .confetti { display: none; }
   .tchampion-crown, .podium-block { animation: none; }
 }
+
+/* Fatal-error banner. Deliberately loud: a silent failure reads as "the button
+   does nothing", which tells the user nothing and costs everyone an hour. */
+.fatal {
+  margin: 0.75rem 1rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--danger);
+  border-left-width: 5px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--danger) 12%, transparent);
+  color: var(--text);
+}
+.fatal code { overflow-wrap: anywhere; }
