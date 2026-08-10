@@ -72,27 +72,39 @@ enforces no budget, by design.
 
 from __future__ import annotations
 
+import argparse
 import multiprocessing as mp
 import queue as queue_mod
 import statistics
+import sys
 import time
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from typing import TYPE_CHECKING, Any, Protocol
 
 from . import game
 from .elo import DEFAULT_INITIAL_RATING, updated_ratings
 from .game import Move, State
 from .player import Player
 
+if TYPE_CHECKING:
+    # Only the concrete contexts declare `Process`; BaseContext does not. This one
+    # exists solely on POSIX, which is exactly where the fork path applies.
+    from multiprocessing.context import ForkContext
+
 #: Boards every match is played on, unless the caller overrides them.
 #:
-#: ``[7, 9, 11]`` is deliberately larger than the two classic boards. On small
-#: boards a depth-4 search with endgame knowledge plays *optimally*, so every
-#: strong player ties and the top of the ranking stops discriminating. This board
-#: is big enough that the search cannot reach the endgame from the opening, which
-#: is what keeps the leaderboard meaningful at the top.
-DEFAULT_STARTING_STATES: list[State] = [[3, 5, 7], [1, 3, 5, 7], [7, 9, 11]]
+#: Three deliberately different shapes: the classic 3-row board, a 5-row
+#: staircase, and a wide 6-row board of 39 sticks. The last one matters because a
+#: depth-limited search cannot reach the endgame from its opening, which is what
+#: keeps the top of the ranking discriminating instead of every strong player
+#: tying. Every match plays ``repetitions`` games on each board, from each side.
+DEFAULT_STARTING_STATES: list[State] = [
+    [3, 5, 7],
+    [1, 2, 3, 4, 5],
+    [4, 5, 6, 7, 8, 9],
+]
 #: Per-player, per-game thinking budget in milliseconds.
 DEFAULT_GAME_BUDGET_MS = 2000
 #: Per-player budget for :meth:`~nimarena.player.Player.create`, in milliseconds.
@@ -111,6 +123,20 @@ DEFAULT_GROUP_SIZE = 4
 DEFAULT_ADVANCE_PER_GROUP = 2
 #: The tournament formats understood by :func:`run_tournament`.
 TOURNAMENT_MODES = ("simple", "league", "championship")
+
+#: One JSON object in the results payload.
+#:
+#: ``Any`` rather than ``object`` is deliberate, and rather than a ``TypedDict``
+#: too. This is a JSON boundary: the payload is written to
+#: ``results/leaderboard.json`` and consumed by a web page, its shape varies by
+#: tournament mode, and several keys (``elo``) are present only conditionally.
+#: Modelling that precisely needs ``NotRequired``, which is not in ``typing``
+#: until 3.11 — so on the 3.10 floor it would mean adding ``typing_extensions``
+#: as a runtime dependency of the package, to describe a dict that is validated
+#: by tests against the schema documented in ``docs/tournament.md``. Not worth it.
+#: Every *function* here is still fully annotated; only the payload's interior is
+#: dynamic, which is the truth about JSON.
+JsonDict = dict[str, Any]
 
 #: Milliseconds per second, used to convert measured/allotted times.
 _MS_PER_SECOND = 1000.0
@@ -218,6 +244,20 @@ def _as_spec(entry: Player | PlayerSpec, seed: int = 0) -> PlayerSpec:
 # Shared progress, written by the child and readable after it is killed        #
 # --------------------------------------------------------------------------- #
 
+class _Buffer(Protocol):
+    """A mutable, integer-indexed buffer of numbers.
+
+    Satisfied by both a plain ``list`` (the in-process path) and a
+    :class:`multiprocessing.Array` (the forked path). Neither is nominally a
+    ``MutableSequence``, and ``Sequence`` would forbid the writes, so the shape is
+    stated structurally instead.
+    """
+
+    def __getitem__(self, index: int) -> float: ...
+
+    def __setitem__(self, index: int, value: float) -> None: ...
+
+
 # Cumulative milliseconds, indexed by player position within the game.
 _ACCT_MOVE = (0, 1)
 _ACCT_BUILD = (2, 3)
@@ -230,7 +270,7 @@ _ST_SLOTS = 3
 _PHASE_BUILD, _PHASE_PLAY, _PHASE_DONE = 0, 1, 2
 
 
-def _fork_context() -> mp.context.BaseContext | None:
+def _fork_context() -> ForkContext | None:
     """Return a ``fork`` context, or ``None`` where forking is unavailable.
 
     Only ``fork`` is used. Under ``spawn`` the child would have to unpickle the
@@ -365,7 +405,7 @@ class Matchup:
             if rec.player == name and rec.move is not None
         ]
 
-    def to_dict(self) -> dict[str, object]:
+    def to_dict(self) -> JsonDict:
         """Return a JSON-serializable, aggregated summary of the match.
 
         Timing is reported as **aggregates only** — mean, standard deviation and
@@ -425,9 +465,12 @@ def _normalize_move(raw: object) -> Move | None:
     Returns:
         The move, or ``None`` if it is not a pair of integers.
     """
+    if not isinstance(raw, Iterable):
+        return None
     try:
-        row, count = raw  # type: ignore[misc]
-    except (TypeError, ValueError):
+        row, count = raw
+    except ValueError:
+        # Right shape of thing, wrong number of items.
         return None
     if isinstance(row, bool) or isinstance(count, bool):
         return None
@@ -443,7 +486,7 @@ def _forfeit(
     result: str,
     detail: str,
     moves: list[MoveRecord],
-    acct: Sequence[float],
+    acct: _Buffer,
 ) -> MatchResult:
     """Build the :class:`MatchResult` for a game lost by player ``culprit``."""
     return MatchResult(
@@ -460,8 +503,8 @@ def _forfeit(
 
 
 def _play_game(
-    acct: Sequence[float],
-    st: Sequence[int],
+    acct: _Buffer,
+    st: _Buffer,
     specs: Sequence[PlayerSpec],
     start_state: State,
     budgets: Budgets,
@@ -568,8 +611,8 @@ def _play_game(
 
 def _game_worker(  # pragma: no cover - runs only in a child process
     result_queue: mp.Queue,
-    acct: Sequence[float],
-    st: Sequence[int],
+    acct: _Buffer,
+    st: _Buffer,
     specs: Sequence[PlayerSpec],
     start_state: State,
     budgets: Budgets,
@@ -584,8 +627,8 @@ def _game_worker(  # pragma: no cover - runs only in a child process
 def _verdict_after_kill(
     specs: Sequence[PlayerSpec],
     start_state: State,
-    acct: Sequence[float],
-    st: Sequence[int],
+    acct: _Buffer,
+    st: _Buffer,
     budgets: Budgets,
     detail_suffix: str = "",
 ) -> MatchResult:
@@ -601,8 +644,9 @@ def _verdict_after_kill(
       mid-move. Its own time was never added to the clock, which is exactly why
       the fallback has to be the *active* player rather than the clocks.
     """
-    phase = st[_ST_PHASE]
-    active = st[_ST_ACTIVE] if st[_ST_ACTIVE] in (0, 1) else 0
+    phase = int(st[_ST_PHASE])
+    raw_active = int(st[_ST_ACTIVE])
+    active = raw_active if raw_active in (0, 1) else 0
 
     if phase == _PHASE_BUILD:
         return _forfeit(
@@ -625,7 +669,7 @@ def _verdict_after_kill(
 
     return _forfeit(
         specs, start_state, active, "forfeit_timeout",
-        f"{specs[active].name} stopped responding after {st[_ST_MOVES]} "
+        f"{specs[active].name} stopped responding after {int(st[_ST_MOVES])} "
         f"move(s) in the game{detail_suffix}",
         [], acct,
     )
@@ -766,8 +810,8 @@ def build_roster(
     constructor signatures is needed; a deterministic bot ignores it but is still
     duplicated so its kind plays itself.
 
-    Each copy is named ``"<name>#<seed>"`` so the copies stay distinct in the
-    standings.
+    Each copy is named ``"<name>_<seed>"`` so the copies stay distinct in the
+    standings. The web app renders that suffix as a subscript.
 
     Args:
         players: one entry per kind (typically ``registry.all()``).
@@ -786,7 +830,7 @@ def build_roster(
         spec = _as_spec(entry)
         base_name = spec.cls.get_name()
         for seed in range(repetition):
-            roster.append(PlayerSpec(cls=spec.cls, seed=seed, name=f"{base_name}#{seed}"))
+            roster.append(PlayerSpec(cls=spec.cls, seed=seed, name=f"{base_name}_{seed}"))
     return roster
 
 
@@ -926,12 +970,12 @@ def _rank_names(stats: dict[str, _Stats], *, use_elo: bool) -> list[str]:
     return sorted(stats, key=key)
 
 
-def _standings(stats: dict[str, _Stats], *, use_elo: bool) -> list[dict[str, object]]:
+def _standings(stats: dict[str, _Stats], *, use_elo: bool) -> list[JsonDict]:
     """Build the ranked, JSON-serializable classification (right-column data)."""
-    standings: list[dict[str, object]] = []
+    standings: list[JsonDict] = []
     for rank, name in enumerate(_rank_names(stats, use_elo=use_elo), start=1):
         s = stats[name]
-        row: dict[str, object] = {
+        row: JsonDict = {
             "rank": rank,
             "player": name,
             "points": s.points,
@@ -950,16 +994,16 @@ def _standings(stats: dict[str, _Stats], *, use_elo: bool) -> list[dict[str, obj
     return standings
 
 
-def _player_stats(stats: dict[str, _Stats], *, use_elo: bool) -> list[dict[str, object]]:
+def _player_stats(stats: dict[str, _Stats], *, use_elo: bool) -> list[JsonDict]:
     """Build the detailed per-player stats block (with head-to-head breakdown)."""
-    rows: list[dict[str, object]] = []
+    rows: list[JsonDict] = []
     for name in _rank_names(stats, use_elo=use_elo):
         s = stats[name]
         opponents = [
             {"opponent": opp, "wins": wl[0], "losses": wl[1]}
             for opp, wl in sorted(s.opponents.items())
         ]
-        row: dict[str, object] = {
+        row: JsonDict = {
             "player": name,
             "wins": s.wins,
             "losses": s.losses,
@@ -984,7 +1028,7 @@ def _player_stats(stats: dict[str, _Stats], *, use_elo: bool) -> list[dict[str, 
 
 def _totals(
     all_games: list[MatchResult], num_matches: int, num_players: int
-) -> dict[str, object]:
+) -> JsonDict:
     """Build the overview totals block for the whole tournament."""
     total_moves = sum(len(g.moves) for g in all_games)
     total_time_ms = sum(sum(g.spent_ms.values()) for g in all_games)
@@ -1047,7 +1091,7 @@ def _round_name(num_participants: int) -> str:
 
 def _group_table(
     members: list[str], stats: dict[str, _Stats]
-) -> list[dict[str, object]]:
+) -> list[JsonDict]:
     """Rank a group's members by points and return a JSON-serializable table."""
     ordered = sorted(
         members,
@@ -1105,7 +1149,7 @@ def _run_championship(
     use_subprocess: bool,
     group_size: int,
     advance_per_group: int,
-) -> tuple[list[Matchup], dict[str, object]]:
+) -> tuple[list[Matchup], JsonDict]:
     """Run a group phase then a knockout bracket.
 
     Returns:
@@ -1133,7 +1177,7 @@ def _run_championship(
     for index, spec in enumerate(roster):
         groups[index % num_groups].append(spec)
     matchups: list[Matchup] = []
-    group_blocks: list[dict[str, object]] = []
+    group_blocks: list[JsonDict] = []
     seeds_by_place: list[list[str]] = [[] for _ in range(advance_per_group)]
 
     for g_index, members in enumerate(groups):
@@ -1160,13 +1204,13 @@ def _run_championship(
     seeds: list[str] = [name for place in seeds_by_place for name in place]
 
     # --- Knockout bracket ---------------------------------------------------
-    rounds: list[dict[str, object]] = []
+    rounds: list[JsonDict] = []
     champion = seeds[0] if seeds else ""
     current = seeds
     while len(current) > 1:
         round_name = _round_name(len(current))
         pairs = _seed_bracket_pairs(current)
-        ties: list[dict[str, object]] = []
+        ties: list[JsonDict] = []
         winners: list[str] = []
         for high, low in pairs:
             if low is None:  # bye: the seed advances unopposed
@@ -1190,7 +1234,7 @@ def _run_championship(
         champion = winners[0] if len(winners) == 1 else champion
         current = winners
 
-    structure: dict[str, object] = {
+    structure: JsonDict = {
         "type": "championship",
         "group_size": group_size,
         "advance_per_group": advance_per_group,
@@ -1204,13 +1248,16 @@ def _run_championship(
 # Top-level tournament runner                                                  #
 # --------------------------------------------------------------------------- #
 
-def validate_starting_states(states: Sequence[State]) -> list[State]:
+def validate_starting_states(states: Sequence[Sequence[int]]) -> list[State]:
     """Return ``states`` as clean boards, or explain why they are unplayable.
 
     Nothing downstream can cope with a nonsense board: an all-zero board is
     already over, so the game would end with nobody having taken the last stick,
     and a negative row makes ``legal_moves`` return nothing so the first player
     forfeits for no reason.
+
+    Accepts any sequence of sequences — a tuple of tuples is fine — and always
+    returns fresh ``list[int]`` boards, so callers cannot alias what they passed in.
 
     Raises:
         ValueError: if any board is empty, holds a non-integer or negative row, or
@@ -1234,6 +1281,26 @@ def validate_starting_states(states: Sequence[State]) -> list[State]:
     return cleaned
 
 
+def _player_directory(specs: Sequence[PlayerSpec]) -> list[JsonDict]:
+    """Return one identity entry per player *kind* in the roster.
+
+    Keyed by the kind's own name (``"hard"``), not by roster entry (``"hard_0"``),
+    so this stays O(kinds) rather than O(roster) and nothing is repeated on every
+    standings row. The scoreboard strips the ``_<n>`` suffix to look a player up.
+    """
+    seen: dict[str, JsonDict] = {}
+    for spec in specs:
+        name = spec.cls.get_name()
+        if name not in seen:
+            seen[name] = {
+                "name": name,
+                "icon": spec.cls.get_icon(),
+                "authors": list(spec.cls.get_authors()),
+                "description": spec.cls.get_description(),
+            }
+    return [seen[k] for k in sorted(seen)]
+
+
 def run_tournament(
     roster: Sequence[Player | PlayerSpec],
     *,
@@ -1246,8 +1313,8 @@ def run_tournament(
     group_size: int = DEFAULT_GROUP_SIZE,
     advance_per_group: int = DEFAULT_ADVANCE_PER_GROUP,
     now: Callable[[], datetime] | None = None,
-    extra_config: dict[str, object] | None = None,
-) -> dict[str, object]:
+    extra_config: JsonDict | None = None,
+) -> JsonDict:
     """Run a tournament in the requested ``mode`` and return the results dict.
 
     Args:
@@ -1320,7 +1387,7 @@ def run_tournament(
     if use_elo:
         _apply_elo(stats, all_games)
 
-    config: dict[str, object] = {
+    config: JsonDict = {
         "tournament": mode,
         "starting_states": [list(s) for s in starting_states],
         "repetitions": repetitions,
@@ -1335,6 +1402,7 @@ def run_tournament(
     return {
         "generated_at": now().strftime("%Y-%m-%dT%H:%M:%SZ"),
         "config": config,
+        "players": _player_directory(specs),
         "standings": _standings(stats, use_elo=use_elo),
         "matches": [mu.to_dict() for mu in matchups],
         "player_stats": _player_stats(stats, use_elo=use_elo),
@@ -1355,10 +1423,8 @@ def _parse_board(text: str) -> State:
         raise ValueError(f"bad --board {text!r}: expected comma-separated integers") from exc
 
 
-def _build_arg_parser() -> object:
+def _build_arg_parser() -> argparse.ArgumentParser:
     """Build the ``nim-tournament`` argument parser."""
-    import argparse
-
     from .manifest import DEFAULT_MANIFEST, DEFAULT_PLAYERS_DIR
 
     parser = argparse.ArgumentParser(
@@ -1422,9 +1488,9 @@ def _build_arg_parser() -> object:
     return parser
 
 
-def _budgets_from_args(args: object) -> Budgets:
+def _budgets_from_args(args: argparse.Namespace) -> Budgets:
     """Turn the parsed time-limit flags into a :class:`Budgets`."""
-    if args.no_time_limit:  # type: ignore[attr-defined]
+    if args.no_time_limit:
         return UNLIMITED
 
     def to_ms(seconds: float, label: str) -> int:
@@ -1432,9 +1498,9 @@ def _budgets_from_args(args: object) -> Budgets:
             raise ValueError(f"{label} must be greater than 0, got {seconds}")
         return max(1, round(seconds * _MS_PER_SECOND))
 
-    shared = args.time_limit  # type: ignore[attr-defined]
-    game = args.game_time_limit  # type: ignore[attr-defined]
-    build = args.build_time_limit  # type: ignore[attr-defined]
+    shared: float = args.time_limit
+    game: float | None = args.game_time_limit
+    build: float | None = args.build_time_limit
     return Budgets(
         game_ms=to_ms(game if game is not None else shared, "--game-time-limit"),
         build_ms=to_ms(build if build is not None else shared, "--build-time-limit"),
@@ -1456,11 +1522,10 @@ def main(argv: list[str] | None = None) -> int:
     """
     import json
     from pathlib import Path
-    from typing import Any, cast
 
     from .manifest import ManifestError, load_players
 
-    args = _build_arg_parser().parse_args(argv)  # type: ignore[attr-defined]
+    args = _build_arg_parser().parse_args(argv)
 
     try:
         budgets = _budgets_from_args(args)
@@ -1477,12 +1542,12 @@ def main(argv: list[str] | None = None) -> int:
             print(
                 "error: no players loaded from the manifest; refusing to write an "
                 "empty leaderboard.",
-                file=__import__("sys").stderr,
+                file=sys.stderr,
             )
             return 1
         roster = build_roster(kinds, args.player_repetition)
     except (ManifestError, ValueError) as exc:
-        print(f"error: {exc}", file=__import__("sys").stderr)
+        print(f"error: {exc}", file=sys.stderr)
         return 1
 
     print(
@@ -1516,15 +1581,15 @@ def main(argv: list[str] | None = None) -> int:
             },
         )
     except ValueError as exc:
-        print(f"error: {exc}", file=__import__("sys").stderr)
+        print(f"error: {exc}", file=sys.stderr)
         return 1
 
     out_path = Path(args.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(leaderboard, indent=2) + "\n", encoding="utf-8")
 
-    standings = cast("list[dict[str, Any]]", leaderboard["standings"])
-    use_elo = bool(cast("dict[str, Any]", leaderboard["config"])["elo"])
+    standings = leaderboard["standings"]
+    use_elo = bool(leaderboard["config"]["elo"])
     print(f"\nClassification (written to {out_path}):")
     for row in standings:
         score = f"elo {row['elo']}" if use_elo else f"{row['points']} pts"

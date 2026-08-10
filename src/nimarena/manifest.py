@@ -174,6 +174,12 @@ def _build_and_validate(cls: type[Player], path: Path) -> Player:
             f"{cls.__name__} in {path}: get_description() must return a non-empty str"
         )
 
+    icon = cls.get_icon()
+    if not isinstance(icon, str) or not icon.strip():
+        raise ManifestError(
+            f"{cls.__name__} in {path}: get_icon() must return a single emoji"
+        )
+
     return instance
 
 

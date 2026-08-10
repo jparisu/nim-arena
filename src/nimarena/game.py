@@ -47,16 +47,25 @@ def legal_moves(state: State) -> list[Move]:
     return moves
 
 
-def is_legal(state: State, move: Move) -> bool:
+def is_legal(state: State, move: object) -> bool:
     """Return ``True`` if ``move`` is legal from ``state``.
 
     This is the single source of truth for "what is a legal move", used by the
     tournament to forfeit players that return illegal moves.
+
+    ``move`` is deliberately typed ``object`` rather than :data:`Move`: its whole
+    job is to judge what an *untrusted* player handed back, which may be any
+    object at all. Annotated as a ``Move``, the shape checks below would be
+    provably dead code — and they are the point of the function.
     """
-    try:
-        row, count = move
-    except (TypeError, ValueError):
+    # Narrowed to tuple/list on purpose. The old form unpacked any iterable,
+    # which meant validating a generator silently *consumed* it — the exact bug
+    # that used to abort a whole tournament. A move is documented as a pair, and
+    # the two callers that matter hand over a tuple (the tournament normalises
+    # first) or a list (decoded JSON).
+    if not isinstance(move, (tuple, list)) or len(move) != 2:
         return False
+    row, count = move
     if not isinstance(row, int) or not isinstance(count, int):
         return False
     if row < 0 or row >= len(state):

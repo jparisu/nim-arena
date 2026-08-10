@@ -32,6 +32,13 @@ concurrency:
 jobs:
   tournament:
     runs-on: ubuntu-latest
+    # A run-level ceiling. The per-game budget bounds ONE game (~8.5 s worst
+    # case); nothing bounds games x matchups, which grows as O(roster^2). Past
+    # about five player kinds the theoretical worst case already exceeds
+    # GitHub's 6 h job limit — at which point the job is killed and produces NO
+    # leaderboard at all. Failing in 90 minutes is a visible, diagnosable
+    # failure instead of a six-hour silent one.
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
 

@@ -42,6 +42,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     # Do not publish a scoreboard from a Tournament that failed. Non-workflow_run
     # triggers (push, manual dispatch) carry no conclusion, so they always pass.
     if: >-

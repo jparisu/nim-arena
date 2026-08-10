@@ -1,0 +1,42 @@
+<section id="screen-about" class="screen hidden">
+  <div class="prose">
+    <h1>About NIM Arena</h1>
+    <p>
+      NIM is played with several rows of sticks. On each turn you remove one
+      or more sticks from a <strong>single</strong> row. <strong>Whoever
+      takes the last stick wins</strong> (normal play).
+    </p>
+    <h2>One source of truth</h2>
+    <p>
+      The game rules and every AI are written once, in Python. This page
+      loads that exact code through <strong>Pyodide</strong> (Python compiled
+      to WebAssembly) — the rules are never re-implemented in JavaScript. The
+      same code also runs the automated tournament in GitHub Actions.
+    </p>
+    <h2>The winning strategy (X-ray mode)</h2>
+    <p>
+      The optimal strategy uses the <strong>nim-sum</strong>: the bitwise XOR
+      of all row sizes. If the nim-sum is non-zero, the player to move can
+      force a win by moving to a position whose nim-sum is zero. Turn on
+      <em>X-ray</em> mode during a game to see the nim-sum live and the row
+      the perfect player would touch.
+    </p>
+    <h2>Add your own AI</h2>
+    <p>
+      Anyone can submit a new player by Pull Request. See the
+      <a href="https://nim-arena.readthedocs.io" target="_blank" rel="noopener">documentation</a>
+      and the
+      <a href="https://github.com/jparisu/nim-arena" target="_blank" rel="noopener">repository</a>.
+    </p>
+
+    <h2>Author</h2>
+    <p class="author">
+      Built by <strong>Javier Paris</strong> —
+      <a href="https://github.com/jparisu" target="_blank" rel="noopener">github.com/jparisu</a>
+    </p>
+    <p class="muted small">
+      Source, issues and pull requests:
+      <a href="https://github.com/jparisu/nim-arena" target="_blank" rel="noopener">jparisu/nim-arena</a>
+    </p>
+  </div>
+</section>

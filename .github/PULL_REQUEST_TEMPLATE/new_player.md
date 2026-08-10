@@ -13,7 +13,8 @@ this checklist into your PR description.
 
 - [ ] Added a single file `players/<my_bot>.py`.
 - [ ] The class subclasses `nimarena.player.Player`.
-- [ ] `get_name`, `get_authors` and `get_description` are implemented.
+- [ ] `get_name`, `get_authors`, `get_description` and `get_icon` are implemented.
+- [ ] The icon is a **single** emoji, and not already used by another player.
 - [ ] The name is **unique** — no admitted player already uses it.
 - [ ] `choose_move(self, state) -> (row, count)` returns a **legal** move.
 - [ ] Does **not** mutate the `state` it receives.

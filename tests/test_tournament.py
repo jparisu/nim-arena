@@ -37,6 +37,10 @@ class _Stub(Player):
     def get_description(cls) -> str:
         return f"Test stub {cls.__name__}."
 
+    @classmethod
+    def get_icon(cls) -> str:
+        return "🧪"
+
 
 class OneStickBot(_Stub):
     """Always removes one stick from the first non-empty row (legal, simple)."""
@@ -118,7 +122,7 @@ def test_run_tournament_survives_a_bad_bot():
 def test_build_roster_duplicates_each_kind_with_seed_suffixes():
     # A deterministic bot ignores the seed but is still duplicated so it faces itself.
     roster = build_roster([OneStickBot()])
-    assert [p.name for p in roster] == ["OneStickBot#0", "OneStickBot#1"]
+    assert [p.name for p in roster] == ["OneStickBot_0", "OneStickBot_1"]
 
 
 def test_build_roster_assigns_one_seed_per_copy():
@@ -152,8 +156,8 @@ def test_build_roster_seeds_random_bots_reproducibly():
     from players.random import Random
 
     a, b = build_roster([Random.create(seed=0)])
-    assert (a.name, a.seed) == ("random#0", 0)
-    assert (b.name, b.seed) == ("random#1", 1)
+    assert (a.name, a.seed) == ("random_0", 0)
+    assert (b.name, b.seed) == ("random_1", 1)
     # A copy built from its spec behaves exactly like a fresh instance with that seed.
     state = [3, 5, 7]
     assert a.cls.create(seed=a.seed).choose_move(list(state)) == (
@@ -163,7 +167,7 @@ def test_build_roster_seeds_random_bots_reproducibly():
 
 def test_build_roster_respects_repetition_count():
     roster = build_roster([OneStickBot()], repetition=3)
-    assert [p.name for p in roster] == ["OneStickBot#0", "OneStickBot#1", "OneStickBot#2"]
+    assert [p.name for p in roster] == ["OneStickBot_0", "OneStickBot_1", "OneStickBot_2"]
 
 
 def test_build_roster_rejects_zero_repetition():
@@ -178,7 +182,7 @@ def test_build_roster_lets_a_kind_play_itself():
         roster, starting_states=[[1, 2, 3]], repetitions=1,
         budgets=UNLIMITED, use_subprocess=False,
     )
-    assert {r["player"] for r in lb["standings"]} == {"OneStickBot#0", "OneStickBot#1"}
+    assert {r["player"] for r in lb["standings"]} == {"OneStickBot_0", "OneStickBot_1"}
     # They played each other (both ways) -> one win and one loss each.
     assert all(r["games"] == 2 for r in lb["standings"])
 
@@ -440,12 +444,13 @@ def test_player_state_survives_across_moves_in_one_game():
 
 def test_repeated_games_differ_when_the_player_is_stochastic():
     """The whole point of D2: repetitions must not be byte-identical."""
-    from nimarena.tournament import play_matchup
     from players.random import Random
 
+    from nimarena.tournament import play_matchup
+
     mu = play_matchup(
-        PlayerSpec(Random, 0, "random#0"),
-        PlayerSpec(Random, 1, "random#1"),
+        PlayerSpec(Random, 0, "random_0"),
+        PlayerSpec(Random, 1, "random_1"),
         [[7, 9, 11]], repetitions=6, budgets=Budgets(),
     )
     signatures = {
@@ -503,13 +508,14 @@ def test_championship_rejects_degenerate_group_settings(group_size, advance):
 
 def test_a_whole_run_is_reproducible_despite_varying_games():
     """Games within a match differ, yet the run repeats byte-for-byte."""
-    from nimarena.tournament import play_matchup
     from players.random import Random
+
+    from nimarena.tournament import play_matchup
 
     def signatures():
         mu = play_matchup(
-            PlayerSpec(Random, 0, "random#0"),
-            PlayerSpec(Random, 1, "random#1"),
+            PlayerSpec(Random, 0, "random_0"),
+            PlayerSpec(Random, 1, "random_1"),
             [[7, 9, 11]], repetitions=4, budgets=UNLIMITED, use_subprocess=False,
         )
         return [tuple(tuple(m.move) for m in g.moves if m.move) for g in mu.games]

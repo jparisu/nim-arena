@@ -12,7 +12,8 @@ Before any games are played, the roster is built by
 kind compete against *itself* (a round-robin never pairs an instance with itself)
 and, crucially, makes runs **reproducible**: every copy of a random-dependent bot
 (one whose constructor accepts a `seed`) is seeded with `0, 1, …, N-1`. Copies
-are named `random#0`, `random#1`, and so on.
+are named `random_0`, `random_1`, and so on. The web scoreboard renders that
+suffix as a subscript and puts each player's own icon in front of it.
 
 ## A "match" is many games
 

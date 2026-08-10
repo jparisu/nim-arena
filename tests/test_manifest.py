@@ -21,6 +21,8 @@ class Tiny(Player):
     def get_authors(cls): return ["me"]
     @classmethod
     def get_description(cls): return "Takes one stick from the first non-empty row."
+    @classmethod
+    def get_icon(cls): return "\U0001F9EA"
     def choose_move(self, state):
         for i, s in enumerate(state):
             if s: return (i, 1)
@@ -76,7 +78,7 @@ def test_bad_entry_skipped_when_not_strict(tmp_path, capsys):
 
 @pytest.mark.parametrize(
     "missing",
-    ["get_name", "get_authors", "get_description"],
+    ["get_name", "get_authors", "get_description", "get_icon"],
 )
 def test_player_missing_an_accessor_is_rejected(tmp_path, missing):
     """ABCMeta refuses to construct it, and the loader reports it clearly."""
