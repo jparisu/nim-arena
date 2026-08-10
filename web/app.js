@@ -1084,7 +1084,10 @@ function tRandomise() {
 /* ---------------- bracket construction ---------------- */
 
 function tStart() {
-  const board = $("t-board").value.split(",").map((x) => parseInt(x.trim())).filter(Number.isFinite);
+  const board = $("t-start-board").value
+    .split(",")
+    .map((x) => parseInt(x.trim()))
+    .filter(Number.isFinite);
   const problem = boardProblem(board);
   if (problem) { toast(problem); return; }
 
