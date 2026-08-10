@@ -47,9 +47,11 @@ case. The tournament survives all of it:
 
 | Failure | Result |
 |---------|--------|
-| exceeds the time budget | forfeit (`forfeit_timeout`) |
-| raises an exception | forfeit (`forfeit_error`) |
-| returns an illegal move | forfeit (`forfeit_illegal`) |
+| exceeds its game budget, or hangs | forfeit (`forfeit_timeout`) |
+| raises an exception while playing | forfeit (`forfeit_error`) |
+| returns an illegal or malformed move | forfeit (`forfeit_illegal`) |
+| `create()` exceeds the build budget | forfeit (`forfeit_build_timeout`) |
+| `create()` raises | forfeit (`forfeit_build_error`) |
 
 In every case the reason is logged and the run **continues**. One bad player
 never aborts the tournament.
@@ -62,12 +64,36 @@ caller owns it. This keeps the player a pure function of the board.
 
 ### How the hard timeout works
 
-Each move runs in a **separate process**. If a bot hangs in an infinite loop, the
-process is **terminated** and the bot forfeits — the tournament moves on. (Python
-threads cannot be force-killed, so a thread-based timeout could not honor this
-guarantee.) A single-process "soft timeout" mode (`--no-subprocess`) is available
-for fast local runs; it still measures elapsed time and forfeits over-budget
-moves, but cannot interrupt a true infinite loop.
+Each **game** runs in a separate process — one fork per game, not per move. If a
+bot hangs in an infinite loop the process is **terminated** and the bot forfeits;
+the tournament moves on. (Python threads cannot be force-killed, so a
+thread-based timeout could not honor this guarantee.)
+
+Forking per game rather than per move is deliberate: a player's RNG position, its
+caches and its memo tables have to survive from one move to the next *within its
+own game*. A fork per move would reset all of it and quietly punish any bot that
+remembers anything.
+
+A single-process "soft timeout" mode (`--no-subprocess`) is available for fast
+local runs; it still measures elapsed time and forfeits over-budget players, but
+cannot interrupt a true infinite loop.
+
+### The budgets are chess clocks
+
+Each player gets **two** budgets *per game*, not per move:
+
+- a **game budget** (`--game-time-limit`, default 2 s) that its thinking time is
+  charged against, cumulatively across all its moves. A bot may legitimately burn
+  most of it on one hard position and play the rest instantly;
+- a **build budget** (`--build-time-limit`, default 2 s) for `create()`, kept
+  separate so precomputation cannot be smuggled into the constructor for free.
+
+Because both players may legitimately spend their whole budget, the process is
+killed only after `2 × (game + build) + grace`. When that happens the runner still
+knows *who* to blame: the child records its phase, the active player and its
+running totals in shared memory **before** entering any player code, so the parent
+can read them after the kill. A constructor that hangs is attributed to its own
+player (`forfeit_build_timeout`), not to its opponent.
 
 !!! warning "Timing is measured in CI"
     The graded tournament runs on **GitHub's runners**, which are slower and more
@@ -78,7 +104,8 @@ moves, but cannot interrupt a true infinite loop.
 ## Running it
 
 ```bash
-# Default: a "simple" tournament, 0.5s/move, 2 copies per kind, 10 games/board.
+# Default: a "simple" tournament, 2 s per player per game, 2 copies per kind,
+# 10 games per board and first-mover.
 nim-tournament --out results/leaderboard.json
 
 # A league ranked by Elo, with a generous 2-second budget.
@@ -95,7 +122,7 @@ nim-tournament --tournament championship --repetitions 1 --no-subprocess
 | `--game-time-limit` | — | override just the thinking budget |
 | `--build-time-limit` | — | override just the construction budget |
 | `--no-time-limit` | off | enforce nothing (never use with untrusted players) |
-| `--board` | built-in set | a starting board, e.g. `--board 3,5,7`; repeatable |
+| `--board` | `3,5,7` · `1,2,3,4,5` · `4,5,6,7,8,9` | a starting board, e.g. `--board 3,5,7`; repeatable, and replaces the defaults |
 | `--group-size` | `4` | championship only: players per group |
 | `--advance-per-group` | `2` | championship only: who advances |
 | `--player-repetition` | `2` | copies of each kind (seeded `0..N-1`) |
@@ -105,43 +132,28 @@ nim-tournament --tournament championship --repetitions 1 --no-subprocess
 
 ## The results file
 
-The tournament writes `results/leaderboard.json`. Its shape adapts to the format
-(the `structure` block differs), but the top-level keys are stable:
-
-```json
-{
-  "generated_at": "2026-03-01T12:00:00Z",
-  "config": {
-    "tournament": "league", "starting_states": [[3,5,7],[1,3,5,7]],
-    "repetitions": 10, "game_budget_ms": 2000, "build_budget_ms": 2000,
-    "elo": true, "hard_timeout": true,
-    "time_limit_s": 2.0, "player_repetition": 2
-  },
-  "standings":  [ /* ranked classification: rank, player, points, elo?, W/L, ... */ ],
-  "matches":    [ /* one entry per match, averaged over its games */ ],
-  "player_stats": [ /* per player: timing, win rate, head-to-head opponents */ ],
-  "totals":     { /* players, matches, games, total moves, think time, ... */ },
-  "structure":  { /* mode-specific: groups + bracket for championship */ }
-}
-```
-
-The [web scoreboard](web.md) reads `config.tournament` and renders the matching
-blocks: a right-hand **classification** column plus collapsible **Tournament
-structure** (bracket/groups for a championship), **Match summary**, **Player
-stats** and **Total stats** panels.
+The tournament writes `results/leaderboard.json`. Its structure — and how the web
+page turns it into a scoreboard — has its own page:
+**[The scoreboard](scoreboard.md)**.
 
 ## Ranking and the expected order
 
 `simple` and `championship` rank by **points** (one per win); `league` ranks by
-**Elo**. All fall back to fewer forfeits, then faster average move, then name (so
-the order is fully deterministic). Across enough games the reference players land
-in the expected order:
+**Elo**. Ties break on **fewer forfeits**, then on **name**, so the order is fully
+deterministic.
+
+!!! note "Average move time is deliberately *not* a tie-break"
+    It would reward the wrong thing. A player that forfeits every game records no
+    move times at all, so it would win any tie-break on speed. Forfeits come
+    first for exactly that reason.
+
+Across enough games the reference players land in the expected order:
 
 ```
 hard  >  medium  >  easy  ≈  random
 ```
 
-`hard` searches 4 plies with alpha-beta and recognises several endgames outright,
+`hard` searches 4 plies with alpha-beta and recognizes several endgames outright,
 which makes it strong — but it cannot compute the nim-sum, so it is still
 beatable. `medium` runs the same search at 2 plies with a deliberately weak
 total-sticks heuristic: solid right at the end of a game, unreliable before that.
@@ -154,6 +166,15 @@ ahead depends on the draw. If they swap places between runs, nothing is wrong.
     In `league` mode the rank comes from Elo while the table also shows points, so
     a player with more points can sit *below* one with fewer. That is Elo working
     as intended — it weights *who* you beat, not just how often.
+
+## Where to go next
+
+- [The scoreboard](scoreboard.md) — what the tournament writes, and how it is
+  rendered.
+- [Player API](player-api.md) — the contract the tournament calls.
+- [Submit a player](submit-a-player.md) — get your bot into the next run.
+
+## API reference
 
 ::: nimarena.tournament.run_tournament
 

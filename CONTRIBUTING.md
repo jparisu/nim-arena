@@ -3,7 +3,7 @@
 Thanks for your interest! The main way to contribute is by **adding a new AI
 player** through a Pull Request. This page describes the whole flow. The same
 content lives, with more narrative, in the
-[online docs](https://nim-arena.readthedocs.io/en/latest/submit-a-player/).
+[online docs](https://nim-arena.readthedocs.io/en/latest/arena/submit-a-player/).
 
 ## The upload mechanism is the Pull Request
 

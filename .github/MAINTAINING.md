@@ -80,7 +80,7 @@ resumes.
 
 Every submission runs untrusted-but-reviewed code. Your review is the security
 and correctness gate. Check the acceptance criteria from
-[submit-a-player](https://nim-arena.readthedocs.io/en/latest/submit-a-player/):
+[submit-a-player](https://nim-arena.readthedocs.io/en/latest/arena/submit-a-player/):
 
 1. **Design** — one file in `players/`, one manifest line, subclasses `Player`,
    unique `name`.

@@ -61,8 +61,8 @@ nim-tournament --time-limit 2.0
 nim-tournament --board 3,5,7 --board 7,9,11
 ```
 
-See [The tournament](tournament.md) for what the results file contains and how
-timing/forfeits work.
+See [The tournament](tournament.md) for how timing and forfeits work, and
+[The scoreboard](scoreboard.md) for what the results file contains.
 
 ## Run the web app locally
 
@@ -77,3 +77,19 @@ python -m http.server -d web 8000     # open http://localhost:8000
 !!! note
     Pyodide is downloaded from a CDN the first time the page loads, so the browser
     needs internet access. Everything after that runs locally in your browser.
+
+## Build the documentation locally
+
+This site is MkDocs. It ships in English and Spanish from a single tree:
+
+```bash
+pip install -e ".[docs]"
+mkdocs serve          # http://127.0.0.1:8000
+mkdocs build --strict # exactly what CI runs
+```
+
+## Where to go next
+
+- [Game rules](rules.md) — what you are actually programming against.
+- [Player API](player-api.md) — the interface every AI implements.
+- [Submit a player](submit-a-player.md) — get yours into the tournament.

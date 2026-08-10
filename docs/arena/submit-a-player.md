@@ -74,14 +74,12 @@ The manifest is only an admission list — which file, and which class. Your nam
 authors and description come from the class itself, so there is nothing here to
 keep in step with your code.
 
-Fields:
+There are exactly **two** fields:
 
 | Field | Meaning |
 |-------|---------|
-| `name` | unique, human-readable; must match your `Player.name` |
-| `author` | your GitHub handle (for credit) |
-| `file` | the `.py` file. A bare filename resolves inside `players/`; a path with `/` resolves from the repo root. |
-| `class` | the `Player` subclass to instantiate |
+| `file` | the `.py` file. A bare filename resolves inside `players/`; a path containing `/` resolves from the repo root. |
+| `class` | the `Player` subclass to admit |
 
 !!! info "Why a manifest and not folder auto-scan?"
     The manifest makes the trust boundary **visible**. In a single PR diff the
@@ -98,8 +96,21 @@ nim-tournament --no-subprocess # optional: watch it compete locally
 
 ## Step 5 — Open the Pull Request
 
-Push your branch and open a PR. Fill in the new-player checklist in the PR
-template. CI runs the tests automatically.
+Push your branch and open a PR from your fork. The repository ships a dedicated
+new-player template at
+[`.github/PULL_REQUEST_TEMPLATE/new_player.md`](https://github.com/jparisu/nim-arena/blob/main/.github/PULL_REQUEST_TEMPLATE/new_player.md);
+select it by appending `?template=new_player.md` to the PR URL, or paste it into
+the description yourself. It is the same checklist the maintainer reviews against,
+so filling it in honestly is the fastest route to a merge.
+
+CI runs on every push to the PR: `ruff`, `mypy`, `pytest` on three Python
+versions, a smoke tournament, and a strict docs build. A red check is a blocked
+merge.
+
+If you are new to any of that, the [student guide](../guide/index.md) covers
+[forking and branching](../guide/github/workflow.md),
+[pull requests](../guide/github/pull-requests.md) and
+[what the CI checks do](../guide/github/actions.md).
 
 ## Acceptance criteria (the maintainer's checklist)
 
@@ -129,3 +140,10 @@ explicit, documented gate:
   separate one for construction, both **measured on GitHub's
   runners**, which are slower and more variable than your laptop. A bot that
   passes locally can still time out in the graded run — choose efficient code.
+
+## Where to go next
+
+- [Player API](player-api.md) — the full contract, and what the tournament
+  demands on top of it.
+- [Pull requests](../guide/github/pull-requests.md) — how to open one, and how
+  one is reviewed.

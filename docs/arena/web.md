@@ -18,7 +18,9 @@ animate, pace AI-vs-AI, and manage the timeline.
    `py.zip`, unpacks it into Pyodide's virtual filesystem, and imports
    `webglue`.
 3. `webglue.init()` loads the manifest and populates the registry.
-4. `app.js` calls the bridge (`window.NIM.*`) for every rule check and AI move.
+4. The page scripts — `web/js/core.js`, `play.js`, `scoreboard.js`,
+   `tournament.js` and `main.js` — call the bridge (`window.NIM.*`) for every rule
+   check and AI move.
 
 Everything crosses the Python↔JS boundary as **JSON strings** — state is a list
 of ints, moves are `[row, count]`. No custom objects.
@@ -35,14 +37,16 @@ of ints, moves are `[row, count]`. No custom objects.
   the timeline slider back and forth, step move-by-move, jump to the ends, and
   return to the live state.
 - **X-ray / nim-sum mode** — overlays the position's nim-sum and highlights the
-  row the perfect player would touch. A live lecture on the XOR strategy.
+  row optimal play would touch. A live lecture on the XOR strategy.
 - **"Why did it do that?" panel** — after each AI move, shows its reasoning
-  (minimax depth/score/nodes, or the perfect player's nim-sum before/after) and
-  the per-move time.
-- **Hint mode** — on request, shows the optimal move for the human seat (uses the
-  perfect player under the hood).
+  (the `last_info` dict a bot may publish: minimax depth, score, nodes) and the
+  per-move time.
+- **Hint mode** — on request, shows the optimal move for the human seat. There is
+  no "perfect player" bot doing this: `webglue.perfect_analysis` computes the
+  nim-sum move directly, which is why the strongest *admitted* player can still be
+  beaten.
 - **Speed readout** — each AI move's think-time is displayed, mirroring the
-  tournament's per-move timing.
+  timing the tournament records.
 - **Tournament page** — build your own single-elimination bracket of 4, 8 or 16
   entrants. Any bot may enter several times (each copy gets its own seed, so they
   are genuinely independent), and humans can enter under a name. Bot-vs-bot
@@ -64,20 +68,15 @@ of ints, moves are `[row, count]`. No custom objects.
   page would require exposing a token in the browser. The scoreboard is read-only;
   use GitHub's own "Run workflow" UI to trigger a run.
 
-## The scoreboard
+## The scoreboard screen
 
 The Scoreboard screen fetches `leaderboard.json` (copied next to the page by the
-build) and renders the results produced entirely by the tournament workflow. The
-page reads `config.tournament` and adapts its layout to the
-[tournament format](tournament.md):
+build) and renders results produced entirely by the tournament workflow. No game
+is played to draw it — it is pure data rendering over a JSON file.
+See **[The scoreboard](scoreboard.md)** for the file's structure.
 
-- a right-hand **classification** column (points, or Elo in a league);
-- a collapsible **Tournament structure** block — for a championship it draws the
-  group tables and the knockout bracket with the eventual champion;
-- **Match summary** — one row per match, averaged over its games;
-- **Player stats** — an expandable card per player with timing and a
-  head-to-head breakdown;
-- **Total stats** — overview tiles (players, matches, games, think time, …).
+## Where to go next
 
-All game logic still runs through the same Python; the scoreboard itself is pure
-data rendering over the results JSON.
+- [The scoreboard](scoreboard.md) — the results file the page reads.
+- [The tournament](tournament.md) — what produces that file.
+- [Getting started](getting-started.md) — serve the page locally.

@@ -21,7 +21,8 @@ The game is fully parametrized by its starting configuration:
   or `[1, 3, 5, 7]`.
 
 A game is defined entirely by its starting configuration. Both the web page and
-the tournament let you configure these values.
+the tournament let you configure these values. The tournament's built-in set is
+`[3, 5, 7]`, `[1, 2, 3, 4, 5]` and `[4, 5, 6, 7, 8, 9]`; `--board` replaces it.
 
 ## State representation
 
@@ -54,9 +55,14 @@ For normal-play NIM the optimal strategy is classic and based on the
     nim-sum `0`. Here, reducing row 0 from `3` to `2` gives `[2, 5, 7]` whose
     nim-sum is `010 ⊕ 101 ⊕ 111 = 000`. 
 
-No shipped player computes this. `hard` recognises *some* zero-nim-sum shapes —
+No shipped player computes this. `hard` recognizes *some* zero-nim-sum shapes —
 mirrored rows, all-ones boards by parity, and a few tabulated positions — but it
 cannot see the general rule, which is exactly why it stays beatable. Writing the
 player that does is the obvious first submission.
 
 Try **X-ray mode** on the [web app](web.md) to see the nim-sum live during a game.
+
+## Where to go next
+
+- [Getting started](getting-started.md) — install and play a game.
+- [Player API](player-api.md) — turn the strategy above into a player.

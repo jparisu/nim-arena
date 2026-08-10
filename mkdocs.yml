@@ -1,5 +1,8 @@
 site_name: NIM Arena
-site_description: Parametrized NIM — game engine, player API, three AIs, tournament, and a Pyodide web app.
+site_description: >-
+  NIM Arena — the reference manual of the project (game engine, player API,
+  reference AIs, tournament and web app) and a student guide to Git, GitHub,
+  Python packaging and documentation.
 site_url: https://nim-arena.readthedocs.io
 repo_url: https://github.com/jparisu/nim-arena
 repo_name: jparisu/nim-arena
@@ -23,21 +26,68 @@ theme:
         icon: material/weather-night
         name: Switch to dark mode
   features:
-    - navigation.instant
+    # `navigation.instant` is deliberately absent: it is incompatible with the
+    # i18n language switcher's contextual link, and this site is bilingual.
     - navigation.sections
     - navigation.top
     - content.code.copy
     - toc.integrate
 
+extra_css:
+  - stylesheets/extra.css
+
+# A link to a heading that does not exist is only an INFO by default, so a
+# renamed section silently breaks every link into it. Promoting it to a warning
+# makes `mkdocs build --strict` — what CI runs — catch it.
+validation:
+  anchors: warn
+
 nav:
   - Home: index.md
-  - Game rules: rules.md
-  - Getting started: getting-started.md
-  - Code structure: code-structure.md
-  - Player API reference: player-api.md
-  - Submit a new player: submit-a-player.md
-  - The tournament: tournament.md
-  - The web app: web.md
+  - NIM Arena:
+      - arena/index.md
+      - Game rules: arena/rules.md
+      - Getting started: arena/getting-started.md
+      - Code structure: arena/code-structure.md
+      - Player API: arena/player-api.md
+      - Submit a player: arena/submit-a-player.md
+      - The scoreboard: arena/scoreboard.md
+      - The tournament: arena/tournament.md
+      - The web app: arena/web.md
+  - Student guide:
+      - guide/index.md
+      - Git:
+          - guide/git/index.md
+          - 1. What is Git: guide/git/git.md
+          - 2. Organization: guide/git/organization.md
+          - 3. Commands: guide/git/commands.md
+          - 4. Undoing changes: guide/git/undoing-changes.md
+          - 5. Example: guide/git/example.md
+          - FAQ: guide/git/git-faq.md
+      - GitHub:
+          - guide/github/index.md
+          - 1. What is GitHub: guide/github/github.md
+          - 2. First steps: guide/github/first-steps.md
+          - 3. Workflow: guide/github/workflow.md
+          - 4. Pull requests: guide/github/pull-requests.md
+          - 5. Repository configuration: guide/github/repository-configuration.md
+          - 6. GitHub Actions: guide/github/actions.md
+          - 7. GitHub Pages: guide/github/pages.md
+          - FAQ: guide/github/github-faq.md
+      - Python library:
+          - guide/python-library/index.md
+          - 1. What is a library: guide/python-library/library.md
+          - 2. Organization: guide/python-library/organization.md
+          - 3. Installation and usage: guide/python-library/installation-and-usage.md
+          - 4. API: guide/python-library/api.md
+          - 5. Testing: guide/python-library/testing.md
+          - FAQ: guide/python-library/python-faq.md
+      - Documentation:
+          - guide/documentation/index.md
+          - 1. Documenting a project: guide/documentation/documentation.md
+          - 2. MkDocs: guide/documentation/mkdocs.md
+          - 3. Read the Docs: guide/documentation/readthedocs.md
+          - FAQ: guide/documentation/docs-faq.md
 
 markdown_extensions:
   - admonition
@@ -52,7 +102,16 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
-  - pymdownx.superfences
+  # The custom fence is what turns ```mermaid blocks into diagrams instead of
+  # printing the diagram source as code. The guide draws every diagram this way,
+  # so there is not a single image file in docs/.
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.inlinehilite
@@ -61,7 +120,61 @@ markdown_extensions:
       permalink: true
 
 plugins:
+  # Order matters: `i18n` reconfigures the search index per language, so it has
+  # to see a `search` instance that is already registered.
   - search
+  - i18n:
+      docs_structure: suffix
+      languages:
+        - locale: en
+          name: English
+          default: true
+          build: true
+        - locale: es
+          name: Español
+          build: true
+          nav_translations:
+            Home: Inicio
+            FAQ: Preguntas frecuentes
+            Student guide: Guía del estudiante
+            Game rules: Reglas del juego
+            Getting started: Primeros pasos
+            Code structure: Estructura del código
+            Player API: API de jugador
+            Submit a player: Enviar un jugador
+            The scoreboard: El marcador
+            The tournament: El torneo
+            The web app: La página web
+            Git: Git
+            GitHub: GitHub
+            Python library: Librería Python
+            Documentation: Documentación
+            1. What is Git: 1. Qué es Git
+            2. Organization: 2. Organización
+            3. Commands: 3. Comandos
+            4. Undoing changes: 4. Deshacer cambios
+            5. Example: 5. Ejemplo
+            1. What is GitHub: 1. Qué es GitHub
+            2. First steps: 2. Primeros pasos
+            3. Workflow: 3. Flujo de trabajo
+            4. Pull requests: 4. Pull requests
+            5. Repository configuration: 5. Configuración del repositorio
+            6. GitHub Actions: 6. GitHub Actions
+            7. GitHub Pages: 7. GitHub Pages
+            1. What is a library: 1. Qué es una librería
+            3. Installation and usage: 3. Instalación y uso
+            4. API: 4. API
+            5. Testing: 5. Tests
+            1. Documenting a project: 1. Documentar un proyecto
+            2. MkDocs: 2. MkDocs
+            3. Read the Docs: 3. Read the Docs
+  # Declared explicitly (mkdocstrings would otherwise add it implicitly) so that
+  # `resolve_closest` can be set. Every `:::` block is rendered once per language,
+  # so each identifier legitimately has two URLs — `/arena/...` and `/es/arena/...`.
+  # Without this, autorefs warns about "multiple primary URLs" and `--strict`
+  # fails; with it, a link resolves to the page in the reader's own language.
+  - autorefs:
+      resolve_closest: true
   - mkdocstrings:
       handlers:
         python:
