@@ -20,8 +20,9 @@ git checkout -b add-my-bot
 
 ## Step 2 — Add your player file
 
-Create `players/<your_bot>.py`. The easiest start is to copy
-[`players/random.py`](player-api.md). Your class must:
+Create `players/custom/<your_bot>.py` — submissions live in `custom/`, and the
+reference ladder in `builtin/` is not yours to touch. The easiest start is to copy
+[`players/builtin/random.py`](player-api.md). Your class must:
 
 - subclass `nimarena.player.Player`,
 - implement `get_name`, `get_authors`, `get_description` and `get_icon` — the name
@@ -29,7 +30,7 @@ Create `players/<your_bot>.py`. The easiest start is to copy
 - implement `choose_move(self, state) -> (row, count)` returning a **legal** move.
 
 ```python
-# players/corner_bot.py
+# players/custom/corner_bot.py
 from nimarena.game import State, legal_moves, nim_sum
 from nimarena.player import Player
 
@@ -63,7 +64,7 @@ class CornerBot(Player):
 
 ## Step 3 — Register it in the manifest
 
-Add **exactly one entry** to [`players.yaml`](https://github.com/jparisu/nim-arena/blob/main/players.yaml):
+Add **exactly one entry** to [`players/custom/players.yaml`](https://github.com/jparisu/nim-arena/blob/main/players/custom/players.yaml):
 
 ```yaml
   - file: corner_bot.py
@@ -74,11 +75,11 @@ The manifest is only an admission list — which file, and which class. Your nam
 authors and description come from the class itself, so there is nothing here to
 keep in step with your code.
 
-There are exactly **two** fields:
+There are exactly **two** fields to write:
 
 | Field | Meaning |
 |-------|---------|
-| `file` | the `.py` file. A bare filename resolves inside `players/`; a path containing `/` resolves from the repo root. |
+| `file` | the `.py` file. A bare filename resolves next to the manifest, in `players/custom/`; a path containing `/` resolves from the repo root. |
 | `class` | the `Player` subclass to admit |
 
 !!! info "Why a manifest and not folder auto-scan?"
@@ -90,9 +91,14 @@ There are exactly **two** fields:
 ## Step 4 — Verify locally
 
 ```bash
-pytest                         # your bot is exercised by tests/test_players.py
-nim-tournament --no-subprocess # optional: watch it compete locally
+pytest                         # must be green
+nim-tournament --no-subprocess # play your bot against the reference players
 ```
+
+!!! tip "Run the tournament, not just the tests"
+    The tournament is what plays your bot, so it is what catches an illegal move, a
+    crash or a timeout — and a bot that does any of those is not merged. Do it
+    before you open the PR.
 
 ## Step 5 — Open the Pull Request
 
@@ -117,7 +123,7 @@ If you are new to any of that, the [student guide](../guide/index.md) covers
 Your PR is merged only if it passes **all** of these. They are the project's
 explicit, documented gate:
 
-1. **Design** — one file in `players/`, one manifest line, subclasses `Player`,
+1. **Design** — one file in `players/custom/`, one manifest line, subclasses `Player`,
    unique `name`, minimal and readable.
 2. **Correctness** — CI is green; the bot returns legal moves and never mutates
    the state; it does not error or time out against the reference bots.

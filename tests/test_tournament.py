@@ -8,10 +8,13 @@ import pytest
 
 from nimarena.player import Player
 from nimarena.tournament import (
+    BUILTIN_COPIES,
+    CUSTOM_COPIES,
     UNLIMITED,
     Budgets,
     PlayerSpec,
     build_roster,
+    copies_for,
     play_match,
     run_tournament,
     validate_starting_states,
@@ -125,6 +128,41 @@ def test_build_roster_duplicates_each_kind_with_seed_suffixes():
     assert [p.name for p in roster] == ["OneStickBot_0", "OneStickBot_1"]
 
 
+def test_build_roster_takes_a_per_kind_copy_count():
+    """The count is per kind, and the caller decides it — see `copies_for`."""
+    roster = build_roster(
+        [OneStickBot(), AllRowBot()], repetition=1, copies={"AllRowBot": 3}
+    )
+    assert [p.name for p in roster] == [
+        "OneStickBot_0", "AllRowBot_0", "AllRowBot_1", "AllRowBot_2",
+    ]
+
+
+def test_build_roster_ignores_copies_for_kinds_not_entered():
+    """A stale name in the mapping is harmless: only the given players are built."""
+    roster = build_roster([OneStickBot()], repetition=1, copies={"NotEntered": 5})
+    assert [p.name for p in roster] == ["OneStickBot_0"]
+
+
+def test_build_roster_rejects_a_zero_copy_count():
+    with pytest.raises(ValueError):
+        build_roster([OneStickBot()], copies={"OneStickBot": 0})
+
+
+def test_copies_follow_the_manifest_that_admitted_the_player():
+    """Roster copies are a tournament decision, taken from a player's origin."""
+    from nimarena.manifest import BUILTIN, CUSTOM
+    from nimarena.registry import Registry
+
+    reg = Registry()
+    reg.register(OneStickBot(), origin=BUILTIN)
+    reg.register(AllRowBot(), origin=CUSTOM)
+    assert copies_for(reg) == {
+        "OneStickBot": BUILTIN_COPIES,
+        "AllRowBot": CUSTOM_COPIES,
+    }
+
+
 def test_build_roster_assigns_one_seed_per_copy():
     roster = build_roster([OneStickBot()], repetition=3)
     assert [s.seed for s in roster] == [0, 1, 2]
@@ -153,7 +191,7 @@ def test_players_are_built_through_the_create_factory():
 
 
 def test_build_roster_seeds_random_bots_reproducibly():
-    from players.random import Random
+    from players.builtin.random import Random
 
     a, b = build_roster([Random.create(seed=0)])
     assert (a.name, a.seed) == ("random_0", 0)
@@ -444,7 +482,7 @@ def test_player_state_survives_across_moves_in_one_game():
 
 def test_repeated_games_differ_when_the_player_is_stochastic():
     """The whole point of D2: repetitions must not be byte-identical."""
-    from players.random import Random
+    from players.builtin.random import Random
 
     from nimarena.tournament import play_matchup
 
@@ -500,7 +538,7 @@ def test_championship_rejects_degenerate_group_settings(group_size, advance):
     """group_size=0 used to raise ZeroDivisionError."""
     with pytest.raises(ValueError):
         run_tournament(
-            build_roster([OneStickBot(), AllRowBot()]), mode="championship",
+            build_roster([OneStickBot(), AllRowBot()], repetition=1), mode="championship",
             starting_states=[[1, 2]], repetitions=1, budgets=UNLIMITED,
             use_subprocess=False, group_size=group_size, advance_per_group=advance,
         )
@@ -508,7 +546,7 @@ def test_championship_rejects_degenerate_group_settings(group_size, advance):
 
 def test_a_whole_run_is_reproducible_despite_varying_games():
     """Games within a match differ, yet the run repeats byte-for-byte."""
-    from players.random import Random
+    from players.builtin.random import Random
 
     from nimarena.tournament import play_matchup
 

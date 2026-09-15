@@ -26,6 +26,12 @@ A **match** between two players is played identically in every format: for each
 starting board, and for each player going first once, ``repetitions`` games are
 played. So a match spans ``len(boards) * 2 * repetitions`` games.
 
+Every pair of *entrants* plays one match, and a player kind is entered more than
+once so that it also meets its own strategy — see :func:`build_roster`. How many
+copies each one gets is decided here, by :func:`copies_for`, from the manifest that
+admitted it: :data:`BUILTIN_PLAYER_COPIES` for the reference ladder, :data:`CUSTOM_PLAYER_COPIES`
+for a submission.
+
 ## Time budgets
 
 Budgets are **per player, per game** — a chess clock, not a per-move limit. A bot
@@ -47,8 +53,7 @@ cannot honour that guarantee.)
 One fork per *game* rather than per *move* matters for correctness, not just speed:
 a child's memory is discarded when it exits, so forking per move would throw away
 everything a player learned — its RNG position, any cache, any memo table. Games
-would be byte-identical repeats and memoization would be impossible. See
-``devs/DESIGN_DECISIONS.md`` (D2).
+would be byte-identical repeats and memoization would be impossible.
 
 The child owns the whole game, so the parent never holds a player instance — only a
 [`PlayerSpec`][nimarena.tournament.PlayerSpec]. That is also what makes a hanging
@@ -78,7 +83,7 @@ import queue as queue_mod
 import statistics
 import sys
 import time
-from collections.abc import Callable, Iterable, Sequence
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any, Protocol
@@ -86,12 +91,15 @@ from typing import TYPE_CHECKING, Any, Protocol
 from . import game
 from .elo import DEFAULT_INITIAL_RATING, updated_ratings
 from .game import Move, State
+from .manifest import BUILTIN
 from .player import Player
 
 if TYPE_CHECKING:
     # Only the concrete contexts declare `Process`; BaseContext does not. This one
     # exists solely on POSIX, which is exactly where the fork path applies.
     from multiprocessing.context import ForkContext
+
+    from .registry import Registry
 
 #: Boards every match is played on, unless the caller overrides them.
 #:
@@ -113,10 +121,21 @@ DEFAULT_BUILD_BUDGET_MS = 2000
 DEFAULT_GRACE_MS = 500
 #: Per-player budget in seconds, used as the CLI default for both budgets.
 DEFAULT_TIME_LIMIT_S = 2.0
-#: Copies of each player kind entered into the roster (see :func:`build_roster`).
-DEFAULT_PLAYER_REPETITION = 2
+#: Seeded copies entered for a player from ``players/builtin`` — the reference
+#: ladder. Two, so that each rung also meets its own strategy: a round-robin never
+#: pairs an instance with itself.
+BUILTIN_PLAYER_COPIES = 2
+#: Seeded copies entered for a player from ``players/custom`` — a submission.
+#: Lower this to 1 if the roster outgrows the tournament's time budget: the work
+#: is quadratic in the number of entrants, and this is the side that grows.
+CUSTOM_PLAYER_COPIES = 1
 #: Games played per (board, first-mover) pairing within a single match.
-DEFAULT_REPETITIONS = 10
+#:
+#: A match is ``boards * 2 * repetitions`` games and every pair of entrants plays
+#: one, so the cost of a tournament is this number times a quadratic. Three keeps
+#: a full roster inside the CI job's timeout; raise it for a small roster, where
+#: the extra resolution in the Elo ratings is cheap.
+DEFAULT_REPETITIONS = 3
 #: Players per group in the championship group phase.
 DEFAULT_GROUP_SIZE = 4
 #: Players that advance from each championship group to the knockout bracket.
@@ -293,8 +312,7 @@ def _fork_context() -> ForkContext | None:
 class MoveRecord:
     """One move played in a game.
 
-    Retained only so the runner can aggregate timing; it is never serialized. See
-    ``devs/DESIGN_DECISIONS.md`` (D1).
+    Retained only so the runner can aggregate timing; it is never serialized.
 
     Attributes:
         player: name of the player that moved.
@@ -409,8 +427,9 @@ class Matchup:
         """Return a JSON-serializable, aggregated summary of the match.
 
         Timing is reported as **aggregates only** — mean, standard deviation and
-        maximum per player. There is deliberately no per-move array: see
-        ``devs/DESIGN_DECISIONS.md`` (D1).
+        maximum per player. There is deliberately no per-move array: it would grow
+        the leaderboard with every game played and answers nothing the aggregates
+        do not.
         """
         a_times = self._move_times(self.player_a)
         b_times = self._move_times(self.player_b)
@@ -797,16 +816,34 @@ def play_matchup(
 # Roster construction                                                          #
 # --------------------------------------------------------------------------- #
 
+def copies_for(registry: Registry) -> dict[str, int]:
+    """Return ``player name -> roster copies`` for everything in ``registry``.
+
+    How many copies a player is entered with is a **tournament** decision, not a
+    property of the bot, so it is taken here and not declared by the player class.
+    It follows the manifest that admitted the player: the reference ladder gets
+    :data:`BUILTIN_PLAYER_COPIES`, a submission gets :data:`CUSTOM_PLAYER_COPIES`.
+
+    Feed the result to :func:`build_roster`.
+    """
+    return {
+        name: BUILTIN_PLAYER_COPIES if registry.origin(name) == BUILTIN else CUSTOM_PLAYER_COPIES
+        for name in registry.names()
+    }
+
+
 def build_roster(
     players: Sequence[Player | PlayerSpec],
-    repetition: int = DEFAULT_PLAYER_REPETITION,
+    repetition: int = CUSTOM_PLAYER_COPIES,
+    *,
+    copies: Mapping[str, int] | None = None,
 ) -> list[PlayerSpec]:
-    """Expand each player *kind* into ``repetition`` seeded specifications.
+    """Expand each player *kind* into seeded specifications, one per copy.
 
-    A round-robin never lets a player face itself, so to make each *kind* of bot
-    compete against its own kind we enter ``repetition`` independent copies of
-    each, to be built through :meth:`~nimarena.player.Player.create` with the seeds
-    ``0, 1, ..., repetition - 1``. Every player accepts a seed, so no inspection of
+    A round-robin never lets a player face itself, so to make a *kind* of bot
+    compete against its own kind we enter several independent copies of it, to be
+    built through :meth:`~nimarena.player.Player.create` with the seeds
+    ``0, 1, ..., n - 1``. Every player accepts a seed, so no inspection of
     constructor signatures is needed; a deterministic bot ignores it but is still
     duplicated so its kind plays itself.
 
@@ -815,23 +852,32 @@ def build_roster(
 
     Args:
         players: one entry per kind (typically ``registry.all()``).
-        repetition: number of copies per kind (must be ``>= 1``).
+        copies: per-kind counts, normally from :func:`copies_for`.
+        repetition: copies for a kind ``copies`` does not mention (``>= 1``).
 
     Returns:
-        ``len(players) * repetition`` specifications.
+        One specification per copy, in the order the kinds were given.
 
     Raises:
-        ValueError: if ``repetition`` is less than 1.
+        ValueError: if ``repetition`` or any value in ``copies`` is less than 1.
     """
     if repetition < 1:
         raise ValueError(f"repetition must be >= 1, got {repetition}")
+    for name, count in (copies or {}).items():
+        if count < 1:
+            raise ValueError(f"copies[{name!r}] must be >= 1, got {count}")
     roster: list[PlayerSpec] = []
     for entry in players:
         spec = _as_spec(entry)
         base_name = spec.cls.get_name()
-        for seed in range(repetition):
+        for seed in range((copies or {}).get(base_name, repetition)):
             roster.append(PlayerSpec(cls=spec.cls, seed=seed, name=f"{base_name}_{seed}"))
     return roster
+
+
+def _copies_of(roster: Sequence[PlayerSpec], base_name: str) -> list[PlayerSpec]:
+    """Return the roster entries that are copies of the kind called ``base_name``."""
+    return [s for s in roster if s.cls.get_name() == base_name]
 
 
 # --------------------------------------------------------------------------- #
@@ -1425,13 +1471,19 @@ def _parse_board(text: str) -> State:
 
 def _build_arg_parser() -> argparse.ArgumentParser:
     """Build the ``nim-tournament`` argument parser."""
-    from .manifest import DEFAULT_MANIFEST, DEFAULT_PLAYERS_DIR
+    from .manifest import BUILTIN_MANIFEST, CUSTOM_MANIFEST
 
     parser = argparse.ArgumentParser(
         prog="nim-tournament", description="Run a NIM Arena tournament."
     )
-    parser.add_argument("--manifest", default=str(DEFAULT_MANIFEST))
-    parser.add_argument("--players-dir", default=str(DEFAULT_PLAYERS_DIR))
+    parser.add_argument(
+        "--builtin-manifest", default=str(BUILTIN_MANIFEST),
+        help="Manifest admitting the reference ladder.",
+    )
+    parser.add_argument(
+        "--custom-manifest", default=str(CUSTOM_MANIFEST),
+        help="Manifest admitting submitted players.",
+    )
     parser.add_argument("--out", default="results/leaderboard.json")
     parser.add_argument(
         "--tournament", choices=TOURNAMENT_MODES, default="simple",
@@ -1461,12 +1513,13 @@ def _build_arg_parser() -> argparse.ArgumentParser:
              "Defaults to the built-in set.",
     )
     parser.add_argument(
-        "--player-repetition", type=int, default=DEFAULT_PLAYER_REPETITION,
-        help="Copies of each player kind to enter; seeds them 0..N-1 (default: 2).",
+        "--player-repetition", type=int, default=None,
+        help="Override the number of copies for every kind, ignoring what each "
+             "player declares; seeds them 0..N-1.",
     )
     parser.add_argument(
         "--repetitions", type=int, default=DEFAULT_REPETITIONS,
-        help="Games per (board, first-mover) combination in a match (default: 10).",
+        help="Games per (board, first-mover) combination in a match (default: 3).",
     )
     parser.add_argument(
         "--group-size", type=int, default=DEFAULT_GROUP_SIZE,
@@ -1514,8 +1567,8 @@ def main(argv: list[str] | None = None) -> int:
 
         nim-tournament [--out results/leaderboard.json]
                        [--tournament simple|league|championship]
-                       [--time-limit 2.0] [--board 3,5,7] [--repetitions 10]
-                       [--player-repetition 2] [--no-elo] [--no-subprocess]
+                       [--time-limit 2.0] [--board 3,5,7] [--repetitions 3]
+                       [--player-repetition N] [--no-elo] [--no-subprocess]
 
     Returns:
         ``0`` on success, ``1`` on a configuration or manifest error.
@@ -1523,7 +1576,7 @@ def main(argv: list[str] | None = None) -> int:
     import json
     from pathlib import Path
 
-    from .manifest import ManifestError, load_players
+    from .manifest import BUILTIN, CUSTOM, ManifestError, load_players
 
     args = _build_arg_parser().parse_args(argv)
 
@@ -1534,7 +1587,9 @@ def main(argv: list[str] | None = None) -> int:
         )
         if boards is not None:
             boards = validate_starting_states(boards)
-        registry = load_players(args.manifest, args.players_dir)
+        registry = load_players(
+            {BUILTIN: args.builtin_manifest, CUSTOM: args.custom_manifest}
+        )
         kinds = registry.all()
         if not kinds:
             # Writing an empty leaderboard here would let the tournament workflow
@@ -1545,14 +1600,26 @@ def main(argv: list[str] | None = None) -> int:
                 file=sys.stderr,
             )
             return 1
-        roster = build_roster(kinds, args.player_repetition)
+        # --player-repetition, when given, flattens every kind to one count;
+        # otherwise each player's origin decides (see `copies_for`).
+        roster = (
+            build_roster(kinds, args.player_repetition)
+            if args.player_repetition is not None
+            else build_roster(kinds, copies=copies_for(registry))
+        )
     except (ManifestError, ValueError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
 
+    per_kind = sorted({len(_copies_of(roster, s.cls.get_name())) for s in roster})
+    shape = (
+        f"{per_kind[0]} per kind"
+        if len(per_kind) == 1
+        else f"{per_kind[0]}-{per_kind[-1]} per kind"
+    )
     print(
         f"Loaded {len(kinds)} player kinds; roster of {len(roster)} "
-        f"({args.player_repetition} per kind): {', '.join(s.name for s in roster)}"
+        f"({shape}): {', '.join(s.name for s in roster)}"
     )
     limits = (
         "no time limit"
@@ -1577,7 +1644,14 @@ def main(argv: list[str] | None = None) -> int:
             advance_per_group=args.advance_per_group,
             extra_config={
                 "time_limit_s": args.time_limit,
+                # None unless --player-repetition overrode every kind at once.
                 "player_repetition": args.player_repetition,
+                # The per-kind counts actually used, so a published leaderboard
+                # records the roster shape whatever produced it.
+                "player_copies": {
+                    name: len(_copies_of(roster, name))
+                    for name in dict.fromkeys(s.cls.get_name() for s in roster)
+                },
             },
         )
     except ValueError as exc:

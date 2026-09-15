@@ -65,7 +65,8 @@ Ocho claves de primer nivel. Todas están siempre presentes; solo el contenido d
   "elo": true,
   "hard_timeout": true,
   "time_limit_s": 2.0,
-  "player_repetition": 2
+  "player_repetition": null,
+  "player_copies": { "random": 2, "easy": 2, "medium": 2, "hard": 2 }
 }
 ```
 
@@ -185,9 +186,10 @@ La página solo renderiza los grupos y el cuadro cuando `type` es `championship`
 
 ## Nombres de plantilla: `hard_0`, no `hard`
 
-Cada tipo entra en el torneo `--player-repetition` veces (2 por defecto), de modo
-que un tipo juega contra sí mismo y cada copia tiene su propia semilla. Las copias
-se llaman `<tipo>_<semilla>`: `hard_0`, `hard_1`, `random_0`, …
+Un tipo puede entrar en el torneo más de una vez, de modo que juegue contra sí
+mismo y cada copia tenga su propia semilla. Las copias se llaman
+`<tipo>_<semilla>`: `hard_0`, `hard_1`, `random_0`, … `config.player_copies` anota
+cuántas recibió cada tipo.
 
 La página vuelve a separar ese nombre con `splitPlayer` en `web/js/core.js` y
 renderiza `⚔️ hard₀` — el icono viene del directorio `players` indexado por *tipo*

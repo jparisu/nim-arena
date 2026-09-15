@@ -37,4 +37,4 @@ empaquetado, CI, documentación— esa es la otra mitad del sitio: la
 1. Lee las [reglas](rules.md) — cinco minutos.
 2. [Instala](getting-started.md) el paquete.
 3. Copia el ejemplo mínimo de la [API de jugador](player-api.md).
-4. Añade una línea a `players.yaml` y [abre un PR](submit-a-player.md).
+4. Añade una línea a `players/custom/players.yaml` y [abre un PR](submit-a-player.md).

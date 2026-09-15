@@ -17,7 +17,7 @@ pip install -e ".[dev]"
 from nimarena import game
 from nimarena.manifest import load_players
 
-registry = load_players()          # lee players.yaml
+registry = load_players()          # lee los dos manifiestos players.yaml
 hard = registry.get("hard")
 random_bot = registry.get("random")
 

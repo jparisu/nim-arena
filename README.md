@@ -90,7 +90,8 @@ python -m http.server -d web 8000    # open http://localhost:8000
 
 ## The reference players
 
-A four-rung difficulty ladder, all registered in [`players.yaml`](players.yaml)
+A four-rung difficulty ladder, all registered in
+[`players/builtin/players.yaml`](players/builtin/players.yaml)
 and competing in the tournament. Each is a thin wrapper naming a strategy from
 [`nimarena.bots`](src/nimarena/bots/) — identity and a depth, nothing more.
 
@@ -106,10 +107,13 @@ perfect (nim-sum) player** — that slot at the top of the ladder is still open.
 
 ## Add your own AI (by Pull Request)
 
-1. Copy [`players/random.py`](players/random.py) to `players/<your_bot>.py`.
+1. Copy [`players/builtin/random.py`](players/builtin/random.py) to
+   `players/custom/<your_bot>.py`.
 2. Subclass [`Player`](src/nimarena/player.py), fill in `get_name` / `get_authors` /
    `get_description`, and implement `choose_move(state) -> (row, count)`.
-3. Add one entry to [`players.yaml`](players.yaml) — just `file` and `class`.
+3. Add one entry to
+   [`players/custom/players.yaml`](players/custom/players.yaml) — just `file`
+   and `class`.
 4. Open a PR — CI runs the tests. A player that errors, times out, or reuses an
    existing name is not merged.
 
@@ -121,8 +125,8 @@ Full guide: [CONTRIBUTING.md](CONTRIBUTING.md) ·
 ```
 src/nimarena/   game engine, Player API, registry, manifest loader, tournament
 src/nimarena/bots/  reusable strategies the reference players are built from
-players/        reference + community player files (one .py each)
-players.yaml    the manifest — the single list of admitted players
+players/builtin/  the reference ladder, and the manifest admitting it
+players/custom/   submitted players, and the manifest admitting them
 results/        leaderboard.json, written by the tournament workflow
 web/            GitHub Pages site (Pyodide + thin JS UI)
 docs/           Read the Docs source (MkDocs + Material), in English and Spanish

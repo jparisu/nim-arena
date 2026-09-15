@@ -1,8 +1,9 @@
 """Make the repo root and ``web/`` importable for the test suite.
 
-The ``players/`` directory is a namespace package (no ``__init__.py``); adding
-the repo root to ``sys.path`` lets tests import individual bots for unit testing,
-while the tournament/web load them via the manifest as usual. ``web/`` is added
+``players/`` and its ``builtin/`` and ``custom/`` subdirectories are namespace
+packages (no ``__init__.py``); adding the repo root to ``sys.path`` lets tests
+import individual bots (``players.builtin.random``) for unit testing, while the
+tournament and the web app load them via the manifests as usual. ``web/`` is added
 so the browser bridge (``webglue.py``) can be tested like any other module.
 """
 

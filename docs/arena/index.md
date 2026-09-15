@@ -35,4 +35,4 @@ packaging, CI, documentation — that is the other half of the site: the
 1. Read the [rules](rules.md) — five minutes.
 2. [Install](getting-started.md) the package.
 3. Copy the minimal example from the [Player API](player-api.md).
-4. Add one line to `players.yaml` and [open a PR](submit-a-player.md).
+4. Add one line to `players/custom/players.yaml` and [open a PR](submit-a-player.md).

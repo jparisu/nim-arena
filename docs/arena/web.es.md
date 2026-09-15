@@ -13,8 +13,8 @@ línea temporal.
 
 ## Cómo carga
 
-1. `scripts/build_web.py` empaqueta la librería, los archivos de jugadores,
-   `players.yaml` y el puente `webglue.py` en `web/py.zip`.
+1. `scripts/build_web.py` empaqueta la librería, todo el árbol `players/`
+   y el puente `webglue.py` en `web/py.zip`.
 2. En el navegador, `pyodide-bootstrap.js` arranca Pyodide, carga PyYAML,
    descarga `py.zip`, lo descomprime en el sistema de archivos virtual de Pyodide
    e importa `webglue`.

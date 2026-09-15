@@ -22,7 +22,7 @@ git checkout -b add-my-bot
 ## Paso 2 — Añade el archivo de tu jugador
 
 Crea `players/<tu_bot>.py`. Lo más fácil es empezar copiando
-[`players/random.py`](player-api.md). Tu clase debe:
+[`players/builtin/random.py`](player-api.md). Tu clase debe:
 
 - heredar de `nimarena.player.Player`,
 - implementar `get_name`, `get_authors`, `get_description` y `get_icon` — el
@@ -32,7 +32,7 @@ Crea `players/<tu_bot>.py`. Lo más fácil es empezar copiando
   jugada **legal**.
 
 ```python
-# players/corner_bot.py
+# players/custom/corner_bot.py
 from nimarena.game import State, legal_moves, nim_sum
 from nimarena.player import Player
 
@@ -67,7 +67,7 @@ class CornerBot(Player):
 ## Paso 3 — Regístralo en el manifiesto
 
 Añade **exactamente una entrada** a
-[`players.yaml`](https://github.com/jparisu/nim-arena/blob/main/players.yaml):
+[`players/custom/players.yaml`](https://github.com/jparisu/nim-arena/blob/main/players/custom/players.yaml):
 
 ```yaml
   - file: corner_bot.py
@@ -78,11 +78,11 @@ El manifiesto es solo una lista de admisión: qué archivo y qué clase. Tu nomb
 autores y descripción vienen de la propia clase, así que aquí no hay nada que
 mantener sincronizado con tu código.
 
-Hay exactamente **dos** campos:
+Hay exactamente **dos** campos que escribir:
 
 | Campo | Significado |
 |-------|-------------|
-| `file` | el archivo `.py`. Un nombre suelto se resuelve dentro de `players/`; una ruta con `/` se resuelve desde la raíz del repositorio. |
+| `file` | el archivo `.py`. Un nombre suelto se resuelve junto al manifiesto, en `players/custom/`; una ruta con `/` se resuelve desde la raíz del repositorio. |
 | `class` | la subclase de `Player` que se admite |
 
 !!! info "¿Por qué un manifiesto y no un escaneo de la carpeta?"
@@ -94,9 +94,14 @@ Hay exactamente **dos** campos:
 ## Paso 4 — Verifica en local
 
 ```bash
-pytest                         # tests/test_players.py ejercita tu bot
-nim-tournament --no-subprocess # opcional: míralo competir en local
+pytest                         # debe estar verde
+nim-tournament --no-subprocess # juega tu bot contra los jugadores de referencia
 ```
+
+!!! tip "Ejecuta el torneo, no solo los tests"
+    El torneo es lo que juega con tu bot, así que es lo que detecta una jugada
+    ilegal, un fallo o un tiempo agotado — y un bot que haga cualquiera de esas
+    cosas no se fusiona. Hazlo antes de abrir el PR.
 
 ## Paso 5 — Abre el pull request
 
@@ -121,7 +126,7 @@ Si todo esto te resulta nuevo, la [guía del estudiante](../guide/index.md) cubr
 Tu PR se fusiona solo si pasa **todos** estos puntos. Son la puerta explícita y
 documentada del proyecto:
 
-1. **Diseño** — un archivo en `players/`, una línea de manifiesto, hereda de
+1. **Diseño** — un archivo en `players/custom/`, una línea de manifiesto, hereda de
    `Player`, `name` único, mínimo y legible.
 2. **Corrección** — CI en verde; el bot devuelve jugadas legales y nunca muta el
    estado; no falla ni agota el tiempo frente a los bots de referencia.

@@ -66,7 +66,8 @@ Eight top-level keys. All of them are always present; only the contents of
   "elo": true,
   "hard_timeout": true,
   "time_limit_s": 2.0,
-  "player_repetition": 2
+  "player_repetition": null,
+  "player_copies": { "random": 2, "easy": 2, "medium": 2, "hard": 2 }
 }
 ```
 
@@ -186,9 +187,9 @@ The page renders the groups and the bracket only when `type` is `championship`.
 
 ## Roster names: `hard_0`, not `hard`
 
-Every kind enters the tournament `--player-repetition` times (default **2**), so a
-kind plays against itself and every copy gets its own seed. The copies are named
-`<kind>_<seed>`: `hard_0`, `hard_1`, `random_0`, …
+A kind may enter the tournament more than once, so that it plays against itself
+and every copy gets its own seed. The copies are named `<kind>_<seed>`: `hard_0`,
+`hard_1`, `random_0`, … `config.player_copies` records how many each kind got.
 
 The page splits that name back apart with `splitPlayer` in `web/js/core.js` and
 renders `⚔️ hard₀` — the icon comes from the `players` directory keyed by *kind*,

@@ -4,12 +4,11 @@
 nim-arena/
 ├── pyproject.toml          # empaquetado, dependencias, configuración de herramientas
 ├── conftest.py             # pone la raíz del repo y web/ en sys.path para pytest
-├── players.yaml            # EL manifiesto: la única lista de jugadores admitidos
 ├── src/nimarena/
 │   ├── game.py             # reglas puras: legal_moves, apply_move, is_terminal, nim_sum
 │   ├── player.py           # la clase abstracta Player — la API que implementan otros
 │   ├── registry.py         # catálogo en memoria nombre -> Player
-│   ├── manifest.py         # carga players.yaml en el registro
+│   ├── manifest.py         # carga los manifiestos en el registro
 │   ├── elo.py              # puntuación Elo por partida (formato liga)
 │   ├── tournament.py       # formatos (simple/league/championship), tiempos, resultados
 │   └── bots/               # estrategias reutilizables de las que salen los jugadores
@@ -19,10 +18,14 @@ nim-arena/
 │       ├── random_bot.py
 │       └── greedy_bot.py
 ├── players/                # un archivo .py por jugador: identidad y configuración
-│   ├── random.py           # `random` — la referencia base
-│   ├── easy.py             # `easy`   — vacía la fila más grande
-│   ├── medium.py           # `medium` — minimax de profundidad 2
-│   └── hard.py             # `hard`   — minimax de profundidad 4 + oráculo de finales
+│   ├── builtin/            # la escalera de referencia, incluida en el proyecto
+│   │   ├── players.yaml    #   el manifiesto que admite los cuatro de abajo
+│   │   ├── random.py       #   `random` — la referencia base
+│   │   ├── easy.py         #   `easy`   — vacía la fila más grande
+│   │   ├── medium.py       #   `medium` — minimax de profundidad 2
+│   │   └── hard.py         #   `hard`   — minimax de profundidad 4 + oráculo de finales
+│   └── custom/             # jugadores enviados; un PR solo toca esto
+│       └── players.yaml    #   el manifiesto que los admite
 ├── results/leaderboard.json  # lo escribe el workflow del torneo
 ├── web/                    # sitio de GitHub Pages (Pyodide + una capa fina de JS)
 │   ├── index.html          # solo el esqueleto: cabecera, navegación, arranque, scripts
@@ -48,9 +51,9 @@ nim-arena/
 
 ```mermaid
 flowchart TB
-    game["game.py<br/>reglas"] --> players["players/*.py"]
+    game["game.py<br/>reglas"] --> players["players/*/*.py"]
     abc["player.py<br/>clase abstracta Player"] --> players
-    players --> manifest["players.yaml<br/>el manifiesto"]
+    players --> manifest["builtin/players.yaml<br/>custom/players.yaml"]
     manifest --> loader["manifest.py"]
     loader --> registry["registry.py"]
     game --> tournament["tournament.py"]

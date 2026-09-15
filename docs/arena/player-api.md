@@ -151,7 +151,7 @@ class OneStickBot(Player):
 The searches behind the reference players are public API in
 [`nimarena.bots`](code-structure.md). If you want to compete on *evaluation*
 rather than rewrite a search, inherit one and override its hooks. This is the
-whole of `players/hard.py`:
+whole of `players/builtin/hard.py`:
 
 ```python
 from nimarena.bots import SmartMinimaxBot
@@ -258,9 +258,11 @@ graded run.
 
 ## Your name in the results
 
-`get_name()` returns your *kind* — `"hard"`. The tournament enters
-`--player-repetition` copies of every kind (default 2), each with its own seed, and
-names them `hard_0`, `hard_1`. That roster name is what appears in the standings;
+`get_name()` returns your *kind* — `"hard"`. The tournament may enter a kind more
+than once, each copy with its own seed, and names them `hard_0`, `hard_1`. A
+tournament enters two copies of every kind (see
+[the roster](tournament.md#the-roster)). That roster name is what appears in the
+standings;
 `Player.name` returns it for the instance, falling back to `get_name()` when it is
 unset. Never set `_display_name` yourself.
 

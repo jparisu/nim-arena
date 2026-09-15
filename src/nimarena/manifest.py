@@ -1,13 +1,26 @@
 """Manifest-based player discovery.
 
-Players are discovered from an **explicit, human-edited manifest**
-(``players.yaml``) — never by auto-scanning a folder. This is a deliberate
-design choice: when someone opens a PR to add a bot, the reviewer sees, in a
-single diff, both the new file and the one line that admits it. That legibility
-*is* the security gate; auto-importing a directory would hide what is being
-admitted and would run a stranger's top-level code merely to discover it.
+Players are discovered from **explicit, human-edited manifests** — never by
+auto-scanning a folder. This is a deliberate design choice: when someone opens a
+PR to add a bot, the reviewer sees, in a single diff, both the new file and the
+one line that admits it. That legibility *is* the security gate; auto-importing a
+directory would hide what is being admitted and would run a stranger's top-level
+code merely to discover it.
 
-The manifest is purely an **admission list**: which file, and which class in it.
+There are **two** manifests, each next to the players it admits::
+
+    players/
+      builtin/players.yaml   the reference ladder that ships with the project
+      custom/players.yaml    everything submitted by pull request
+
+The split is not cosmetic. It keeps a submission's diff inside ``custom/``, so no
+two submissions collide in the same manifest and none of them can touch the
+reference ladder. It also tells the tournament which players are which, which is
+what decides how many roster copies each one is entered with (see
+:data:`~nimarena.tournament.BUILTIN_COPIES` and
+:data:`~nimarena.tournament.CUSTOM_COPIES`).
+
+A manifest is purely an **admission list**: which file, and which class in it.
 Nothing else::
 
     players:
@@ -22,8 +35,9 @@ drift. The manifest answers "is this admitted?"; the class answers "what is it?"
 
 Path resolution for ``file``:
 
-* A bare filename (e.g. ``random_bot.py``) is resolved inside the ``players/``
-  directory.
+* A bare filename (e.g. ``random_bot.py``) is resolved **next to its own
+  manifest**, so an entry in ``players/custom/players.yaml`` names a file in
+  ``players/custom/``.
 * A path with a separator (e.g. ``community/foo/bar.py``) is resolved relative
   to the repo root.
 
@@ -35,6 +49,7 @@ from __future__ import annotations
 
 import importlib.util
 import sys
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -46,10 +61,21 @@ from .registry import REGISTRY, Registry
 
 #: Repo root, inferred as the parent of ``src/``.
 REPO_ROOT = Path(__file__).resolve().parents[2]
-#: Default manifest location.
-DEFAULT_MANIFEST = REPO_ROOT / "players.yaml"
-#: Default directory holding community player files.
-DEFAULT_PLAYERS_DIR = REPO_ROOT / "players"
+#: Directory holding every player, in one subdirectory per origin.
+PLAYERS_DIR = REPO_ROOT / "players"
+#: Label for a player admitted by the built-in manifest.
+BUILTIN = "builtin"
+#: Label for a player admitted by the submissions manifest.
+CUSTOM = "custom"
+#: The manifest admitting the reference ladder.
+BUILTIN_MANIFEST = PLAYERS_DIR / BUILTIN / "players.yaml"
+#: The manifest admitting submitted players.
+CUSTOM_MANIFEST = PLAYERS_DIR / CUSTOM / "players.yaml"
+#: Every manifest, as ``origin label -> path``, in load order.
+DEFAULT_MANIFESTS: dict[str, Path] = {
+    BUILTIN: BUILTIN_MANIFEST,
+    CUSTOM: CUSTOM_MANIFEST,
+}
 
 
 @dataclass
@@ -106,7 +132,7 @@ def _resolve_file(file: str, players_dir: Path, repo_root: Path) -> Path:
     p = Path(file)
     if p.is_absolute():
         return p
-    if len(p.parts) == 1:  # bare filename -> players/
+    if len(p.parts) == 1:  # bare filename -> beside its own manifest
         return players_dir / p
     return repo_root / p
 
@@ -184,13 +210,13 @@ def _build_and_validate(cls: type[Player], path: Path) -> Player:
 
 
 def load_players(
-    manifest_path: str | Path = DEFAULT_MANIFEST,
-    players_dir: str | Path = DEFAULT_PLAYERS_DIR,
+    manifests: str | Path | Mapping[str, str | Path] = DEFAULT_MANIFESTS,
+    players_dir: str | Path | None = None,
     registry: Registry | None = None,
     *,
     strict: bool = False,
 ) -> Registry:
-    """Load every player named in the manifest into a registry.
+    """Load every player named in the manifests into one registry.
 
     Each admitted class is constructed once through
     :meth:`~nimarena.player.Player.create` and its identity is validated, so a
@@ -198,8 +224,12 @@ def load_players(
     player's name fails here rather than midway through a tournament.
 
     Args:
-        manifest_path: path to ``players.yaml``.
-        players_dir: directory used to resolve bare filenames.
+        manifests: ``origin label -> manifest path``, loaded in order; the label
+            is recorded on each player it admits (see
+            :meth:`~nimarena.registry.Registry.origin`). A bare path is accepted
+            as shorthand for a single unlabelled manifest.
+        players_dir: directory used to resolve bare filenames. Defaults to each
+            manifest's own directory.
         registry: registry to populate; defaults to the global
             :data:`~nimarena.registry.REGISTRY` (cleared first).
         strict: if ``True``, any bad entry raises. If ``False`` (default), a bad
@@ -216,9 +246,29 @@ def load_players(
         registry = REGISTRY
         registry.clear()
 
-    repo_root = Path(manifest_path).resolve().parent
-    players_dir = Path(players_dir)
-    entries = parse_manifest(manifest_path)
+    if isinstance(manifests, (str, Path)):
+        manifests = {"": manifests}
+    for origin, manifest_path in manifests.items():
+        _load_one(manifest_path, players_dir, registry, origin, strict=strict)
+    return registry
+
+
+def _load_one(
+    manifest_path: str | Path,
+    players_dir: str | Path | None,
+    registry: Registry,
+    origin: str,
+    *,
+    strict: bool,
+) -> None:
+    """Load a single manifest into ``registry``, tagging its players ``origin``."""
+    manifest = Path(manifest_path).resolve()
+    # Bare filenames resolve beside the manifest; a path with a separator is
+    # relative to the repo root, which is two levels up from players/<origin>/.
+    here = manifest.parent
+    repo_root = here.parent.parent if here.parent.name == PLAYERS_DIR.name else here
+    players_dir = here if players_dir is None else Path(players_dir)
+    entries = parse_manifest(manifest)
 
     for entry in entries:
         label = f"{entry.file}:{entry.cls}"
@@ -229,7 +279,7 @@ def load_players(
             # No `replace=True`: a duplicate name must be a hard error. "Unique
             # name" is a documented merge gate, and silently overwriting let one
             # submission shadow another with no output at all.
-            registry.register(instance)
+            registry.register(instance, origin=origin)
         except ValueError as exc:
             # Registry rejected the name (already taken).
             if strict:
@@ -239,4 +289,3 @@ def load_players(
             if strict:
                 raise
             print(f"[manifest] skipping {label}: {exc}", file=sys.stderr)
-    return registry

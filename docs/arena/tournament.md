@@ -4,16 +4,24 @@ A function in the library — and a matching GitHub Action — runs a tournament
 among all registered players and writes a machine-readable results file that the
 [web scoreboard](web.md) renders.
 
-## The roster: two copies of every kind
+## The roster
 
 Before any games are played, the roster is built by
-[`build_roster`][nimarena.tournament.build_roster], which enters
-**`--player-repetition` copies of each player kind** (default **2**). This lets a
-kind compete against *itself* (a round-robin never pairs an instance with itself)
-and, crucially, makes runs **reproducible**: every copy of a random-dependent bot
-(one whose constructor accepts a `seed`) is seeded with `0, 1, …, N-1`. Copies
-are named `random_0`, `random_1`, and so on. The web scoreboard renders that
-suffix as a subscript and puts each player's own icon in front of it.
+[`build_roster`][nimarena.tournament.build_roster]. A player kind can be entered
+**more than once**, which is what lets a kind compete against *itself* — a
+round-robin never pairs an instance with itself. Each copy gets its own seed
+(`0, 1, …`), so a bot that depends on randomness plays a different game each time
+and the run still repeats exactly. Copies are named `random_0`, `random_1`, and so
+on; the web scoreboard renders that suffix as a subscript, with the player's icon
+in front.
+
+How many copies each kind gets is decided by the tournament, in
+[`copies_for`][nimarena.tournament.copies_for], from the manifest that admitted
+the player: `BUILTIN_COPIES` for the reference ladder in `players/builtin`, and
+`CUSTOM_COPIES` for a submission in `players/custom`. Both are **2** today, and
+they are two constants precisely so the submitted side can be lowered on its own
+if the roster ever outgrows the tournament's time budget. `--player-repetition`
+overrides every kind at once.
 
 ## A "match" is many games
 
@@ -104,8 +112,8 @@ player (`forfeit_build_timeout`), not to its opponent.
 ## Running it
 
 ```bash
-# Default: a "simple" tournament, 2 s per player per game, 2 copies per kind,
-# 10 games per board and first-mover.
+# Default: a "simple" tournament, 2 s per player per game, 3 games per board
+# and first-mover.
 nim-tournament --out results/leaderboard.json
 
 # A league ranked by Elo, with a generous 2-second budget.
@@ -125,8 +133,8 @@ nim-tournament --tournament championship --repetitions 1 --no-subprocess
 | `--board` | `3,5,7` · `1,2,3,4,5` · `4,5,6,7,8,9` | a starting board, e.g. `--board 3,5,7`; repeatable, and replaces the defaults |
 | `--group-size` | `4` | championship only: players per group |
 | `--advance-per-group` | `2` | championship only: who advances |
-| `--player-repetition` | `2` | copies of each kind (seeded `0..N-1`) |
-| `--repetitions` | `10` | games per (board, first-mover) in a match |
+| `--player-repetition` | *each kind's own* | override the copies entered for every kind |
+| `--repetitions` | `3` | games per (board, first-mover) in a match |
 | `--elo` / `--no-elo` | on | use Elo for the league classification |
 | `--no-subprocess` | off | soft, single-process timeout (fast, local) |
 
@@ -177,6 +185,8 @@ ahead depends on the draw. If they swap places between runs, nothing is wrong.
 ## API reference
 
 ::: nimarena.tournament.run_tournament
+
+::: nimarena.tournament.copies_for
 
 ::: nimarena.tournament.build_roster
 

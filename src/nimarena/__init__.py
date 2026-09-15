@@ -9,8 +9,8 @@ Public surface:
 * :mod:`nimarena.game` — pure game rules (``legal_moves``, ``apply_move``, ...).
 * :class:`nimarena.player.Player` — the interface every AI implements.
 * :class:`nimarena.registry.Registry` — the catalogue of players.
-* :func:`nimarena.manifest.load_players` — populate the registry from
-  ``players.yaml``.
+* :func:`nimarena.manifest.load_players` — populate the registry from the
+  ``players/builtin`` and ``players/custom`` manifests.
 * :func:`nimarena.tournament.run_tournament` — the round-robin runner.
 """
 

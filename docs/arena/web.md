@@ -12,7 +12,7 @@ animate, pace AI-vs-AI, and manage the timeline.
 
 ## How it loads
 
-1. `scripts/build_web.py` bundles the package, the player files, `players.yaml`,
+1. `scripts/build_web.py` bundles the package, the whole `players/` tree,
    and the `webglue.py` bridge into `web/py.zip`.
 2. In the browser, `pyodide-bootstrap.js` boots Pyodide, loads PyYAML, fetches
    `py.zip`, unpacks it into Pyodide's virtual filesystem, and imports

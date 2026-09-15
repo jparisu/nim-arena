@@ -4,17 +4,24 @@ Una función de la librería —y una GitHub Action a juego— ejecuta un torneo
 todos los jugadores registrados y escribe un archivo de resultados legible por
 máquina que el [marcador web](scoreboard.md) renderiza.
 
-## La plantilla: dos copias de cada tipo
+## La plantilla
 
 Antes de jugar nada, la plantilla la construye
-[`build_roster`][nimarena.tournament.build_roster], que inscribe
-**`--player-repetition` copias de cada tipo de jugador** (2 por defecto). Esto
-permite que un tipo compita contra *sí mismo* (un todos contra todos nunca empareja
-una instancia consigo misma) y, sobre todo, hace las ejecuciones
-**reproducibles**: cada copia de un bot que dependa del azar (uno cuyo constructor
-acepte `seed`) se siembra con `0, 1, …, N-1`. Las copias se llaman `random_0`,
-`random_1`, etcétera. El marcador web renderiza ese sufijo como subíndice y pone
-delante el icono de cada jugador.
+[`build_roster`][nimarena.tournament.build_roster]. Un tipo de jugador puede
+inscribirse **más de una vez**, que es lo que permite que un tipo compita contra
+*sí mismo*: un todos contra todos nunca empareja una instancia consigo misma. Cada
+copia recibe su propia semilla (`0, 1, …`), así que un bot que dependa del azar
+juega una partida distinta cada vez y la ejecución sigue repitiéndose exacta. Las
+copias se llaman `random_0`, `random_1`, etcétera; el marcador web renderiza ese
+sufijo como subíndice, con el icono del jugador delante.
+
+Cuántas copias recibe cada tipo lo decide el torneo, en
+[`copies_for`][nimarena.tournament.copies_for], a partir del manifiesto que
+admitió al jugador: `BUILTIN_COPIES` para la escalera de referencia en
+`players/builtin`, y `CUSTOM_COPIES` para una propuesta en `players/custom`. Hoy
+ambos valen **2**, y son dos constantes precisamente para poder bajar solo el lado
+de las propuestas si la plantilla llega a desbordar el presupuesto de tiempo del
+torneo. `--player-repetition` lo sobrescribe para todos los tipos a la vez.
 
 ## Un «enfrentamiento» son muchas partidas
 
@@ -112,8 +119,8 @@ constructor colgado se le imputa a su propio jugador
 ## Ejecutarlo
 
 ```bash
-# Por defecto: torneo "simple", 2 s por jugador y partida, 2 copias por tipo,
-# 10 partidas por tablero y por quién sale primero.
+# Por defecto: torneo "simple", 2 s por jugador y partida, 3 partidas por
+# tablero y por quién sale primero.
 nim-tournament --out results/leaderboard.json
 
 # Una liga ordenada por Elo, con un presupuesto generoso de 2 segundos.
@@ -133,8 +140,8 @@ nim-tournament --tournament championship --repetitions 1 --no-subprocess
 | `--board` | `3,5,7` · `1,2,3,4,5` · `4,5,6,7,8,9` | un tablero inicial, p. ej. `--board 3,5,7`; repetible, y sustituye a los valores por defecto |
 | `--group-size` | `4` | solo campeonato: jugadores por grupo |
 | `--advance-per-group` | `2` | solo campeonato: cuántos pasan |
-| `--player-repetition` | `2` | copias de cada tipo (sembradas `0..N-1`) |
-| `--repetitions` | `10` | partidas por (tablero, quién sale primero) en un enfrentamiento |
+| `--player-repetition` | *la de cada tipo* | sobrescribe las copias inscritas para todos los tipos |
+| `--repetitions` | `3` | partidas por (tablero, quién sale primero) en un enfrentamiento |
 | `--elo` / `--no-elo` | on | usar Elo para la clasificación de liga |
 | `--no-subprocess` | off | tiempo blando en un solo proceso (rápido, local) |
 
@@ -191,6 +198,8 @@ nada.
     Los bloques siguientes salen directamente de los docstrings del paquete.
 
 ::: nimarena.tournament.run_tournament
+
+::: nimarena.tournament.copies_for
 
 ::: nimarena.tournament.build_roster
 

@@ -18,7 +18,7 @@ import json
 import time
 
 from nimarena import game
-from nimarena.manifest import load_players
+from nimarena.manifest import BUILTIN, CUSTOM, load_players
 from nimarena.player import Player
 from nimarena.registry import Registry
 
@@ -48,9 +48,12 @@ def _require_registry() -> Registry:
 
 
 def init(base_dir: str) -> str:
-    """Load players from the manifest under ``base_dir`` and return them as JSON."""
+    """Load players from the manifests under ``base_dir`` and return them as JSON."""
     global _REGISTRY
-    _REGISTRY = load_players(f"{base_dir}/players.yaml", f"{base_dir}/players")
+    _REGISTRY = load_players({
+        BUILTIN: f"{base_dir}/players/{BUILTIN}/players.yaml",
+        CUSTOM: f"{base_dir}/players/{CUSTOM}/players.yaml",
+    })
     return players_json()
 
 

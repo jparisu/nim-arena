@@ -4,12 +4,11 @@
 nim-arena/
 ├── pyproject.toml          # packaging, dependencies, tooling config
 ├── conftest.py             # puts the repo root and web/ on sys.path for pytest
-├── players.yaml            # THE manifest: the single list of admitted players
 ├── src/nimarena/
 │   ├── game.py             # pure rules: legal_moves, apply_move, is_terminal, nim_sum
 │   ├── player.py           # the Player ABC — the API outsiders implement
 │   ├── registry.py         # in-memory name -> Player catalogue
-│   ├── manifest.py         # loads players.yaml into the registry
+│   ├── manifest.py         # loads the manifests into the registry
 │   ├── elo.py              # per-game Elo ratings (used by the league format)
 │   ├── tournament.py       # formats (simple/league/championship), timing, results
 │   └── bots/               # reusable strategies the players are built from
@@ -19,10 +18,14 @@ nim-arena/
 │       ├── random_bot.py
 │       └── greedy_bot.py
 ├── players/                # one .py file per player: identity + configuration
-│   ├── random.py           # `random` — the baseline
-│   ├── easy.py             # `easy`   — empties the largest row
-│   ├── medium.py           # `medium` — depth-2 minimax
-│   └── hard.py             # `hard`   — depth-4 minimax + endgame oracle
+│   ├── builtin/            # the reference ladder, shipped with the project
+│   │   ├── players.yaml    #   the manifest admitting the four below
+│   │   ├── random.py       #   `random` — the baseline
+│   │   ├── easy.py         #   `easy`   — empties the largest row
+│   │   ├── medium.py       #   `medium` — depth-2 minimax
+│   │   └── hard.py         #   `hard`   — depth-4 minimax + endgame oracle
+│   └── custom/             # submitted players; a PR only ever touches this
+│       └── players.yaml    #   the manifest admitting them
 ├── results/leaderboard.json  # written by the tournament workflow
 ├── web/                    # GitHub Pages site (Pyodide + thin JS UI)
 │   ├── index.html          # shell only: header, nav, boot overlay, script tags
@@ -48,9 +51,9 @@ nim-arena/
 
 ```mermaid
 flowchart TB
-    game["game.py<br/>rules"] --> players["players/*.py"]
+    game["game.py<br/>rules"] --> players["players/*/*.py"]
     abc["player.py<br/>Player ABC"] --> players
-    players --> manifest["players.yaml<br/>the manifest"]
+    players --> manifest["builtin/players.yaml<br/>custom/players.yaml"]
     manifest --> loader["manifest.py"]
     loader --> registry["registry.py"]
     game --> tournament["tournament.py"]

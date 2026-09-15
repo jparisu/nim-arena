@@ -152,7 +152,7 @@ class OneStickBot(Player):
 Las búsquedas que hay detrás de los jugadores de referencia son API pública en
 [`nimarena.bots`](code-structure.md). Si quieres competir en la *evaluación* en
 lugar de reescribir una búsqueda, hereda de una y sobreescribe sus ganchos. Esto
-es `players/hard.py` completo:
+es `players/builtin/hard.py` completo:
 
 ```python
 from nimarena.bots import SmartMinimaxBot
@@ -259,10 +259,11 @@ tiempo en la ejecución evaluada.
 
 ## Tu nombre en los resultados
 
-`get_name()` devuelve tu *tipo* — `"hard"`. El torneo inscribe
-`--player-repetition` copias de cada tipo (2 por defecto), cada una con su semilla,
-y las nombra `hard_0`, `hard_1`. Ese nombre de plantilla es el que aparece en la
-clasificación; `Player.name` lo devuelve para la instancia y recae en `get_name()`
+`get_name()` devuelve tu *tipo* — `"hard"`. El torneo puede inscribir un tipo más
+de una vez, cada copia con su semilla, y las nombra `hard_0`, `hard_1`. Una
+torneo inscribe dos copias de cada tipo (ver
+[la plantilla](tournament.md#la-plantilla)). Ese nombre de plantilla es el que
+aparece en la clasificación; `Player.name` lo devuelve para la instancia y recae en `get_name()`
 cuando no está fijado. Nunca fijes `_display_name` tú.
 
 ## Adónde ir después
