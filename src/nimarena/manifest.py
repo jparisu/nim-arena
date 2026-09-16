@@ -17,8 +17,8 @@ The split is not cosmetic. It keeps a submission's diff inside ``custom/``, so n
 two submissions collide in the same manifest and none of them can touch the
 reference ladder. It also tells the tournament which players are which, which is
 what decides how many roster copies each one is entered with (see
-:data:`~nimarena.tournament.BUILTIN_COPIES` and
-:data:`~nimarena.tournament.CUSTOM_COPIES`).
+:data:`~nimarena.tournament.BUILTIN_PLAYER_COPIES` and
+:data:`~nimarena.tournament.CUSTOM_PLAYER_COPIES`).
 
 A manifest is purely an **admission list**: which file, and which class in it.
 Nothing else::

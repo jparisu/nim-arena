@@ -8,8 +8,8 @@ import pytest
 
 from nimarena.player import Player
 from nimarena.tournament import (
-    BUILTIN_COPIES,
-    CUSTOM_COPIES,
+    BUILTIN_PLAYER_COPIES,
+    CUSTOM_PLAYER_COPIES,
     UNLIMITED,
     Budgets,
     PlayerSpec,
@@ -158,8 +158,8 @@ def test_copies_follow_the_manifest_that_admitted_the_player():
     reg.register(OneStickBot(), origin=BUILTIN)
     reg.register(AllRowBot(), origin=CUSTOM)
     assert copies_for(reg) == {
-        "OneStickBot": BUILTIN_COPIES,
-        "AllRowBot": CUSTOM_COPIES,
+        "OneStickBot": BUILTIN_PLAYER_COPIES,
+        "AllRowBot": CUSTOM_PLAYER_COPIES,
     }
 
 
