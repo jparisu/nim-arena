@@ -126,8 +126,9 @@ DEFAULT_TIME_LIMIT_S = 2.0
 #: pairs an instance with itself.
 BUILTIN_PLAYER_COPIES = 2
 #: Seeded copies entered for a player from ``players/custom`` — a submission.
-#: Lower this to 1 if the roster outgrows the tournament's time budget: the work
-#: is quadratic in the number of entrants, and this is the side that grows.
+#: One, because the work is quadratic in the number of entrants and this is the
+#: side that grows with every merged pull request. Raise it only if the roster
+#: stays small.
 CUSTOM_PLAYER_COPIES = 1
 #: Games played per (board, first-mover) pairing within a single match.
 #:
@@ -834,7 +835,7 @@ def copies_for(registry: Registry) -> dict[str, int]:
 
 def build_roster(
     players: Sequence[Player | PlayerSpec],
-    repetition: int = CUSTOM_PLAYER_COPIES,
+    repetition: int = 1,
     *,
     copies: Mapping[str, int] | None = None,
 ) -> list[PlayerSpec]:
@@ -852,8 +853,12 @@ def build_roster(
 
     Args:
         players: one entry per kind (typically ``registry.all()``).
-        copies: per-kind counts, normally from :func:`copies_for`.
+        copies: per-kind counts, normally from :func:`copies_for`. This is how a
+            real run decides; pass it and ``repetition`` never applies.
         repetition: copies for a kind ``copies`` does not mention (``>= 1``).
+            Deliberately a plain ``1`` and **not** one of the policy constants:
+            a default that tracked :data:`CUSTOM_PLAYER_COPIES` would silently
+            change what every other caller gets whenever that value is tuned.
 
     Returns:
         One specification per copy, in the order the kinds were given.

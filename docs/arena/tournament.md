@@ -18,10 +18,11 @@ in front.
 How many copies each kind gets is decided by the tournament, in
 [`copies_for`][nimarena.tournament.copies_for], from the manifest that admitted
 the player: `BUILTIN_PLAYER_COPIES` for the reference ladder in `players/builtin`, and
-`CUSTOM_PLAYER_COPIES` for a submission in `players/custom`. Both are **2** today, and
-they are two constants precisely so the submitted side can be lowered on its own
-if the roster ever outgrows the tournament's time budget. `--player-repetition`
-overrides every kind at once.
+`CUSTOM_PLAYER_COPIES` for a submission in `players/custom`. Today that is **2**
+and **1**: the reference ladder is the yardstick the scoreboard is read against
+and worth the extra games, while the submitted side is the one that grows with
+every merged pull request, and every pair of entrants plays a match.
+`--player-repetition` overrides every kind at once.
 
 ## A "match" is many games
 

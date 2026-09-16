@@ -261,7 +261,7 @@ tiempo en la ejecución evaluada.
 
 `get_name()` devuelve tu *tipo* — `"hard"`. El torneo puede inscribir un tipo más
 de una vez, cada copia con su semilla, y las nombra `hard_0`, `hard_1`. Una
-torneo inscribe dos copias de cada tipo (ver
+torneo inscribe tu tipo una vez y cada jugador de referencia dos (ver
 [la plantilla](tournament.md#la-plantilla)). Ese nombre de plantilla es el que
 aparece en la clasificación; `Player.name` lo devuelve para la instancia y recae en `get_name()`
 cuando no está fijado. Nunca fijes `_display_name` tú.

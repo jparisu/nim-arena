@@ -124,7 +124,9 @@ def test_run_tournament_survives_a_bad_bot():
 
 def test_build_roster_duplicates_each_kind_with_seed_suffixes():
     # A deterministic bot ignores the seed but is still duplicated so it faces itself.
-    roster = build_roster([OneStickBot()])
+    # Every count below is passed explicitly: these tests are about build_roster's
+    # behaviour, not about whatever BUILTIN/CUSTOM_PLAYER_COPIES happen to be.
+    roster = build_roster([OneStickBot()], repetition=2)
     assert [p.name for p in roster] == ["OneStickBot_0", "OneStickBot_1"]
 
 
@@ -163,6 +165,11 @@ def test_copies_follow_the_manifest_that_admitted_the_player():
     }
 
 
+def test_build_roster_defaults_to_a_single_copy():
+    """The default is a plain 1, independent of the policy constants."""
+    assert [p.name for p in build_roster([OneStickBot()])] == ["OneStickBot_0"]
+
+
 def test_build_roster_assigns_one_seed_per_copy():
     roster = build_roster([OneStickBot()], repetition=3)
     assert [s.seed for s in roster] == [0, 1, 2]
@@ -193,7 +200,7 @@ def test_players_are_built_through_the_create_factory():
 def test_build_roster_seeds_random_bots_reproducibly():
     from players.builtin.random import Random
 
-    a, b = build_roster([Random.create(seed=0)])
+    a, b = build_roster([Random.create(seed=0)], repetition=2)
     assert (a.name, a.seed) == ("random_0", 0)
     assert (b.name, b.seed) == ("random_1", 1)
     # A copy built from its spec behaves exactly like a fresh instance with that seed.
@@ -215,7 +222,7 @@ def test_build_roster_rejects_zero_repetition():
 
 def test_build_roster_lets_a_kind_play_itself():
     # Two seeded copies of the same kind are distinct opponents in the roster.
-    roster = build_roster([OneStickBot()])
+    roster = build_roster([OneStickBot()], repetition=2)
     lb = run_tournament(
         roster, starting_states=[[1, 2, 3]], repetitions=1,
         budgets=UNLIMITED, use_subprocess=False,
@@ -301,7 +308,9 @@ def test_league_without_elo_falls_back_to_points():
 
 def test_championship_builds_groups_and_bracket():
     # Four kinds x 2 copies = 8 players -> two groups of four, top two advance.
-    roster = build_roster([OneStickBot(), AllRowBot(), CheatBot(), CrashBot()])
+    roster = build_roster(
+        [OneStickBot(), AllRowBot(), CheatBot(), CrashBot()], repetition=2
+    )
     lb = run_tournament(
         roster,
         mode="championship",

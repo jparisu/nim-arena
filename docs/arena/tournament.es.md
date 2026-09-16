@@ -18,10 +18,12 @@ sufijo como subíndice, con el icono del jugador delante.
 Cuántas copias recibe cada tipo lo decide el torneo, en
 [`copies_for`][nimarena.tournament.copies_for], a partir del manifiesto que
 admitió al jugador: `BUILTIN_PLAYER_COPIES` para la escalera de referencia en
-`players/builtin`, y `CUSTOM_PLAYER_COPIES` para una propuesta en `players/custom`. Hoy
-ambos valen **2**, y son dos constantes precisamente para poder bajar solo el lado
-de las propuestas si la plantilla llega a desbordar el presupuesto de tiempo del
-torneo. `--player-repetition` lo sobrescribe para todos los tipos a la vez.
+`players/builtin`, y `CUSTOM_PLAYER_COPIES` para una propuesta en
+`players/custom`. Hoy valen **2** y **1**: la escalera de referencia es el patrón
+con el que se lee el marcador y merece las partidas extra, mientras que el lado de
+las propuestas es el que crece con cada pull request fusionado, y cada pareja de
+inscritos juega un enfrentamiento. `--player-repetition` lo sobrescribe para todos
+los tipos a la vez.
 
 ## Un «enfrentamiento» son muchas partidas
 

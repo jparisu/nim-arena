@@ -57,8 +57,9 @@ nim-tournament --out results/leaderboard.json
 nim-tournament --tournament championship --time-limit 2.0
 ```
 
-Every bot kind is entered **twice** (seeded copies) so it competes against
-itself and runs stay reproducible. Choose the format with `--tournament`
+Each reference bot is entered **twice** (seeded copies) so it competes against
+itself and runs stay reproducible; a submitted bot is entered once, because the
+work grows with the square of the roster. Choose the format with `--tournament`
 (`simple` · `league` · `championship`); see the
 [tournament docs](https://nim-arena.readthedocs.io/en/latest/arena/tournament/).
 

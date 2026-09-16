@@ -260,7 +260,7 @@ graded run.
 
 `get_name()` returns your *kind* — `"hard"`. The tournament may enter a kind more
 than once, each copy with its own seed, and names them `hard_0`, `hard_1`. A
-tournament enters two copies of every kind (see
+tournament enters your kind once and each reference player twice (see
 [the roster](tournament.md#the-roster)). That roster name is what appears in the
 standings;
 `Player.name` returns it for the instance, falling back to `get_name()` when it is
