@@ -14,7 +14,7 @@ The split throughout this package is between *searching* and *knowing*:
   the hooks and add nothing to the search.
 
 The players in ``players/`` add only *identity* — a name, authors, a description
-and a depth. See ``players/hard.py`` for the shortest complete example.
+and a depth. See ``players/builtin/hard.py`` for the shortest complete example.
 """
 
 from __future__ import annotations

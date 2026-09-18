@@ -5,7 +5,7 @@
 [![Docs](https://readthedocs.org/projects/nim-arena/badge/?version=latest)](https://nim-arena.readthedocs.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-### ▶️ &nbsp;[**Play it now**](https://jparisu.github.io/nim-arena) &nbsp;·&nbsp; 📚 &nbsp;[**Read the docs**](https://nim-arena.readthedocs.io) &nbsp;·&nbsp; 🚀 &nbsp;[**Submit your own AI**](https://nim-arena.readthedocs.io/en/latest/submit-a-player/)
+### ▶️ &nbsp;[**Play it now**](https://jparisu.github.io/nim-arena) &nbsp;·&nbsp; 📚 &nbsp;[**Read the docs**](https://nim-arena.readthedocs.io) &nbsp;·&nbsp; 🚀 &nbsp;[**Submit your own AI**](https://nim-arena.readthedocs.io/en/latest/arena/submit-a-player/)
 
 ---
 
@@ -20,7 +20,10 @@ game of **NIM**:
 - 🏆 an **automatic tournament** (GitHub Actions) that pits the AIs against each
   other and publishes a ranked [scoreboard](results/leaderboard.json);
 - 📚 **documentation** — [**nim-arena.readthedocs.io**](https://nim-arena.readthedocs.io) —
-  most importantly, how an outsider can submit a new AI player by Pull Request.
+  in English and Spanish, in two parts: the reference manual of this repository
+  (including how an outsider [submits a new AI player by Pull
+  Request](https://nim-arena.readthedocs.io/en/latest/arena/submit-a-player/)),
+  and a student guide to Git, GitHub, Python packaging and documentation.
 
 The elegance: the game rules and AIs are written **once, in Python**, and that
 exact code runs both in the graded tournament (CI) and live in the browser
@@ -34,7 +37,7 @@ On each turn a player removes one or more sticks from a **single** row.
 **The player who removes the last stick wins**.
 
 Full rules and the winning (nim-sum / XOR) strategy: see the
-[docs](https://nim-arena.readthedocs.io/en/latest/rules/).
+[docs](https://nim-arena.readthedocs.io/en/latest/arena/rules/).
 
 ## Install & play locally
 
@@ -54,10 +57,11 @@ nim-tournament --out results/leaderboard.json
 nim-tournament --tournament championship --time-limit 2.0
 ```
 
-Every bot kind is entered **twice** (seeded copies) so it competes against
-itself and runs stay reproducible. Choose the format with `--tournament`
+Each reference bot is entered **twice** (seeded copies) so it competes against
+itself and runs stay reproducible; a submitted bot is entered once, because the
+work grows with the square of the roster. Choose the format with `--tournament`
 (`simple` · `league` · `championship`); see the
-[tournament docs](https://nim-arena.readthedocs.io/en/latest/tournament/).
+[tournament docs](https://nim-arena.readthedocs.io/en/latest/arena/tournament/).
 
 Play a quick game in Python:
 
@@ -87,7 +91,8 @@ python -m http.server -d web 8000    # open http://localhost:8000
 
 ## The reference players
 
-A four-rung difficulty ladder, all registered in [`players.yaml`](players.yaml)
+A four-rung difficulty ladder, all registered in
+[`players/builtin/players.yaml`](players/builtin/players.yaml)
 and competing in the tournament. Each is a thin wrapper naming a strategy from
 [`nimarena.bots`](src/nimarena/bots/) — identity and a depth, nothing more.
 
@@ -103,26 +108,31 @@ perfect (nim-sum) player** — that slot at the top of the ladder is still open.
 
 ## Add your own AI (by Pull Request)
 
-1. Copy [`players/random.py`](players/random.py) to `players/<your_bot>.py`.
+1. Copy [`players/builtin/random.py`](players/builtin/random.py) to
+   `players/custom/<your_bot>.py`.
 2. Subclass [`Player`](src/nimarena/player.py), fill in `get_name` / `get_authors` /
    `get_description`, and implement `choose_move(state) -> (row, count)`.
-3. Add one entry to [`players.yaml`](players.yaml) — just `file` and `class`.
+3. Add one entry to
+   [`players/custom/players.yaml`](players/custom/players.yaml) — just `file`
+   and `class`.
 4. Open a PR — CI runs the tests. A player that errors, times out, or reuses an
    existing name is not merged.
 
 Full guide: [CONTRIBUTING.md](CONTRIBUTING.md) ·
-[docs](https://nim-arena.readthedocs.io/en/latest/submit-a-player/).
+[docs](https://nim-arena.readthedocs.io/en/latest/arena/submit-a-player/).
 
 ## Repository layout
 
 ```
 src/nimarena/   game engine, Player API, registry, manifest loader, tournament
 src/nimarena/bots/  reusable strategies the reference players are built from
-players/        reference + community player files (one .py each)
-players.yaml    the manifest — the single list of admitted players
+players/builtin/  the reference ladder, and the manifest admitting it
+players/custom/   submitted players, and the manifest admitting them
 results/        leaderboard.json, written by the tournament workflow
 web/            GitHub Pages site (Pyodide + thin JS UI)
-docs/           Read the Docs source (MkDocs + Material)
+docs/           Read the Docs source (MkDocs + Material), in English and Spanish
+docs/arena/     the reference manual of this repository
+docs/guide/     the student guide: Git, GitHub, Python packaging, documentation
 tests/          pytest suite
 ```
 

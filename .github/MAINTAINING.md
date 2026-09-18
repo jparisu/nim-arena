@@ -16,7 +16,7 @@ Configure under **Settings → Branches → Add rule** for `main`:
 > **Never add a `paths:` filter to the `pull_request` trigger of a workflow you
 > mark as a required check.** GitHub reports a required check that did not run as
 > permanently "Expected", which blocks the merge with no way to clear it. A
-> new-player PR touches only `players/` and `players.yaml`, so a `docs/**` filter
+> new-player PR touches only `players/custom/`, so a `docs/**` filter
 > on `Docs` would make every student submission unmergeable. Both `Tests` and
 > `Docs` therefore run unconditionally on pull requests.
 
@@ -80,12 +80,16 @@ resumes.
 
 Every submission runs untrusted-but-reviewed code. Your review is the security
 and correctness gate. Check the acceptance criteria from
-[submit-a-player](https://nim-arena.readthedocs.io/en/latest/submit-a-player/):
+[submit-a-player](https://nim-arena.readthedocs.io/en/latest/arena/submit-a-player/):
 
-1. **Design** — one file in `players/`, one manifest line, subclasses `Player`,
-   unique `name`.
+1. **Design** — one file in `players/custom/`, one line in
+   `players/custom/players.yaml`, subclasses `Player`, unique `name`. A
+   submission must not touch `players/builtin/`.
 2. **Correctness** — CI green; legal moves; no mutation of `state`; no
-   errors/timeouts against the reference bots.
+   errors/timeouts against the reference bots. Note that `pytest` asserts nothing
+   about a submitted bot on purpose — a suite that pinned the roster would go red
+   on every submission — so **run `nim-tournament` on the branch yourself**. That
+   is where a bad bot shows up.
 3. **No malware** — read the code in full. Reject on sight: network, filesystem,
    subprocess, `eval`/`exec`, `os`/`sys` manipulation, obfuscation, or attempts
    to read secrets or escape the sandbox.

@@ -1,20 +1,45 @@
 # NIM Arena
 
-Welcome to the documentation for **NIM Arena** — a complete, self-contained
-project built entirely on GitHub, centered on the game of NIM.
+**NIM Arena** is an educational project built entirely on GitHub, centered on the
+game of NIM. This site has two parts.
 
-The project has four visible faces:
+<div class="grid cards" markdown>
 
-- 🐍 a **Python library** — a parametrized game engine, a clean player API, three
-  leveled reference AIs (plus a worked-example bot), and a robust tournament
-  runner (simple / league / championship formats);
-- 🌐 a **static web page** ([live demo](https://jparisu.github.io/nim-arena)) that
-  runs the *actual Python AI code in the browser* via
-  [Pyodide](https://pyodide.org);
-- 🏆 an **automatic tournament** (GitHub Actions) that publishes a ranked
-  scoreboard;
-- 📚 **this documentation**, whose most important job is explaining how an
-  outsider can [submit a new AI player by Pull Request](submit-a-player.md).
+- :material-controller:{ .lg .middle } **[NIM Arena](arena/index.md)**
+
+    ---
+
+    The reference manual of this repository: the game rules, the Python library,
+    the [player API](arena/player-api.md) an AI implements, how to
+    [submit one](arena/submit-a-player.md), the
+    [scoreboard](arena/scoreboard.md), the tournament and the web app.
+
+- :material-book-open-page-variant:{ .lg .middle } **[Student guide](guide/index.md)**
+
+    ---
+
+    The tools a project like this is built with:
+    [Git](guide/git/index.md), [GitHub](guide/github/index.md),
+    [Python packaging](guide/python-library/index.md) and
+    [documentation](guide/documentation/index.md) — with this repository as the
+    worked example throughout.
+
+</div>
+
+## Try it
+
+```bash
+git clone https://github.com/jparisu/nim-arena
+cd nim-arena
+python -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"
+
+pytest                                            # run the tests
+nim-tournament --out results/leaderboard.json     # run a tournament
+```
+
+Or play against the AIs in your browser, no install at all:
+[**jparisu.github.io/nim-arena**](https://jparisu.github.io/nim-arena).
 
 ## The one big idea
 
@@ -23,17 +48,13 @@ The project has four visible faces:
 > Pyodide). **One source of truth.** The rules are never re-implemented in
 > JavaScript.
 
-## Where to go next
+## Building this site locally
 
-<div class="grid cards" markdown>
+```bash
+pip install -e ".[docs]"
+mkdocs serve
+```
 
-- :material-book-open: **[Game rules](rules.md)** — how NIM works and the winning
-  XOR strategy.
-- :material-rocket-launch: **[Getting started](getting-started.md)** — install,
-  play, run the tournament.
-- :material-code-braces: **[Player API reference](player-api.md)** — the exact
-  interface every AI implements.
-- :material-source-pull: **[Submit a new player](submit-a-player.md)** — the PR
-  flow, step by step.
-
-</div>
+The site is then available at <http://127.0.0.1:8000>. It is written in English
+and Spanish from a single source tree; use the language switcher in the header.
+Every push to `main` rebuilds it on Read the Docs.

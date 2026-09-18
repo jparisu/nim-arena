@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "nimarena"
 version = "0.1.0"
-description = "Parametrized NIM: a game engine, three reference AIs, a tournament runner, and a clean player API."
+description = "Parametrized NIM: a game engine, four reference AIs, a tournament runner, and a clean player API."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
@@ -38,6 +38,9 @@ docs = [
     "mkdocs>=1.6",
     "mkdocs-material>=9.5",
     "mkdocstrings[python]>=0.25",
+    # The site ships in English and Spanish. The suffix convention (`page.es.md`
+    # next to `page.md`) keeps both languages in one tree and one nav.
+    "mkdocs-static-i18n>=1.2",
 ]
 
 [project.urls]
@@ -70,9 +73,9 @@ ignore = ["E501"]
 python_version = "3.10"
 files = ["src", "players", "scripts", "tests", "conftest.py"]
 # Without these, mypy derives a module name from the bare filename, so
-# players/random.py becomes module `random` and SHADOWS the standard library —
-# every `import random` in the package then resolved to the player class.
-# Naming the roots explicitly makes it `players.random`, as it is at runtime.
+# players/builtin/random.py becomes module `random` and SHADOWS the standard
+# library — every `import random` in the package then resolved to the player class.
+# Naming the roots explicitly makes it `players.builtin.random`, as it is at runtime.
 # `web` is a root, not a package: conftest.py puts it on sys.path at runtime, so
 # the bridge is importable as `webglue` — mypy must see it the same way, or the
 # module gets two names. It is still checked, because the tests import it.

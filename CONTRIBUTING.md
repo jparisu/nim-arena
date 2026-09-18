@@ -3,7 +3,7 @@
 Thanks for your interest! The main way to contribute is by **adding a new AI
 player** through a Pull Request. This page describes the whole flow. The same
 content lives, with more narrative, in the
-[online docs](https://nim-arena.readthedocs.io/en/latest/submit-a-player/).
+[online docs](https://nim-arena.readthedocs.io/en/latest/arena/submit-a-player/).
 
 ## The upload mechanism is the Pull Request
 
@@ -16,8 +16,8 @@ which is exactly why review is the security and correctness gate.
 
 1. **Fork & clone**, then create a branch.
 
-2. **Add your player file** at `players/<your_bot>.py`. Copy
-   [`players/random.py`](players/random.py) as a template. Your class must
+2. **Add your player file** at `players/custom/<your_bot>.py`. Copy
+   [`players/builtin/random.py`](players/builtin/random.py) as a template. Your class must
    subclass `nimarena.player.Player`, declare its identity, and implement
    `choose_move(self, state) -> (row, count)`:
 
@@ -52,7 +52,8 @@ which is exactly why review is the security and correctness gate.
    Prefer to compete on evaluation rather than write a search? Inherit a strategy
    from `nimarena.bots` and override its hooks — see the Player API docs.
 
-3. **Register it** — add exactly one entry to [`players.yaml`](players.yaml):
+3. **Register it** — add exactly one entry to
+   [`players/custom/players.yaml`](players/custom/players.yaml):
 
    ```yaml
      - file: my_bot.py
@@ -63,9 +64,12 @@ which is exactly why review is the security and correctness gate.
 
    ```bash
    pip install -e ".[dev]"
-   pytest                      # your bot is exercised by tests/test_players.py
-   nim-tournament --no-subprocess   # optional: see it in a local tournament
+   pytest                           # must be green
+   nim-tournament --no-subprocess   # play your bot against the reference players
    ```
+
+   Run the tournament, not just the tests: it is what catches an illegal move, a
+   crash or a timeout in your player.
 
 ## Rules your player must follow
 
@@ -87,7 +91,7 @@ which is exactly why review is the security and correctness gate.
 A PR is merged only if it passes **all** of these — they are our explicit,
 documented gate:
 
-1. **Design** — one file in `players/`, one manifest line, subclasses `Player`,
+1. **Design** — one file in `players/custom/`, one manifest line, subclasses `Player`,
    unique `name`, minimal and readable.
 2. **Correctness** — CI is green; the bot returns legal moves and never mutates
    state; it does not error or time out against the reference bots.
