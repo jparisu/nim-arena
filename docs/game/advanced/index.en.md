@@ -24,6 +24,12 @@ flowchart LR
 
 <div class="grid cards" markdown>
 
+- :material-file-tree:{ .lg .middle } **[Getting started](getting-started.md)**
+
+    ---
+
+    First steps to download and install the project.
+
 - :material-file-tree:{ .lg .middle } **[Code structure](code-structure.md)**
 
     ---

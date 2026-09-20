@@ -40,7 +40,7 @@ flowchart LR
 | If you do not have… | Go to |
 |---|---|
 | the rules of NIM clear | [Game rules](../rules.md) |
-| the package installed | [Getting started](../getting-started.md) |
+| the package installed | [Getting started](../advanced/getting-started.md) |
 | a grip on Git and pull requests | [Guide](../../guide/index.md) |
 
 ---

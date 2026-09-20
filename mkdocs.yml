@@ -88,7 +88,7 @@ nav:
           - 2. Enviar un jugador: game/upload-a-bot/submit-a-player.md
       - Documentación avanzada:
           - game/advanced/index.md
-          - Primeros pasos: game/getting-started.md
+          - Primeros pasos: game/advanced/getting-started.md
           - Estructura del código: game/advanced/code-structure.md
           - El marcador: game/advanced/scoreboard.md
           - El torneo: game/advanced/tournament.md

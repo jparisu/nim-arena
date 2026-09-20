@@ -1,7 +1,7 @@
 # API de jugador
 
 Para crear tu propio jugador de NIM para este repositorio, solo debes implementar la clase `Player`.
-Es esta clase tienes un método que decide la jugada, esta será la estrategia de tu jugador.
+En esta clase tienes un método que decide la jugada, esta será la estrategia de tu jugador.
 Esta página te ayuda a escribir tu propio bot desde 0.
 
 ---

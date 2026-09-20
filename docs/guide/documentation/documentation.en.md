@@ -39,7 +39,7 @@ things.
 
 | Kind | Answers | In this project |
 | --- | --- | --- |
-| **Tutorial** | "I am new — walk me through something that works." | [Getting started](../../game/getting-started.md) |
+| **Tutorial** | "I am new — walk me through something that works." | [Getting started](../../game/advanced/getting-started.md) |
 | **How-to guide** | "I have a specific goal." | [Submit a player](../../game/upload-a-bot/submit-a-player.md) |
 | **Reference** | "What exactly does this do?" | [Player API](../../game/upload-a-bot/player-api.md), [The scoreboard](../../game/advanced/scoreboard.md) |
 | **Explanation** | "Why is it built this way?" | this guide, and the module docstrings |

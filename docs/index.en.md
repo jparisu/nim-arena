@@ -1,8 +1,9 @@
 # NIM Arena
 
 A complete project built on GitHub around the game of **NIM**: a Python library
-holding the rules and several AIs, a page where you play against them, a
-tournament that pits them against each other on its own, and these docs.
+holding the rules and several bots, a web interface where a human can play, a tournament that evaluates the different bots, and these docs.
+
+This is an educational project whose purpose is to help students build an online game of their own.
 
 [![Tests](https://github.com/jparisu/nim-arena/actions/workflows/tests.yml/badge.svg)](https://github.com/jparisu/nim-arena/actions/workflows/tests.yml)
 [![Tournament](https://github.com/jparisu/nim-arena/actions/workflows/tournament.yml/badge.svg)](https://github.com/jparisu/nim-arena/actions/workflows/tournament.yml)
@@ -14,27 +15,15 @@ tournament that pits them against each other on its own, and these docs.
 
 ---
 
-## What is inside
-
-```mermaid
-flowchart LR
-    LIB["🐍 nimarena<br/>the rules and the AIs"]
-    WEB["🌐 Web page<br/>you play"]
-    CI["🏆 Tournament<br/>the AIs compete"]
-    BOARD["📊 Leaderboard"]
-
-    LIB --> WEB
-    LIB --> CI
-    CI --> BOARD
-    BOARD --> WEB
-```
+## The project
 
 | Piece | What it is | Where |
 |---|---|---|
-| 🐍 **Library** | the rules of NIM and four AIs, in Python | [The game](game/index.md) |
-| 🌐 **Web page** | play against any AI, nothing to install | [play](https://jparisu.github.io/nim-arena) |
-| 🏆 **Tournament** | runs every AI against every other and publishes a ranking | [The tournament](game/advanced/tournament.md) |
-| 🤖 **Your AI** | you write one class and send it as a pull request | [Upload a bot](game/upload-a-bot/index.md) |
+| 🐍 **Library** | the rules of NIM written in Python | [The game](game/index.md) |
+| 🌐 **Web page** | play against any bot online | [play](https://jparisu.github.io/nim-arena) |
+| 📚 **Documentation** | explains how it works and includes a guide to building a project of your own | [index](https://nim-arena.readthedocs.io/en/latest/) |
+| 🏆 **Tournament** | runs every bot against every other and publishes a ranking | [The tournament](game/advanced/tournament.md) |
+| 🤖 **Your bot** | write a class and test a bot of your own | [Upload a bot](game/upload-a-bot/index.md) |
 
 ---
 
@@ -66,11 +55,3 @@ flowchart LR
     [step-by-step guide](guide/step-by-step.md).
 
 </div>
-
----
-
-## The one big idea
-
-> The game rules and every AI are written **once, in Python**. That exact same
-> code runs the tournament (in CI) and live play in the browser (via Pyodide).
-> **One source of truth.** The rules are never re-implemented in JavaScript.

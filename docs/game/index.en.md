@@ -5,25 +5,6 @@ how you add a player of your own.
 
 ---
 
-## The shortest path to a player of your own
-
-```mermaid
-flowchart LR
-    A["1 · Rules<br/>5 minutes"] --> B["2 · Install<br/>and play"]
-    B --> C["3 · Copy the<br/>example bot"]
-    C --> D["4 · Open<br/>a PR"]
-    D --> E["🏆 Into the tournament"]
-```
-
-| Step | What you do | Page |
-|---|---|---|
-| 1 | Understand NIM and the strategy that wins it | [Game rules](rules.md) |
-| 2 | Install the package and play a game | [Getting started](getting-started.md) |
-| 3 | Write your AI: one class, one method | [Player API](upload-a-bot/player-api.md) |
-| 4 | Send it as a pull request | [Submit a player](upload-a-bot/submit-a-player.md) |
-
----
-
 ## Start here
 
 <div class="grid cards" markdown>
@@ -33,12 +14,6 @@ flowchart LR
     ---
 
     How NIM works, and the XOR strategy that wins it. Five minutes.
-
-- :material-rocket-launch:{ .lg .middle } **[Getting started](getting-started.md)**
-
-    ---
-
-    Install, play a game, run the tests and the tournament.
 
 </div>
 
@@ -54,8 +29,8 @@ flowchart LR
 
     *You want to write an AI.* The
     [player API](upload-a-bot/player-api.md) your class implements, and the
-    [Pull Request flow](upload-a-bot/submit-a-player.md) that gets it into the
-    next tournament. Two pages, nothing else needed.
+    [pull request flow](upload-a-bot/submit-a-player.md) that gets it into the
+    next tournament. Two pages, nothing else.
 
 - :material-cog-outline:{ .lg .middle } **[Advanced documentation](advanced/index.md)**
 
@@ -72,4 +47,4 @@ flowchart LR
 
 !!! tip "Are Git, forks or pull requests new to you?"
     The [Guide](../guide/index.md) teaches them from scratch, using this same
-    repository as the worked example.
+    repository as the example.

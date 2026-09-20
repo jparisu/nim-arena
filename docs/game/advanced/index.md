@@ -24,7 +24,7 @@ flowchart LR
 
 <div class="grid cards" markdown>
 
-- :material-file-tree:{ .lg .middle } **[Primeros pasos](advanced/getting-started.md)**
+- :material-file-tree:{ .lg .middle } **[Primeros pasos](getting-started.md)**
 
     ---
 

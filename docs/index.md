@@ -20,7 +20,7 @@ Este es un proyecto con fines educativos que tiene como finalidad ayudar a estud
 | Pieza | Qué es | Dónde |
 |---|---|---|
 | 🐍 **Librería** | las reglas del NIM programado en Python | [El juego](game/index.md) |
-| 🌐 **Página web** | juega contra cualquier un bot online | [jugar](https://jparisu.github.io/nim-arena) |
+| 🌐 **Página web** | juega contra cualquier bot online | [jugar](https://jparisu.github.io/nim-arena) |
 | 📚 **Documentación** | explica las instrucciones y tiene una guía para crear tu propio proyecto | [índice](https://nim-arena.readthedocs.io/en/latest/) |
 | 🏆 **Torneo** | enfrenta a todos los bots y publica una clasificación | [El torneo](game/advanced/tournament.md) |
 | 🤖 **Tu bot** | escribe una clase y prueba tu propio bot | [Subir un bot](game/upload-a-bot/index.md) |

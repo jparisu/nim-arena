@@ -77,7 +77,7 @@ nim-tournament --no-subprocess
 nim-tournament --board 3,5,7 --board 7,9,11
 ```
 
-See [The tournament](advanced/tournament.md) for the formats, the timing and the
+See [The tournament](tournament.md) for the formats, the timing and the
 forfeits.
 
 ---
@@ -102,5 +102,5 @@ python -m http.server -d web 8000     # open http://localhost:8000
 
 ---
 
-**Next:** [Player API](upload-a-bot/player-api.md) — write your first AI in
+**Next:** [Player API](../upload-a-bot/player-api.md) — write your first AI in
 twenty lines.

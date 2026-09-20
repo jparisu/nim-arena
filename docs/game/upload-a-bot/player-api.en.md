@@ -1,8 +1,8 @@
 # Player API
 
-A NIM Arena player is **a class with one method that decides the move**. That is
-the whole contract. This page walks through it, starting from a bot that already
-works.
+To create your own NIM player for this repository, all you have to do is implement the `Player` class.
+This class gives you one method that decides the move, and that will be your player's strategy.
+This page helps you write your own bot from scratch.
 
 ---
 
@@ -99,10 +99,6 @@ state = [3, 0, 4]     # row 0 → 3 sticks, row 1 → empty, row 2 → 4 sticks
 | Empty rows | can exist (`0`) |
 | Empty board | you **never** receive one: the game is already over |
 
-!!! warning "Treat `state` as read-only"
-    Do not mutate it. If you need to change it, copy first: `list(state)`. A bot
-    that mutates the board it was given corrupts the game, and the tests reject
-    it.
 
 ### What you return: the move
 
@@ -134,7 +130,6 @@ reimplement any of these:
 | `is_legal(state, move)` | check a move |
 | `apply_move(state, move)` | a **new** state with the move applied (no mutation) |
 | `is_terminal(state)` | `True` if the board is empty |
-| `nim_sum(state)` | bitwise XOR of the rows — the signal behind the [winning strategy](../rules.md) |
 | `total_sticks(state)` | total sticks remaining |
 
 ---
@@ -200,46 +195,63 @@ run gives the same result twice.
 ## Optional extras
 
 ??? tip "Reuse one of our searches instead of writing your own"
-    The searches behind the reference players are public API in `nimarena.bots`.
-    You can subclass one and override its hooks. This is all of
-    `players/builtin/hard.py`:
+    The searches behind the reference players are public API in
+    `nimarena.bots`. You can subclass one and override its methods. This is
+    all of `players/builtin/random.py`:
 
     ```python
+    from __future__ import annotations
+    import random
+
     from nimarena.bots import SmartMinimaxBot
+    from nimarena.game import Move, State, legal_moves
 
     DEPTH = 4
 
-    class Hard(SmartMinimaxBot):
+    class Random(RandomBot):
+        """Picks a legal move uniformly at random."""
+
+        def __init__(self, seed: int | None = None) -> None:
+            """Create the bot.
+
+            Args:
+                seed: seed for the private RNG. A private RNG keeps the bot
+                    reproducible without touching global random state.
+            """
+            self._rng = random.Random(seed)
+
+        @classmethod
+        def create(cls, seed: int) -> RandomBot:
+            """Build an instance seeded for one game."""
+            return cls(seed=seed)
+
         @classmethod
         def get_name(cls) -> str:
-            return "hard"
+            return "random"
 
         @classmethod
         def get_authors(cls) -> list[str]:
-            return ["jparisu"]
-
-        @classmethod
-        def get_description(cls) -> str:
-            return f"Minimax with alpha-beta pruning, searching {DEPTH} plies."
+            return ["builtin"]
 
         @classmethod
         def get_icon(cls) -> str:
-            return "⚔️"
+            return "🎲"
 
         @classmethod
-        def create(cls, seed: int) -> "Hard":
-            return cls(depth=DEPTH, seed=seed)
+        def get_description(cls) -> str:
+            return (
+                "Picks uniformly at random among all legal moves. No strategy at all "
+                "— the baseline every other player has to beat."
+            )
+
+        def choose_move(self, state: State) -> Move:
+            """Return a legal move chosen uniformly at random."""
+            return self._rng.choice(legal_moves(state))
+
+    You can see the source code [here](https://github.com/jparisu/nim-arena/blob/main/players/random.py).
+
     ```
 
-    `MinimaxBot` gives you negamax with alpha-beta pruning and two hooks:
-
-    | Hook | Returns | Meaning |
-    |------|---------|---------|
-    | `evaluate(state)` | float inside `(LOSS, WIN)` | scores a position at the depth limit |
-    | `known_value(state)` | float, or `None` | the **exact** value of a position you already know |
-
-    `known_value` is consulted before the depth cutoff, so a recognized position
-    ends that branch immediately. It must be exact, never an estimate.
 
 ??? tip "Publish your reasoning for the “why did it do that?” panel"
     The minimax-based players fill a `self.last_info` dictionary after each move

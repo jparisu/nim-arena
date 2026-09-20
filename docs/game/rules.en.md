@@ -112,6 +112,6 @@ would beat all of them.
 
 ---
 
-**Next:** [Getting started](getting-started.md) — install the package and play a
+**Next:** [Getting started](advanced/getting-started.md) — install the package and play a
 game. Or go straight to the [Player API](upload-a-bot/player-api.md) to turn this
 strategy into code.

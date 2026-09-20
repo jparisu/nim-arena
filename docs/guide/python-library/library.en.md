@@ -101,4 +101,4 @@ glossary. Designing that surface deliberately is what
 
 **Next:** [Organization](organization.md) — the files and folders that turn this code into an installable library.
 
-**Also:** [Installation and usage](installation-and-usage.md) · [API](api.md)
+**Also:** [Installation and usage](installation-and-usage.md)

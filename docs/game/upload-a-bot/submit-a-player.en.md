@@ -1,8 +1,6 @@
 # Submit a new player
 
-New players arrive by **pull request**. There is no separate upload form: you
-fork the repo, add a file, add a line to the manifest and open a PR. Someone
-reviews it and merges it.
+For your player to be published and evaluated alongside the rest, you have to open a Pull Request on the repository and wait for someone to validate and merge it.
 
 ```mermaid
 flowchart LR
@@ -38,41 +36,6 @@ git checkout -b add-my-bot
 Create `players/custom/<your_bot>.py`. The easiest start is the
 [minimal example from the Player API](player-api.md#start-by-copying-this).
 
-Here is a slightly smarter bot, applying the
-[nim-sum strategy](../rules.md#the-winning-strategy-the-nim-sum):
-
-```python
-# players/custom/corner_bot.py
-from nimarena.game import State, legal_moves, nim_sum
-from nimarena.player import Player
-
-class CornerBot(Player):
-    @classmethod
-    def get_name(cls) -> str:
-        return "corner"
-
-    @classmethod
-    def get_authors(cls) -> list[str]:
-        return ["your-github-handle"]
-
-    @classmethod
-    def get_description(cls) -> str:
-        return "Reduces a row to leave a zero nim-sum whenever one exists."
-
-    @classmethod
-    def get_icon(cls) -> str:
-        return "📐"
-
-    def choose_move(self, state: State) -> tuple[int, int]:
-        # Try to leave the nim-sum at zero; otherwise take a single stick.
-        target = nim_sum(state)
-        for row, sticks in enumerate(state):
-            reduce_to = sticks ^ target
-            if reduce_to < sticks:
-                return (row, sticks - reduce_to)
-        return legal_moves(state)[0]
-```
-
 ---
 
 ## Step 3 — Register it in the manifest
@@ -94,12 +57,6 @@ There are only **two** fields to write:
 
 Your name, authors and description come from the class itself, so there is
 nothing here to keep in sync.
-
-!!! info "Why a manifest and not a folder scan?"
-    The manifest makes the trust boundary **visible**. In a single PR diff the
-    reviewer sees both your new file and the one line admitting it. An automatic
-    scan would hide what is being admitted, and would run your top-level code
-    just to discover it.
 
 ---
 

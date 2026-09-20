@@ -78,7 +78,7 @@ nim-tournament --no-subprocess
 nim-tournament --board 3,5,7 --board 7,9,11
 ```
 
-Consulta [El torneo](advanced/tournament.md) para los formatos, los tiempos y
+Consulta [El torneo](tournament.md) para los formatos, los tiempos y
 las descalificaciones.
 
 ---
@@ -103,5 +103,5 @@ python -m http.server -d web 8000     # abre http://localhost:8000
 
 ---
 
-**Siguiente:** [API de jugador](upload-a-bot/player-api.md) — escribe tu primera
+**Siguiente:** [API de jugador](../upload-a-bot/player-api.md) — escribe tu primera
 IA en veinte líneas.
