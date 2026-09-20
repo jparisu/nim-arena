@@ -21,9 +21,10 @@ reading right now.
 
     ---
 
-    The whole project as one ordered task list: what to do, what you should end
-    up with, and how to check it worked. Every task links into the section that
-    explains it. If you do not know where to begin, begin here.
+    Build your own game, from an empty repository to a published tournament,
+    as one ordered task list. Every task explains what to do, links into the
+    section that covers it, and ends with the result you should be able to see.
+    If you do not know where to begin, begin here.
 
 </div>
 

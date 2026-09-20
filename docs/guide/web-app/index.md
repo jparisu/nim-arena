@@ -1,9 +1,5 @@
 # Aplicación web
 
-!!! warning "Esqueleto — aún sin escribir"
-    Solo existe la estructura de esta sección. Las páginas de abajo son
-    marcadores de posición.
-
 Una librería que nadie puede probar es una librería que nadie usa. Esta sección
 trata de ponerle **cara** al proyecto: una página que alguien abre en el
 navegador y usa, sin instalar nada.

@@ -150,6 +150,39 @@ Click **New** (the green button on your repositories page) and fill in:
     [Git example](../git/example.md)), leave these unchecked and push your own
     history up.
 
+### Choosing a license
+
+A public repository without a license is **not** open source. Copyright is the
+default, so code with no license is code nobody else may legally reuse — which
+is the opposite of what a public project usually intends.
+
+Pick one at creation time. For a project like this, three are worth knowing:
+
+| License | In one line |
+| --- | --- |
+| **MIT** | do anything, keep the copyright notice. Short, permissive, the common default. |
+| **Apache 2.0** | MIT plus an explicit patent grant and a notice requirement. |
+| **GPL-3.0** | anyone distributing a derived work must publish its source under the GPL too. |
+
+**MIT unless you have a reason.** It is three paragraphs long, everybody
+understands it, and it puts no obligation on the people you want writing bots
+for your game. This repository uses it.
+
+The license is a plain `LICENSE` file at the root — GitHub offers a picker when
+you create the repository, and **Add file → Create new file** named `LICENSE`
+offers the same picker afterwards. Name it in `pyproject.toml` as well, so the
+packaged distribution carries it:
+
+```toml
+license = "MIT"
+```
+
+!!! tip "One decision, made once"
+    [choosealicense.com](https://choosealicense.com) exists for exactly this and
+    takes about a minute. Do not spend an afternoon on it, and do not leave it
+    empty — an unlicensed public repository is the one mistake here that has
+    real consequences.
+
 ## Set it up
 
 A few settings are worth changing early, from the repository's **Settings** tab

@@ -1,9 +1,5 @@
 # Streamlit
 
-!!! warning "Esqueleto — aún sin escribir"
-    Solo existe la estructura de esta subsección. Las páginas de abajo son
-    marcadores de posición.
-
 **Streamlit** convierte un script de Python en una aplicación web. Sin HTML, sin
 JavaScript, sin framework de front-end — escribes Python y él dibuja los widgets.
 

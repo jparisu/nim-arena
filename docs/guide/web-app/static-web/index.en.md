@@ -1,9 +1,5 @@
 # Static web
 
-!!! warning "Scaffold — not written yet"
-    Only the structure of this subsection exists. The pages below are
-    placeholders.
-
 A **static** site is a folder of files — HTML, CSS, JavaScript, images, JSON —
 that a host hands out unchanged. Nothing runs on the server, because there is no
 server to speak of.

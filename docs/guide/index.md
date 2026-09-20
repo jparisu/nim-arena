@@ -21,9 +21,10 @@ abre de verdad, y el sitio de documentación que estás leyendo ahora mismo.
 
     ---
 
-    Todo el proyecto como una única lista ordenada de tareas: qué hacer, qué
-    deberías obtener y cómo comprobar que funciona. Cada tarea enlaza con la
-    sección que la explica. Si no sabes por dónde empezar, empieza aquí.
+    Construye tu propio juego, desde un repositorio vacío hasta un torneo
+    publicado, como una única lista ordenada de tareas. Cada tarea explica qué
+    hacer, enlaza con la sección que la cubre y termina con el resultado que
+    deberías poder ver. Si no sabes por dónde empezar, empieza aquí.
 
 </div>
 

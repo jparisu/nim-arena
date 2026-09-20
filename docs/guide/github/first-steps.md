@@ -152,6 +152,40 @@ Haz clic en **New** (el botón verde en tu página de repositorios) y rellena:
     [ejemplo de Git](../git/example.md)), deja estas casillas sin marcar y sube tu
     propio historial.
 
+### Elegir una licencia
+
+Un repositorio público sin licencia **no** es open source. El copyright es lo
+que se aplica por defecto, así que el código sin licencia es código que nadie
+más puede reutilizar legalmente — justo lo contrario de lo que suele pretender
+un proyecto público.
+
+Elige una al crearlo. Para un proyecto como este, merece la pena conocer tres:
+
+| Licencia | En una línea |
+| --- | --- |
+| **MIT** | haz lo que quieras, conservando el aviso de copyright. Corta, permisiva, la opción habitual. |
+| **Apache 2.0** | MIT más una cesión explícita de patentes y un requisito de aviso. |
+| **GPL-3.0** | quien distribuya una obra derivada tiene que publicar su código, también bajo GPL. |
+
+**MIT salvo que tengas un motivo.** Ocupa tres párrafos, todo el mundo la
+entiende, y no impone ninguna obligación a las personas que quieres que
+escriban bots para tu juego. Este repositorio la usa.
+
+La licencia es un archivo `LICENSE` en la raíz — GitHub ofrece un selector al
+crear el repositorio, y **Add file → Create new file** con el nombre `LICENSE`
+ofrece el mismo selector después. Decláralo también en `pyproject.toml`, para
+que la distribución empaquetada la lleve:
+
+```toml
+license = "MIT"
+```
+
+!!! tip "Una decisión, y se toma una vez"
+    [choosealicense.com](https://choosealicense.com) existe exactamente para
+    esto y se resuelve en un minuto. No le dediques una tarde, y no la dejes
+    vacía: un repositorio público sin licencia es el único error de aquí que
+    tiene consecuencias reales.
+
 ## Configurarlo
 
 Conviene cambiar pronto algunos ajustes, desde la pestaña **Settings** del

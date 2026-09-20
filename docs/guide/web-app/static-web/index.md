@@ -1,9 +1,5 @@
 # Web estática
 
-!!! warning "Esqueleto — aún sin escribir"
-    Solo existe la estructura de esta subsección. Las páginas de abajo son
-    marcadores de posición.
-
 Un sitio **estático** es una carpeta de archivos — HTML, CSS, JavaScript,
 imágenes, JSON — que un host reparte sin tocarlos. No se ejecuta nada en el
 servidor, porque prácticamente no hay servidor.

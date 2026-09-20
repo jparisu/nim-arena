@@ -1,9 +1,5 @@
 # Streamlit
 
-!!! warning "Scaffold — not written yet"
-    Only the structure of this subsection exists. The pages below are
-    placeholders.
-
 **Streamlit** turns a Python script into a web app. No HTML, no JavaScript, no
 front-end framework — you write Python, it renders widgets.
 

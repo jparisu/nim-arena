@@ -1,8 +1,5 @@
 # Web app
 
-!!! warning "Scaffold — not written yet"
-    Only the structure of this section exists. The pages below are placeholders.
-
 A library nobody can try is a library nobody uses. This section is about putting
 a **face** on your project: a page someone opens in a browser and uses, without
 installing anything.
