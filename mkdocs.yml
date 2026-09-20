@@ -1,6 +1,16 @@
 site_name: NIM Arena
-site_description: Parametrized NIM — game engine, player API, three AIs, tournament, and a Pyodide web app.
-site_url: https://nim-arena.readthedocs.io
+site_description: >-
+  NIM Arena — the reference manual of this project (rules, player API,
+  tournament and web app), plus the Guide to building one of your own with Git,
+  GitHub, Python and MkDocs.
+# Where the built site actually lives. This is NOT cosmetic: the i18n language
+# switcher builds its `<link rel="alternate">` hrefs from the *path* of site_url,
+# so a hardcoded root sends the English link to `/en/` — which on Read the Docs is
+# a language slug, not our subdirectory, and lands on an unstyled 404.
+# Read the Docs exports READTHEDOCS_CANONICAL_URL per build (per version, and per
+# pull-request preview), so the switcher stays inside whatever build you are
+# reading. The fallback is for local `mkdocs serve` / `mkdocs build`.
+site_url: !ENV [READTHEDOCS_CANONICAL_URL, "https://nim-arena.readthedocs.io/"]
 repo_url: https://github.com/jparisu/nim-arena
 repo_name: jparisu/nim-arena
 edit_uri: edit/main/docs/
@@ -23,21 +33,114 @@ theme:
         icon: material/weather-night
         name: Switch to dark mode
   features:
-    - navigation.instant
-    - navigation.sections
-    - navigation.top
+    - content.action.edit
     - content.code.copy
-    - toc.integrate
+    # `navigation.indexes` is what makes the two parts readable as two parts: the
+    # untitled `game/index.md` / `guide/index.md` entries become the *landing
+    # page of their section*, clickable from the section title itself.
+    - navigation.indexes
+    - navigation.footer
+    # `navigation.instant` is deliberately absent: it is incompatible with the
+    # i18n language switcher's contextual link, and this site is bilingual.
+    #
+    # `navigation.sections` and `navigation.expand` are deliberately absent too:
+    # both hold the whole tree open at once, which flattens "The game" and
+    # "Guide" into one long list and loses the distinction. Without them
+    # only the section you are reading is expanded.
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.suggest
+    - toc.follow
 
+extra_css:
+  - stylesheets/extra.css
+
+# A link to a heading that does not exist is only an INFO by default, so a
+# renamed section silently breaks every link into it. Promoting it to a warning
+# makes `mkdocs build --strict` — what CI runs — catch it.
+validation:
+  anchors: warn
+
+# The site has exactly two parts, and the navigation says so. Titles here are in
+# Spanish because Spanish is the default locale; `nav_translations` under the
+# `en` locale maps each one to English.
+#
+#   El juego (The game) — the reference manual of THIS repository. It splits
+#       again by who is reading: everyone starts at the rules and getting
+#       started, `Subir un bot nuevo` is the path for someone writing an AI, and
+#       `Documentación avanzada` is the machinery behind it.
+#   Guía (Guide) — how a project like it is built and shipped: Git, GitHub,
+#       Python packaging, a web app and documentation. `Guía paso a paso` is the
+#       ordered path through all of it.
+#
+# Keep new pages on the right side of that line: a page describing *what this
+# project does* belongs to El juego, a page *teaching a technique* belongs to
+# la Guía. The two parts cross-link freely, they never merge.
 nav:
-  - Home: index.md
-  - Game rules: rules.md
-  - Getting started: getting-started.md
-  - Code structure: code-structure.md
-  - Player API reference: player-api.md
-  - Submit a new player: submit-a-player.md
-  - The tournament: tournament.md
-  - The web app: web.md
+  - Inicio: index.md
+  - El juego:
+      - game/index.md
+      - Reglas del juego: game/rules.md
+      - Subir un bot nuevo:
+          - game/upload-a-bot/index.md
+          - 1. API de jugador: game/upload-a-bot/player-api.md
+          - 2. Enviar un jugador: game/upload-a-bot/submit-a-player.md
+      - Documentación avanzada:
+          - game/advanced/index.md
+          - Primeros pasos: game/advanced/getting-started.md
+          - Estructura del código: game/advanced/code-structure.md
+          - El marcador: game/advanced/scoreboard.md
+          - El torneo: game/advanced/tournament.md
+          - La página web: game/advanced/web.md
+          - Referencia de la API: game/advanced/api.md
+  - Guía:
+      - guide/index.md
+      - Guía paso a paso: guide/step-by-step.md
+      - Git:
+          - guide/git/index.md
+          - 1. Qué es Git: guide/git/git.md
+          - 2. Organización: guide/git/organization.md
+          - 3. Comandos: guide/git/commands.md
+          - 4. Deshacer cambios: guide/git/undoing-changes.md
+          - 5. Ejemplo: guide/git/example.md
+          - Preguntas frecuentes: guide/git/git-faq.md
+      - GitHub:
+          - guide/github/index.md
+          - 1. Qué es GitHub: guide/github/github.md
+          - 2. Primeros pasos: guide/github/first-steps.md
+          - 3. Flujo de trabajo: guide/github/workflow.md
+          - 4. Pull requests: guide/github/pull-requests.md
+          - 5. Configuración del repositorio: guide/github/repository-configuration.md
+          - 6. GitHub Actions: guide/github/actions.md
+          - 7. GitHub Pages: guide/github/pages.md
+          - Preguntas frecuentes: guide/github/github-faq.md
+      - Librería Python:
+          - guide/python-library/index.md
+          - 1. Qué es una librería: guide/python-library/library.md
+          - 2. Organización: guide/python-library/organization.md
+          - 3. Instalación y uso: guide/python-library/installation-and-usage.md
+          - 4. API: guide/python-library/api.md
+          - 5. Tests: guide/python-library/testing.md
+          - Preguntas frecuentes: guide/python-library/python-faq.md
+      - Aplicación web:
+          - guide/web-app/index.md
+          - 1. Alojamiento: guide/web-app/hosting.md
+          - 2. Streamlit:
+              - guide/web-app/streamlit/index.md
+              - Construir la aplicación: guide/web-app/streamlit/building.md
+              - Streamlit Community Cloud: guide/web-app/streamlit/cloud.md
+          - 3. Web estática:
+              - guide/web-app/static-web/index.md
+              - HTML, CSS y JavaScript: guide/web-app/static-web/html-js.md
+              - Python en el navegador: guide/web-app/static-web/pyodide.md
+          - Preguntas frecuentes: guide/web-app/web-faq.md
+      - Documentación:
+          - guide/documentation/index.md
+          - 1. Documentar un proyecto: guide/documentation/documentation.md
+          - 2. MkDocs: guide/documentation/mkdocs.md
+          - 3. Read the Docs: guide/documentation/readthedocs.md
+          - Preguntas frecuentes: guide/documentation/docs-faq.md
 
 markdown_extensions:
   - admonition
@@ -52,7 +155,20 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
-  - pymdownx.superfences
+  # The custom fence is what turns ```mermaid blocks into diagrams instead of
+  # printing the diagram source as code. The guide draws every diagram this way,
+  # so there is not a single image file in docs/.
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  # Renders `- [ ]` / `- [x]` as checkboxes. The step-by-step guide is one long
+  # task list and depends on it.
+  - pymdownx.tasklist:
+      custom_checkbox: true
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.inlinehilite
@@ -61,7 +177,90 @@ markdown_extensions:
       permalink: true
 
 plugins:
+  # Order matters: `i18n` reconfigures the search index per language, so it has
+  # to see a `search` instance that is already registered.
   - search
+  - i18n:
+      docs_structure: suffix
+      # A page without a `.en.md` twin still appears in the English build, in
+      # Spanish, instead of vanishing from the navigation. Translations can then
+      # be added one page at a time.
+      fallback_to_default: true
+      reconfigure_material: true
+      reconfigure_search: true
+      languages:
+        # Spanish is the DEFAULT locale, which with `docs_structure: suffix`
+        # means it owns the files with no suffix (`rules.md`) and is served at
+        # the site root. English lives in `rules.en.md` and is served under
+        # `/en/`. The plugin refuses any other arrangement: the default language
+        # must be the unsuffixed one.
+        - locale: es
+          name: Español
+          default: true
+          build: true
+        - locale: en
+          name: English
+          build: true
+          site_description: >-
+            NIM Arena — the reference manual of this project (rules, player
+            API, tournament and web app), plus the Guide to building one of your
+            own with Git, GitHub, Python and MkDocs.
+          # The `nav:` titles above are Spanish, so these map Spanish -> English.
+          nav_translations:
+            Inicio: Home
+            Preguntas frecuentes: FAQ
+            El juego: The game
+            Guía: Guide
+            Subir un bot nuevo: Upload a new bot
+            Documentación avanzada: Advanced documentation
+            1. API de jugador: 1. Player API
+            2. Enviar un jugador: 2. Submit a player
+            Guía paso a paso: Step-by-step guide
+            Aplicación web: Web app
+            1. Alojamiento: 1. Hosting
+            2. Streamlit: 2. Streamlit
+            3. Web estática: 3. Static web
+            Construir la aplicación: Building the app
+            Streamlit Community Cloud: Streamlit Community Cloud
+            HTML, CSS y JavaScript: HTML, CSS and JavaScript
+            Python en el navegador: Python in the browser
+            Reglas del juego: Game rules
+            Primeros pasos: Getting started
+            Estructura del código: Code structure
+            El marcador: The scoreboard
+            El torneo: The tournament
+            La página web: The web app
+            Referencia de la API: API reference
+            Git: Git
+            GitHub: GitHub
+            Librería Python: Python library
+            Documentación: Documentation
+            1. Qué es Git: 1. What is Git
+            2. Organización: 2. Organization
+            3. Comandos: 3. Commands
+            4. Deshacer cambios: 4. Undoing changes
+            5. Ejemplo: 5. Example
+            1. Qué es GitHub: 1. What is GitHub
+            2. Primeros pasos: 2. First steps
+            3. Flujo de trabajo: 3. Workflow
+            4. Pull requests: 4. Pull requests
+            5. Configuración del repositorio: 5. Repository configuration
+            6. GitHub Actions: 6. GitHub Actions
+            7. GitHub Pages: 7. GitHub Pages
+            1. Qué es una librería: 1. What is a library
+            3. Instalación y uso: 3. Installation and usage
+            4. API: 4. API
+            5. Tests: 5. Testing
+            1. Documentar un proyecto: 1. Documenting a project
+            2. MkDocs: 2. MkDocs
+            3. Read the Docs: 3. Read the Docs
+  # Declared explicitly (mkdocstrings would otherwise add it implicitly) so that
+  # `resolve_closest` can be set. Every `:::` block is rendered once per language,
+  # so each identifier legitimately has two URLs — `/game/...` and `/en/game/...`.
+  # Without this, autorefs warns about "multiple primary URLs" and `--strict`
+  # fails; with it, a link resolves to the page in the reader's own language.
+  - autorefs:
+      resolve_closest: true
   - mkdocstrings:
       handlers:
         python:

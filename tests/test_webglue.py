@@ -14,6 +14,11 @@ import webglue
 
 from nimarena.player import Player
 
+#: The reference players that ship with the repository. ``players.yaml`` is an
+#: open admission list, so the page may legitimately offer more than these — a
+#: test may check that they are *present*, never that they are all there is.
+REFERENCE_PLAYERS = {"random", "easy", "medium", "hard"}
+
 
 @pytest.fixture(autouse=True)
 def loaded():
@@ -64,7 +69,7 @@ class Cheat(Boom):
 
 def test_players_json_carries_identity():
     entries = json.loads(webglue.players_json())
-    assert {e["name"] for e in entries} == {"random", "easy", "medium", "hard"}
+    assert REFERENCE_PLAYERS <= {e["name"] for e in entries}
     for e in entries:
         assert e["icon"].strip() and e["authors"] and e["description"].strip()
 

@@ -8,7 +8,14 @@ from nimarena import game
 from nimarena.manifest import load_players
 from nimarena.tournament import UNLIMITED, build_roster, play_match, run_tournament
 
-#: The difficulty ladder, weakest first. One place to edit when a player is added.
+#: The reference difficulty ladder that ships with the repository, weakest first.
+#:
+#: Every assertion below is scoped to these four **on purpose**. The manifest is
+#: an open admission list: any merged pull request adds a player to it. A test
+#: that pinned the *exact* roster would therefore turn CI red on every single
+#: submission — so the roster is only ever checked for what must be present,
+#: never for what must be absent. A submitted bot proves itself in the
+#: tournament, which is built to survive a bad one; it is not this suite's job.
 LADDER = ["random", "easy", "medium", "hard"]
 
 
@@ -17,8 +24,14 @@ def registry():
     return load_players(strict=True)
 
 
-def test_all_manifest_players_load(registry):
-    assert set(registry.names()) == set(LADDER)
+def test_the_manifest_loads_without_error(registry):
+    """Whatever ``players.yaml`` admits must load; the fixture is ``strict``."""
+    assert registry.names(), "the manifest admitted no players at all"
+
+
+def test_the_reference_ladder_is_admitted(registry):
+    """The four built-in players must always be there. Others may join them."""
+    assert set(LADDER) <= set(registry.names())
 
 
 @pytest.mark.parametrize("name", LADDER)
@@ -99,8 +112,10 @@ def test_hard_beats_medium_head_to_head(registry):
 
 
 def test_ranking_order_follows_the_difficulty_ladder(registry):
+    # Only the reference ladder: the claim under test is about *their* relative
+    # strength, and a full-roster round-robin would grow with every submission.
     lb = run_tournament(
-        build_roster(registry.all(), 1),
+        build_roster([registry.get(n) for n in LADDER], 1),
         starting_states=[[3, 5, 7], [1, 3, 5, 7], [7, 9, 11]],
         repetitions=1,
         budgets=UNLIMITED,
@@ -112,7 +127,7 @@ def test_ranking_order_follows_the_difficulty_ladder(registry):
     assert rank["medium_0"] < rank["random_0"], "medium must outrank random"
     # `easy` and `random` are deliberately NOT ordered against each other: greedy
     # play is only marginally better than random in NIM, and which one lands ahead
-    # depends on the draw. See devs/DESIGN_DECISIONS.md (D5).
+    # depends on the draw.
 
 
 def test_hard_recognises_the_endgames_it_claims_to(registry):
@@ -137,7 +152,7 @@ def test_every_player_has_a_distinct_icon(registry):
 def test_leaderboard_carries_a_player_directory(registry):
     """The scoreboard reads identity from the leaderboard, not the live registry."""
     lb = run_tournament(
-        build_roster(registry.all(), 2),
+        build_roster([registry.get(n) for n in LADDER], 2),
         starting_states=[[1, 2, 3]], repetitions=1,
         budgets=UNLIMITED, use_subprocess=False,
     )

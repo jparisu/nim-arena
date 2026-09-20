@@ -9,7 +9,6 @@ on:
       - "web/**"
       - "src/**"
       - "players/**"
-      - "players.yaml"
       - "results/leaderboard.json"
       - "scripts/build_web.py"
       - ".github/workflows/pages.yml"

@@ -6,8 +6,8 @@ available to Pyodide, we bundle it into ``web/py.zip``:
 
     py.zip
     ├── nimarena/        (the installable package, copied from src/)
-    ├── players/         (every reference/community player .py file)
-    ├── players.yaml     (the manifest)
+    ├── players/         (copied whole: builtin/ and custom/, each with its
+    │                     own players.yaml manifest)
     └── webglue.py       (the JS<->Python bridge)
 
 We also copy ``results/leaderboard.json`` next to the page so the scoreboard can
@@ -48,13 +48,15 @@ def main() -> int:
         STAGE / "nimarena",
         ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
     )
-    # 2. Player files.
-    players_dst = STAGE / "players"
-    players_dst.mkdir()
-    for py in sorted((REPO_ROOT / "players").glob("*.py")):
-        shutil.copy2(py, players_dst / py.name)
-    # 3. Manifest + bridge.
-    shutil.copy2(REPO_ROOT / "players.yaml", STAGE / "players.yaml")
+    # 2. Player files and their manifests. Copied as a tree: each origin
+    #    directory carries its own players.yaml, and the loader resolves a bare
+    #    filename next to the manifest that names it.
+    shutil.copytree(
+        REPO_ROOT / "players",
+        STAGE / "players",
+        ignore=shutil.ignore_patterns("__pycache__", "*.pyc", "*.md"),
+    )
+    # 3. Bridge.
     shutil.copy2(WEB / "webglue.py", STAGE / "webglue.py")
 
     # 4. Zip it up (a single fetch in the browser).

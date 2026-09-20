@@ -1,39 +1,57 @@
 # NIM Arena
 
-Welcome to the documentation for **NIM Arena** — a complete, self-contained
-project built entirely on GitHub, centered on the game of NIM.
+Un proyecto completo construido sobre GitHub alrededor del juego del **NIM**:
+una librería de Python con las reglas y varios bots, una interfaz web donde un humano puede jugar, un torneo que evalúa los distintos bots, y esta documentación.
 
-The project has four visible faces:
+Este es un proyecto con fines educativos que tiene como finalidad ayudar a estudiantes a crear su propio juego online.
 
-- 🐍 a **Python library** — a parametrized game engine, a clean player API, three
-  leveled reference AIs (plus a worked-example bot), and a robust tournament
-  runner (simple / league / championship formats);
-- 🌐 a **static web page** ([live demo](https://jparisu.github.io/nim-arena)) that
-  runs the *actual Python AI code in the browser* via
-  [Pyodide](https://pyodide.org);
-- 🏆 an **automatic tournament** (GitHub Actions) that publishes a ranked
-  scoreboard;
-- 📚 **this documentation**, whose most important job is explaining how an
-  outsider can [submit a new AI player by Pull Request](submit-a-player.md).
+[![Tests](https://github.com/jparisu/nim-arena/actions/workflows/tests.yml/badge.svg)](https://github.com/jparisu/nim-arena/actions/workflows/tests.yml)
+[![Tournament](https://github.com/jparisu/nim-arena/actions/workflows/tournament.yml/badge.svg)](https://github.com/jparisu/nim-arena/actions/workflows/tournament.yml)
+[![Docs](https://readthedocs.org/projects/nim-arena/badge/?version=latest)](https://nim-arena.readthedocs.io)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/jparisu/nim-arena/blob/main/LICENSE)
 
-## The one big idea
+[:material-play: Jugar ahora](https://jparisu.github.io/nim-arena){ .md-button .md-button--primary }
+[:material-github: Ver el código](https://github.com/jparisu/nim-arena){ .md-button }
 
-> The game rules and every AI are written **once, in Python**. That exact same
-> code runs both the graded tournament (in CI) and live play in the browser (via
-> Pyodide). **One source of truth.** The rules are never re-implemented in
-> JavaScript.
+---
 
-## Where to go next
+## El proyecto
+
+| Pieza | Qué es | Dónde |
+|---|---|---|
+| 🐍 **Librería** | las reglas del NIM programado en Python | [El juego](game/index.md) |
+| 🌐 **Página web** | juega contra cualquier bot online | [jugar](https://jparisu.github.io/nim-arena) |
+| 📚 **Documentación** | explica las instrucciones y tiene una guía para crear tu propio proyecto | [índice](https://nim-arena.readthedocs.io/en/latest/) |
+| 🏆 **Torneo** | enfrenta a todos los bots y publica una clasificación | [El torneo](game/advanced/tournament.md) |
+| 🤖 **Tu bot** | escribe una clase y prueba tu propio bot | [Subir un bot](game/upload-a-bot/index.md) |
+
+---
+
+## Por dónde empezar
 
 <div class="grid cards" markdown>
 
-- :material-book-open: **[Game rules](rules.md)** — how NIM works and the winning
-  XOR strategy.
-- :material-rocket-launch: **[Getting started](getting-started.md)** — install,
-  play, run the tournament.
-- :material-code-braces: **[Player API reference](player-api.md)** — the exact
-  interface every AI implements.
-- :material-source-pull: **[Submit a new player](submit-a-player.md)** — the PR
-  flow, step by step.
+- :material-controller:{ .lg .middle } **[El juego](game/index.md)**
+
+    ---
+
+    El manual de este proyecto: las [reglas del NIM](game/rules.md), la librería
+    `nimarena` y cómo [escribir tu propia IA](game/upload-a-bot/index.md) y
+    meterla en el torneo.
+
+    Léelo para **jugar o programar un bot**.
+
+- :material-book-open-page-variant:{ .lg .middle } **[Guía](guide/index.md)**
+
+    ---
+
+    Las herramientas con las que se construye un proyecto así:
+    [Git](guide/git/index.md), [GitHub](guide/github/index.md),
+    [Python](guide/python-library/index.md),
+    [web](guide/web-app/index.md) y
+    [documentación](guide/documentation/index.md).
+
+    Léela para **construir un proyecto tuyo**. Empieza por la
+    [guía paso a paso](guide/step-by-step.md).
 
 </div>

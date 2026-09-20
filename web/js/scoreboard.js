@@ -40,6 +40,19 @@ async function loadScoreboard() {
 /* The scoreboard's current view state. `selected` holds roster names ("hard_0"). */
 const SB = { data: null, useElo: false, mode: "simple", selected: new Set() };
 
+/* How many copies of each kind ran. The count is per kind — the reference bots
+   are entered twice, submissions once — so print a range when it is not uniform
+   rather than a single number that would be wrong for most of the roster. */
+function rosterShape(data, cfg) {
+  const counts = Object.values(cfg.player_copies || {});
+  const entrants = (data.standings || []).length;
+  if (!counts.length) return `${cfg.player_repetition ?? "?"} per kind`;
+  const lo = Math.min(...counts);
+  const hi = Math.max(...counts);
+  const per = lo === hi ? `${lo} per kind` : `${lo}-${hi} per kind`;
+  return `${entrants} entrants, ${per}`;
+}
+
 function renderScoreboard(data) {
   const cfg = data.config || {};
   const mode = cfg.tournament || "simple";
@@ -57,7 +70,7 @@ function renderScoreboard(data) {
   $("sb-title").textContent = `${MODE_LABEL[mode] || "Tournament"} results`;
   $("sb-meta").textContent =
     `Generated ${data.generated_at} · ${MODE_LABEL[mode] || mode} · ` +
-    `${cfg.player_repetition ?? "?"} per kind · ${cfg.repetitions ?? "?"} reps/board · ` +
+    `${rosterShape(data, cfg)} · ${cfg.repetitions ?? "?"} reps/board · ` +
     `boards ${JSON.stringify(cfg.starting_states)} · ` +
     `budget ${cfg.game_budget_ms != null ? cfg.game_budget_ms + " ms/game" : "none"}`;
 

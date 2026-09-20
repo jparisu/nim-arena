@@ -31,22 +31,48 @@ class Tiny(Player):
 
 
 def _write(tmp_path, source: str, *, filename: str = "tiny.py", cls: str = "Tiny"):
-    """Write ``source`` as a player file plus a manifest admitting it."""
+    """Write ``source`` as a player file plus a manifest admitting it, side by side.
+
+    This mirrors the real layout: ``players/<origin>/players.yaml`` names files in
+    its own directory.
+    """
     players_dir = tmp_path / "players"
     players_dir.mkdir(exist_ok=True)
     (players_dir / filename).write_text(textwrap.dedent(source))
-    manifest = tmp_path / "players.yaml"
+    manifest = players_dir / "players.yaml"
     manifest.write_text(f"players:\n  - file: {filename}\n    class: {cls}\n")
     return manifest, players_dir
 
 
-def test_parse_real_manifest_admits_the_reference_players():
-    from nimarena.manifest import DEFAULT_MANIFEST
+def test_parse_real_builtin_manifest_admits_the_reference_players():
+    from nimarena.manifest import BUILTIN_MANIFEST
 
-    entries = parse_manifest(DEFAULT_MANIFEST)
+    entries = parse_manifest(BUILTIN_MANIFEST)
     assert {e.cls for e in entries} >= {"Random", "Easy", "Medium", "Hard"}
     # The manifest is an admission list: file + class, and nothing else.
     assert all(e.file.endswith(".py") for e in entries)
+
+
+def test_the_custom_manifest_exists_and_parses():
+    """Submissions land here. It ships empty, and an empty list is not an error."""
+    from nimarena.manifest import CUSTOM_MANIFEST
+
+    assert isinstance(parse_manifest(CUSTOM_MANIFEST), list)
+
+
+def test_both_manifests_load_into_one_registry_tagged_by_origin():
+    from nimarena.manifest import BUILTIN
+
+    reg = load_players(registry=Registry(), strict=True)
+    assert {"random", "easy", "medium", "hard"} <= set(reg.names())
+    assert all(reg.origin(n) == BUILTIN for n in ("random", "easy", "medium", "hard"))
+
+
+def test_a_bare_filename_resolves_next_to_its_own_manifest(tmp_path):
+    """Two origins can hold same-named files without a players_dir argument."""
+    manifest, _ = _write(tmp_path, GOOD_PLAYER)
+    reg = load_players(manifest, registry=Registry(), strict=True)
+    assert reg.names() == ["Tiny"]
 
 
 def test_missing_manifest_raises(tmp_path):
@@ -130,7 +156,7 @@ def test_duplicate_names_are_rejected(tmp_path):
 
 
 def test_registry_rejects_duplicate_names():
-    from players.random import Random
+    from players.builtin.random import Random
 
     reg = Registry()
     reg.register(Random.create(seed=0))

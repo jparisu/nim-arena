@@ -11,7 +11,7 @@ on:
   # Deliberately NOT path-filtered. This workflow is a required status check
   # (see MAINTAINING.md), and a filtered workflow that does not run leaves its
   # check permanently "expected" — which blocks the merge forever. A new-player
-  # PR touches only players/ and players.yaml, so a docs/** filter here would
+  # PR touches only players/custom/, so a docs/** filter here would
   # make every single student submission unmergeable. The build takes ~25s.
   pull_request:
 

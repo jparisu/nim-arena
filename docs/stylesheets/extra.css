@@ -1,0 +1,133 @@
+/* Project-specific tweaks on top of the Material theme. */
+
+/* Keep tables readable when they carry long reference listings (the CLI flag
+ * table, the leaderboard schema, the git command quick reference). */
+.md-typeset table:not([class]) {
+  font-size: 0.75rem;
+}
+
+/* Give Mermaid diagrams some breathing room. */
+.md-typeset .mermaid {
+  margin: 1.5em 0;
+  text-align: center;
+}
+
+/* Mermaid `gitGraph` theming.
+ *
+ * Material styles only flowchart, sequence, class, state and ER diagrams; git
+ * graphs fall back to Mermaid's stock palette, whose pale-yellow branch colour
+ * and low-contrast commit labels are unreadable against either Material
+ * palette. The rules below restate them with Material's own variables, so the
+ * diagram follows the light/dark toggle. `!important` is required: Mermaid
+ * prefixes its own rules with the generated SVG id, which outranks any
+ * selector we can write here. */
+
+/* Branch colours: neutral for `main`, primary/accent for the rest. `commitN`
+ * are the dots, `arrowN` the connecting arrows and `labelN` the background of
+ * the branch name box. */
+.md-typeset .mermaid .commit0,
+.md-typeset .mermaid .arrow0,
+.md-typeset .mermaid .label0 {
+  fill: var(--md-default-fg-color--light) !important;
+  stroke: var(--md-default-fg-color--light) !important;
+}
+
+.md-typeset .mermaid .commit1,
+.md-typeset .mermaid .arrow1,
+.md-typeset .mermaid .label1 {
+  fill: var(--md-primary-fg-color) !important;
+  stroke: var(--md-primary-fg-color) !important;
+}
+
+.md-typeset .mermaid .commit2,
+.md-typeset .mermaid .arrow2,
+.md-typeset .mermaid .label2 {
+  fill: var(--md-accent-fg-color) !important;
+  stroke: var(--md-accent-fg-color) !important;
+}
+
+/* Arrows are strokes only; a fill would blob them out. */
+.md-typeset .mermaid .arrow0,
+.md-typeset .mermaid .arrow1,
+.md-typeset .mermaid .arrow2 {
+  fill: none !important;
+}
+
+/* Branch name, written inside the coloured box. */
+.md-typeset .mermaid .branch-label0,
+.md-typeset .mermaid .branch-label1,
+.md-typeset .mermaid .branch-label2 {
+  fill: var(--md-primary-bg-color) !important;
+}
+
+/* The dashed horizontal line each branch runs along. */
+.md-typeset .mermaid .branch {
+  stroke: var(--md-default-fg-color--lighter) !important;
+}
+
+/* Commit messages. Mermaid draws them at 50% opacity over a pale background,
+ * which is what makes them disappear; an opaque background of the page colour
+ * keeps them legible where they cross a branch line. */
+.md-typeset .mermaid .commit-label {
+  fill: var(--md-default-fg-color) !important;
+}
+
+.md-typeset .mermaid .commit-label-bkg {
+  fill: var(--md-default-bg-color) !important;
+  opacity: 0.9 !important;
+}
+
+/* Slightly wider content area: the workflow YAML blocks and the leaderboard
+ * schema tables are cramped at the default width. */
+.md-grid {
+  max-width: 62rem;
+}
+
+/* ---------------------------------------------------------------------------
+ * Breathing room.
+ *
+ * These pages are long and text-heavy, and a reader who cannot see where one
+ * section ends gets tired before they get lost. Section rules are the visual
+ * anchor: every `---` between two `##` blocks becomes a quiet full-width line
+ * with real space around it, and headings get room of their own.
+ * ------------------------------------------------------------------------ */
+
+.md-typeset hr {
+  margin: 2.6em 0;
+  border-bottom: 1px solid var(--md-default-fg-color--lightest);
+}
+
+.md-typeset h2 {
+  margin-top: 1.4em;
+  padding-bottom: 0.2em;
+  border-bottom: 1px solid var(--md-default-fg-color--lightest);
+}
+
+/* A rule immediately followed by a heading would draw two lines a few pixels
+ * apart; the heading's own rule is the one that stays. */
+.md-typeset hr + h2 {
+  margin-top: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.md-typeset h3 {
+  margin-top: 1.6em;
+}
+
+/* Tables carry a lot of the reference load here. Give the header row some
+ * weight so a table reads as a block rather than as more prose. */
+.md-typeset table:not([class]) th {
+  background-color: var(--md-default-fg-color--lightest);
+}
+
+/* Diagrams and admonitions sit between paragraphs; keep them from crowding. */
+.md-typeset .admonition,
+.md-typeset details {
+  margin: 1.4em 0;
+}
+
+/* The landing-page button row. */
+.md-typeset .md-button {
+  margin: 0.2em 0.4em 0.2em 0;
+}

@@ -4,7 +4,7 @@ contact_links:
     url: https://nim-arena.readthedocs.io
     about: Read the game rules, player API, and the submission guide.
   - name: How to submit a new player
-    url: https://nim-arena.readthedocs.io/en/latest/submit-a-player/
+    url: https://nim-arena.readthedocs.io/en/latest/game/upload-a-bot/submit-a-player/
     about: Step-by-step guide to adding your AI by Pull Request.
   - name: Code of Conduct
     url: https://github.com/jparisu/nim-arena/blob/main/CODE_OF_CONDUCT.md

@@ -12,8 +12,8 @@ The unique, human-readable name you plan to use.
 Describe how your bot will choose moves.
 
 **Questions (optional)**
-Anything unclear in the [Player API](https://nim-arena.readthedocs.io/en/latest/player-api/)
-or the [submission guide](https://nim-arena.readthedocs.io/en/latest/submit-a-player/)?
+Anything unclear in the [Player API](https://nim-arena.readthedocs.io/en/latest/game/upload-a-bot/player-api/)
+or the [submission guide](https://nim-arena.readthedocs.io/en/latest/game/upload-a-bot/submit-a-player/)?
 
 <!-- Ready to submit? You don't need an issue — just open a PR with the
 new-player template. -->

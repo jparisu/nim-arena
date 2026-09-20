@@ -28,3 +28,7 @@ web/leaderboard.json
 .idea/
 .vscode/
 *.swp
+
+# Private files
+tmp/
+devs/
