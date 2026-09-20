@@ -19,4 +19,9 @@
 #   - file: my_bot.py
 #     class: MyBot
 
-players: []
+players:
+
+  # jparisu bot
+  - file: jparisu-nimsum.py
+    class: NimSumBot
+
