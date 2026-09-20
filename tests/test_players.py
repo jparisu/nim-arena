@@ -5,7 +5,8 @@ from __future__ import annotations
 import pytest
 
 from nimarena import game
-from nimarena.manifest import load_players
+from nimarena.manifest import BUILTIN, BUILTIN_MANIFEST, load_players
+from nimarena.registry import Registry
 from nimarena.tournament import UNLIMITED, build_roster, play_match, run_tournament
 
 #: The reference difficulty ladder that ships with the repository, weakest first.
@@ -21,11 +22,14 @@ LADDER = ["random", "easy", "medium", "hard"]
 
 @pytest.fixture(scope="module")
 def registry():
-    return load_players(strict=True)
+    # Only the built-in manifest. A submission is an outsider's code: loading it
+    # strictly here would let one broken bot fail the whole suite, and so every
+    # unrelated pull request. Submissions are checked by tests/test_custom_players.py.
+    return load_players({BUILTIN: BUILTIN_MANIFEST}, registry=Registry(), strict=True)
 
 
 def test_the_manifest_loads_without_error(registry):
-    """Whatever ``players.yaml`` admits must load; the fixture is ``strict``."""
+    """Whatever ``players/builtin/players.yaml`` admits must load; the fixture is ``strict``."""
     assert registry.names(), "the manifest admitted no players at all"
 
 

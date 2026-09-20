@@ -63,7 +63,7 @@ nothing here to keep in sync.
 ## Step 4 — Verify locally
 
 ```bash
-pytest                         # must be green
+pytest tests/test_custom_players.py   # checks your player
 nim-tournament --no-subprocess # play your bot against the reference players
 ```
 
@@ -89,6 +89,7 @@ CI runs on every push to the PR:
 | `ruff` | style and obvious mistakes |
 | `mypy` | types |
 | `pytest` | the test suite, on three Python versions |
+| custom players | your player: identity, legal moves and games against `random` |
 | smoke tournament | that your bot plays legal games |
 | docs | that the site builds without warnings |
 

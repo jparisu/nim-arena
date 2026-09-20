@@ -63,7 +63,9 @@ def test_the_custom_manifest_exists_and_parses():
 def test_both_manifests_load_into_one_registry_tagged_by_origin():
     from nimarena.manifest import BUILTIN
 
-    reg = load_players(registry=Registry(), strict=True)
+    # Not strict: a broken submission must not fail this suite. It is checked,
+    # strictly, by tests/test_custom_players.py.
+    reg = load_players(registry=Registry(), strict=False)
     assert {"random", "easy", "medium", "hard"} <= set(reg.names())
     assert all(reg.origin(n) == BUILTIN for n in ("random", "easy", "medium", "hard"))
 

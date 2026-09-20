@@ -50,7 +50,10 @@ jobs:
         run: mypy
 
       - name: Run tests
-        run: pytest -q
+        # Skips the submitted players, which the Custom players workflow checks
+        # instead, so one broken bot fails its own check and not every unrelated
+        # pull request. A plain `pytest` locally still runs everything.
+        run: pytest -q --ignore=tests/test_custom_players.py
 
       - name: Smoke-run the tournament (soft timeout, fast)
         # Writes to a throwaway path, NOT results/leaderboard.json: the committed
@@ -58,4 +61,12 @@ jobs:
         # and overwriting it here made this step mutate the working tree.
         # --repetitions 1 keeps it an actual smoke test (the default of 10 means
         # 1120 games on every push and every PR).
-        run: nim-tournament --no-subprocess --repetitions 1 --out "$RUNNER_TEMP/leaderboard-smoke.json"
+        # Built-in players only, via an empty submitted manifest: --no-subprocess
+        # means soft budgets, so a submitted bot that loops forever would hang
+        # this job until the timeout. The Custom players workflow runs the same
+        # smoke test *with* them, forked, where a hang can be killed.
+        run: |
+          printf 'players: []\n' > "$RUNNER_TEMP/no-custom.yaml"
+          nim-tournament --no-subprocess --repetitions 1 \
+            --custom-manifest "$RUNNER_TEMP/no-custom.yaml" \
+            --out "$RUNNER_TEMP/leaderboard-smoke.json"
