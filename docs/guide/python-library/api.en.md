@@ -12,14 +12,25 @@ fight with.
     `nimarena`, generated in part from its docstrings. Read this page for *why* an
     API looks the way it does, and that one for *what* the library offers today.
 
+---
+
 ## What an API is here
 
 Think of a library as having two sides:
 
-- the **public API** — what users import and call, and what you promise to keep
-  stable across versions;
-- the **internals** — helper functions, private modules and data structures that
-  make it work, which you can rewrite at any time.
+```mermaid
+flowchart LR
+    U["👤 The user"] --> API["🚪 Public API<br/>Player · game · Registry"]
+    API --> INT["🔧 Internals<br/>manifest · tournament · bots"]
+
+    style API stroke-width:3px
+```
+
+| | Public API | Internals |
+|---|---|---|
+| Who touches it | anyone importing your package | only you |
+| Can you change it | not without breaking someone | whenever you like |
+| How it is marked | listed in `__all__`, documented | a leading `_underscore` |
 
 The value of the distinction is freedom: as long as the public API keeps its
 shape, you can refactor everything behind it without breaking a single user. The
@@ -51,22 +62,19 @@ which module it lives in — nor that the tournament, right next door, is a
 1600-line file full of process forking and shared-memory accounting that they are
 promised nothing about.
 
+---
+
 ## Designing a good one
 
-A handful of principles make an interface predictable and pleasant:
+Five principles make an interface predictable and pleasant:
 
-- **Consistency.** Similar things should look similar. In `nimarena.game`, every
-  function takes the state as its first argument and none of them mutate it —
-  once you have called one, you can predict the rest.
-- **Small, predictable signatures.** Few parameters, sensible defaults, and no
-  surprises.
-- **Meaningful names.** `legal_moves`, `is_terminal`, `nim_sum` say what they
-  are. Avoid abbreviations that only the author understands.
-- **Type hints.** Annotate parameters and return types. They document the
-  interface, enable editor autocompletion, and let tools catch mistakes before
-  runtime. Add a `py.typed` file so users get the benefit too.
-- **Docstrings.** Every public object gets a short docstring saying what it does,
-  what it takes and what it returns.
+| Principle | What it means in practice |
+|---|---|
+| **Consistency** | similar things look similar. In `nimarena.game` every function takes the state as its first argument and none of them mutate it: once you have called one, you can predict the rest |
+| **Small signatures** | few parameters, sensible defaults, no surprises |
+| **Meaningful names** | `legal_moves`, `is_terminal`, `nim_sum` say what they are. Avoid abbreviations only the author understands |
+| **Type hints** | they document the interface, enable autocompletion and catch mistakes before runtime. Add `py.typed` so users get the benefit too |
+| **Docstrings** | every public object says what it does, what it takes and what it returns |
 
 ```python
 def apply_move(state: State, move: Move) -> State:
@@ -87,18 +95,38 @@ def apply_move(state: State, move: Move) -> State:
 The type hints and the docstring together tell a user everything they need in
 order to call `apply_move` correctly, without reading its body.
 
+---
+
 ## Designing a plug-in API
 
 Some libraries are called *by* users. Others are **implemented by** them: the
 library defines a shape, and users supply the code that fills it. A game arena is
-the second kind — an outsider writes a class, the library runs it. That inverts
-the design problem, and three decisions carry most of the weight.
+the second kind — an outsider writes a class, the library runs it.
+
+```mermaid
+flowchart LR
+    subgraph N["Normal library"]
+        direction LR
+        U1["👤 You"] -->|"you call"| L1["📦 Library"]
+    end
+    subgraph P["Plug-in library"]
+        direction LR
+        L2["📦 Library"] -->|"calls you"| U2["👤 Your class"]
+    end
+```
+
+That inverts the design problem, and three decisions carry most of the weight:
+
+| Decision | Because the caller needs… |
+|---|---|
+| **abstract base class** | Python to reject an incomplete implementation, at the point of failure |
+| **identity on classmethods** | to label a player **without constructing one** |
+| **`create(seed)` factory** | a single construction path, the same for everyone |
 
 ### An abstract base class is a contract Python enforces
 
 ```python
 from abc import ABC, abstractmethod
-
 
 class Player(ABC):
     @classmethod
@@ -180,6 +208,8 @@ two sources of truth and one of them would drift.
     the four decisions above. The next person to touch it — very possibly you —
     will not have to re-derive them.
 
+---
+
 ## Documenting the API automatically
 
 An API reference written by hand goes stale quickly: someone renames a parameter
@@ -206,9 +236,8 @@ Two habits make the generated page worth reading:
 - **Document the *why*, not the signature.** The signature is already on the
   page. What the reader cannot see is why the parameter exists.
 
-## Where to go next
+---
 
-- [Player API](../../game/upload-a-bot/player-api.md) — the same ideas, applied: the real
-  public contract of `nimarena`.
-- [Testing](testing.md) — how to verify the API behaves as designed.
-- [MkDocs](../documentation/mkdocs.md) — configuring mkdocstrings.
+**Next:** [Player API](../../game/upload-a-bot/player-api.md) — the same ideas, applied: the real public contract of `nimarena`.
+
+**Also:** [Testing](testing.md) · [MkDocs](../documentation/mkdocs.md)

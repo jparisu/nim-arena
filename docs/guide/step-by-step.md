@@ -5,37 +5,65 @@ Esto es el proyecto entero, en orden, en una sola página.
 Vas a construir un **juego por turnos de dos jugadores**: las reglas como
 librería de Python, una interfaz en la que los bots de otras personas puedan
 enchufarse, un bot propio, una página en la que cualquiera pueda jugar, y un
-torneo que clasifique a todos los bots y publique el resultado. Al final es un
-proyecto open-source de verdad, no un ejercicio.
+torneo que clasifique a todos los bots y publique el resultado.
+
+---
+
+## El recorrido completo
+
+```mermaid
+flowchart LR
+    S0["0 · Repositorio"] --> S1["1 · El juego"]
+    S1 --> S2["2 · La plataforma"]
+    S2 --> S3["3 · El bot"]
+    S3 --> S4["4 · La web"]
+    S4 --> S5["5 · El torneo"]
+```
+
+| Paso | Qué construyes | Cuando acaba, tienes |
+|---|---|---|
+| **0** | el repositorio | un proyecto vacío público, instalable, protegido y documentado |
+| **1** | las reglas | un juego correcto, jugable desde un prompt de Python |
+| **2** | la interfaz `Player` | una plataforma a la que alguien de fuera le puede enchufar un bot |
+| **3** | tu IA | un bot que merece la pena jugar, con resultados medidos |
+| **4** | la página web | una URL pública donde cualquiera juega contra él |
+| **5** | el torneo | una clasificación que se publica sola |
 
 Cada tarea de abajo dice qué hacer, enlaza con la sección de esta
 [Guía](index.md) que lo explica, y termina con un **Resultado**: la cosa
 concreta que deberías poder ver. Marca una tarea cuando puedas ver su
 resultado, no cuando te sientas satisfecho.
 
-## Cómo funciona esto
+---
 
-Tres reglas. Importan más que cualquier tarea concreta de las de abajo.
+## Tres reglas, antes de empezar
 
-**Un paso grande, un pull request.** Sal de `main` en una rama, construye el
-paso, abre un pull request, que lo revise alguien del equipo, fusiona. Nadie
-hace commit en `main` — ni para una errata, ni el último día. Esto es lo que
-hace que el historial sea legible y que el proyecto se pueda recuperar cuando
-algo se rompa. Mira [Flujo de trabajo](github/workflow.md) y
-[Pull requests](github/pull-requests.md).
+Importan más que cualquier tarea concreta de las de abajo.
 
-**Un paso no está hecho cuando el código funciona.** Está hecho cuando los
-tests pasan, la documentación dice que eso existe, las comprobaciones están en
-verde y la rama está fusionada. El código que se escribe ahora y se prueba
-"luego" es código que no se prueba nunca. Mira
-[Pruebas](python-library/testing.md) y
-[Documentar un proyecto](documentation/documentation.md).
+!!! tip "1 · Un paso grande, un pull request"
+    Sal de `main` en una rama, construye el paso, abre un pull request, que lo
+    revise alguien del equipo, fusiona. Nadie hace commit en `main` — ni para
+    una errata, ni el último día.
 
-**Algo jugable en cada etapa.** Cada paso grande termina con algo que puedes
-poner delante de una persona. Es deliberado: un proyecto que solo funciona al
-final es un proyecto del que no puedes saber en qué estado está.
+    Esto es lo que hace que el historial sea legible y que el proyecto se pueda
+    recuperar cuando algo se rompa. Mira [Flujo de trabajo](github/workflow.md)
+    y [Pull requests](github/pull-requests.md).
 
-!!! tip "El orden es de dependencias, no un calendario"
+!!! tip "2 · Un paso no está hecho cuando el código funciona"
+    Está hecho cuando los tests pasan, la documentación dice que eso existe, las
+    comprobaciones están en verde y la rama está fusionada.
+
+    El código que se escribe ahora y se prueba "luego" es código que no se
+    prueba nunca. Mira [Pruebas](python-library/testing.md) y
+    [Documentar un proyecto](documentation/documentation.md).
+
+!!! tip "3 · Algo jugable en cada etapa"
+    Cada paso grande termina con algo que puedes poner delante de una persona.
+
+    Es deliberado: un proyecto que solo funciona al final es un proyecto del que
+    no puedes saber en qué estado está.
+
+!!! note "El orden es de dependencias, no un calendario"
     Cada paso necesita al anterior — el bot necesita la interfaz, la interfaz
     necesita las reglas. Dentro de un paso, las tareas se pueden repartir entre
     el equipo y hacerse en paralelo.
@@ -732,22 +760,6 @@ Quién es mejor de verdad — decidido automáticamente, y publicado.
 
 ---
 
-## Qué deberías tener
+**Siguiente:** [Git](git/index.md) · [GitHub](github/index.md) · [Librería Python](python-library/index.md) · [Aplicación web](web-app/index.md) · [Documentación](documentation/index.md) — las cinco secciones, a fondo.
 
-| Después de | Hay |
-| --- | --- |
-| **Paso 0** | un proyecto vacío público, instalable, protegido, probado y documentado |
-| **Paso 1** | un juego correcto, jugable desde un prompt de Python |
-| **Paso 2** | una interfaz contra la que alguien de fuera puede escribir un bot, y un test que los comprueba |
-| **Paso 3** | un bot que merece la pena jugar, con resultados medidos |
-| **Paso 4** | una URL pública donde cualquiera juega a tu juego contra él |
-| **Paso 5** | un torneo que clasifica a todos los bots y publica la tabla solo |
-
-## Adónde ir después
-
-- [Git](git/index.md) · [GitHub](github/index.md) ·
-  [Librería Python](python-library/index.md) ·
-  [Aplicación web](web-app/index.md) ·
-  [Documentación](documentation/index.md) — las cinco secciones, a fondo.
-- [El juego](../game/index.md) — este repositorio como ejemplo terminado de
-  todo lo anterior.
+**También:** [El juego](../game/index.md)

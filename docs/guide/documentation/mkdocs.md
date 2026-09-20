@@ -7,6 +7,8 @@ produce un directorio `site/` de HTML que puedes alojar en cualquier parte.
 Este sitio es un proyecto MkDocs, así que todos los ejemplos de esta página son
 reales.
 
+---
+
 ## Los dos comandos
 
 ```bash
@@ -23,6 +25,8 @@ corriendo mientras escribes.
 roto es un aviso impreso en un registro que nadie lee; con él, la construcción
 falla y el pull request se pone en rojo. Úsalo en local antes de subir.
 
+---
+
 ## `mkdocs.yml`
 
 Un solo archivo lo configura todo. Los bloques, en el orden en que te importarán:
@@ -32,7 +36,8 @@ Un solo archivo lo configura todo. Los bloques, en el orden en que te importará
 ```yaml
 site_name: NIM Arena
 site_description: >-
-  NIM Arena — el manual de referencia del proyecto y una guía del estudiante…
+  NIM Arena — el manual de referencia del proyecto y la guía para construir
+  uno propio…
 site_url: https://nim-arena.readthedocs.io
 repo_url: https://github.com/jparisu/nim-arena
 repo_name: jparisu/nim-arena
@@ -170,6 +175,8 @@ flowchart LR
     rota. Si una cuadrícula de tarjetas se renderiza como una lista de texto
     literal, esa es la causa.
 
+---
+
 ## Páginas de API desde los docstrings
 
 Escribir una referencia a mano garantiza que se quede desfasada.
@@ -200,6 +207,8 @@ código:
 `Raises:` en tablas. Elige un estilo, decláralo una vez y escribe todos los
 docstrings así — véase [API](../python-library/api.md).
 
+---
+
 ## CSS adicional
 
 `extra_css` carga tu propia hoja de estilos al final, para que puedas
@@ -215,14 +224,22 @@ contraste en modo claro y oscuro, y ensanchar la columna de contenido para que l
 bloques YAML de los workflows no queden apretados. Mantenlo pequeño — cada regla
 que añades es una regla con la que puede pelearse la siguiente versión del tema.
 
+---
+
 ## Dos idiomas desde un solo árbol
 
-El sitio se publica en inglés y español gracias a
-[mkdocs-static-i18n](https://ultrabug.github.io/mkdocs-static-i18n/). La
-convención es un **sufijo en el nombre del archivo**: el idioma **por defecto** se
-queda con el archivo *sin sufijo* y cada idioma adicional añade el suyo. Aquí el
-español es el idioma por defecto, así que `page.md` es el español y `page.en.md`
-su gemelo en inglés, uno al lado del otro en la misma carpeta.
+Este sitio se publica en español e inglés desde una sola carpeta `docs/`, con
+[mkdocs-static-i18n](https://ultrabug.github.io/mkdocs-static-i18n/). **No lo
+necesitas para tu proyecto** — un idioma es una respuesta perfectamente válida —
+pero si quieres dos, así se hace.
+
+La convención es un **sufijo en el nombre del archivo**: el idioma por defecto
+se queda con el archivo sin sufijo, y cada idioma adicional añade el suyo.
+
+| Archivo | Idioma |
+|---|---|
+| `rules.md` | español (el idioma por defecto) |
+| `rules.en.md` | inglés |
 
 ```yaml
 plugins:
@@ -240,36 +257,19 @@ plugins:
           build: true
           nav_translations:
             Reglas del juego: Game rules
-            Guía: Guide
 ```
 
-- El idioma **por defecto** se construye en la raíz del sitio; los demás bajo su
-  código, aquí `/en/`. Cuál es el idioma por defecto no es una elección libre de
-  etiquetas: el plugin exige que el idioma por defecto sea el que no lleva
-  sufijo. Cambiar de idioma por defecto obliga a renombrar todos los archivos.
-- El `nav` se declara **una sola vez**, con las rutas de los archivos sin sufijo
-  y los títulos en el idioma por defecto. `nav_translations` traduce esos títulos
-  a cada idioma.
-- `fallback_to_default: true` sirve la página en el idioma por defecto cuando
-  todavía no existe la traducción — así que un sitio traducido a medias sigue
-  construyéndose y sigue navegándose.
-- Las etiquetas de la barra lateral están en `mkdocs.yml` y no dentro de ninguna
-  página, y por eso hacen falta las `nav_translations`.
-- El orden importa: `i18n` reconfigura el índice de búsqueda por idioma, así que
-  `search` tiene que estar registrado antes.
+Tres cosas que conviene saber antes de empezar:
 
-Una construcción, un despliegue, y Material pone un **selector de idioma** en la
-cabecera — quien lee cambia de idioma sin salir de la página en la que está.
+- El `nav` se declara **una sola vez**, con las rutas sin sufijo, y
+  `nav_translations` traduce los títulos de la barra lateral.
+- `fallback_to_default: true` sirve la página en el idioma por defecto cuando la
+  traducción aún no existe, así que un sitio traducido a medias se construye
+  igual.
+- Cambiar de idioma por defecto **obliga a renombrar todos los archivos**, así
+  que elígelo al principio.
 
 !!! tip "Las páginas de referencia generadas se quedan en inglés"
     Una página cuyo cuerpo sale de los docstrings renderiza el mismo texto en
-    todos los idiomas. Traduce la prosa que la rodea y dilo con un aviso corto
-    encima de la directiva, en vez de fingir que la referencia es bilingüe.
-
-## Adónde ir después
-
-- [Read the Docs](readthedocs.md) — construir y alojar esto automáticamente.
-- [GitHub Actions](../github/actions.md#construir-la-documentacion) — la
-  construcción `--strict` que se ejecuta en cada pull request.
-- [API](../python-library/api.md) — escribir docstrings que merezca la pena
-  generar.
+    todos los idiomas. Traduce la prosa que la rodea y dilo con un aviso corto,
+    en vez de fingir que la referencia es bilingüe.

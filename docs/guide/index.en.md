@@ -1,17 +1,13 @@
 # Guide
 
-This guide covers the tools a project like this one is built and shipped with:
-version control, the collaborative workflow on GitHub, Python packaging and
-testing, the web app people actually open, and the documentation site you are
-reading right now.
+The tools a project like this is built and shipped with: version control,
+collaborative work on GitHub, Python packaging and testing, the web app people
+actually open, and the documentation site.
 
-!!! info "Guide, not reference"
-    These pages teach the *how*, and nothing on them is specific to NIM: the
-    same steps apply to whatever project you build next.
+None of it is specific to NIM: the same steps apply to the next project you
+build.
 
-    The other half of this site is the reference manual of this repository —
-    its [rules](../game/rules.md), its [player API](../game/upload-a-bot/player-api.md) and
-    its [scoreboard](../game/advanced/scoreboard.md): [The game](../game/index.md).
+---
 
 ## Start here
 
@@ -21,34 +17,70 @@ reading right now.
 
     ---
 
-    Build your own game, from an empty repository to a published tournament,
-    as one ordered task list. Every task explains what to do, links into the
-    section that covers it, and ends with the result you should be able to see.
-    If you do not know where to begin, begin here.
+    The whole project, from an empty repository to a published tournament, as one
+    ordered list of tasks. Each task says what to do, links to the section that
+    covers it, and ends with the result you should be able to see.
+
+    **If you do not know where to start, start here.**
 
 </div>
+
+---
 
 ## The five sections
 
+```mermaid
+flowchart LR
+    G["1 · Git"] --> H["2 · GitHub"]
+    H --> P["3 · Python"]
+    P --> W["4 · Web"]
+    W --> D["5 · Docs"]
+```
+
 <div class="grid cards" markdown>
 
-- [**1. Git**](git/index.md) — version control: how it works, the commands you
-  need, and how to undo things.
-- [**2. GitHub**](github/index.md) — the collaborative workflow: pull requests,
-  reviews, Actions, repository protection, Pages.
-- [**3. Python library**](python-library/index.md) — packaging, layout, API
-  design, installation and testing.
-- [**4. Web app**](web-app/index.md) — putting a face on the project:
-  [Streamlit](web-app/streamlit/index.md) or a
-  [static page](web-app/static-web/index.md), and where each one is hosted.
-- [**5. Documentation**](documentation/index.md) — writing docs that live in the
-  repository, building them with MkDocs, publishing them on Read the Docs.
+- :material-source-branch:{ .lg .middle } **[1 · Git](git/index.md)**
+
+    ---
+
+    Version control: how it works, the commands you need, and how to undo
+    changes.
+
+- :material-github:{ .lg .middle } **[2 · GitHub](github/index.md)**
+
+    ---
+
+    The collaborative flow: pull requests, reviews, Actions, repository
+    protection, Pages.
+
+- :material-language-python:{ .lg .middle } **[3 · Python library](python-library/index.md)**
+
+    ---
+
+    Packaging, structure, API design, installation and testing.
+
+- :material-web:{ .lg .middle } **[4 · Web app](web-app/index.md)**
+
+    ---
+
+    Putting a face on the project: [Streamlit](web-app/streamlit/index.md) or a
+    [static page](web-app/static-web/index.md), and where each one is hosted.
+
+- :material-book-open-page-variant:{ .lg .middle } **[5 · Documentation](documentation/index.md)**
+
+    ---
+
+    Docs that live in the repository, built with MkDocs and published on Read
+    the Docs.
 
 </div>
 
-The sections are mostly independent. Read them in order if you are starting from
-scratch; jump straight to [Python library](python-library/index.md) or
-[Documentation](documentation/index.md) if you already know Git and GitHub.
+!!! tip "You do not have to read them in order"
+    The sections are mostly independent. Read them in order if you are starting
+    from scratch; jump straight to [Python library](python-library/index.md) or
+    [Documentation](documentation/index.md) if you already know Git and GitHub.
+
+---
 
 ## This repository is the worked example
 

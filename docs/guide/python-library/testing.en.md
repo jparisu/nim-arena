@@ -6,23 +6,24 @@ of a user finding out later. This page explains why they matter, how the
 `tests/` folder is organized, how to write and run them with **pytest**, and how
 they become an automatic gate on every pull request.
 
+---
+
 ## Why unit tests
 
 A **unit test** exercises one small piece of the library in isolation and asserts
 that it behaves as expected. Their real value shows up over time:
 
-- **They catch regressions.** When you change the search in `minimax.py`, the
-  tests tell you at once whether you broke the endgame oracle built on top of it.
-- **They make refactoring safe.** You can rewrite the internals of the
-  [API](api.md) freely, because a passing suite proves the public behavior is
-  unchanged.
-- **They document behavior.** A test is an executable example of how a function
-  is meant to be called and what it should return.
-- **They enable collaboration.** On a team, tests are how you trust a teammate's
-  pull request without re-reading all of it — the checks are green.
+| What you get | What that means on an ordinary Tuesday |
+|---|---|
+| 🛡️ **Regressions caught** | you change the search in `minimax.py` and know at once whether you broke the endgame oracle built on top of it |
+| 🔧 **Refactoring without fear** | you can rewrite the internals of the [API](api.md) freely: a passing suite proves the public behavior is unchanged |
+| 📖 **Documentation** | a test is an executable example of how a function is meant to be called and what it should return |
+| 🤝 **Teamwork** | you trust a teammate's pull request without re-reading all of it, because the checks are green |
 
 The cost is small and paid once; the benefit compounds every time the code
 changes.
+
+---
 
 ## The `tests/` structure
 
@@ -57,12 +58,10 @@ The simplest shape — call the thing, then assert something about it:
 # tests/test_game.py
 from nimarena.game import apply_move, is_terminal, nim_sum
 
-
 def test_apply_move_does_not_mutate_the_input():
     state = [3, 5, 7]
     apply_move(state, (0, 2))
     assert state == [3, 5, 7]
-
 
 def test_nim_sum_of_a_balanced_position_is_zero():
     assert nim_sum([2, 5, 7]) == 0
@@ -71,6 +70,8 @@ def test_nim_sum_of_a_balanced_position_is_zero():
 Each function tests one fact, and its name says what that fact is — so a failure
 report reads like a sentence:
 `test_apply_move_does_not_mutate_the_input failed`.
+
+---
 
 ## Writing and running tests with `pytest`
 
@@ -109,7 +110,6 @@ The everyday features you will reach for:
     ```python
     LADDER = ["random", "easy", "medium", "hard"]
 
-
     @pytest.mark.parametrize("name", LADDER)
     def test_every_player_declares_its_identity(name):
         cls = type(load_players().get(name))
@@ -137,6 +137,8 @@ The everyday features you will reach for:
     tests keep passing through internal refactors and only fail when behavior
     actually changes — which is the whole point.
 
+---
+
 ## Testing a contract other people implement
 
 When your library defines an interface that outsiders fill in
@@ -153,6 +155,8 @@ and asserts that each one forfeits its own game while the run continues. That is
 the difference between a runner that works and a runner you can leave unattended
 with a stranger's code in it.
 
+---
+
 ## Tests in continuous integration
 
 Running tests locally is good; running them **automatically on every change** is
@@ -167,10 +171,8 @@ a pull request cannot be merged while its tests are red. Local `pytest`, CI and
 branch protection then form a chain — you catch problems early, CI catches what
 you missed, and the rules make sure nothing broken reaches `main`.
 
-## Where to go next
+---
 
-- [GitHub Actions](../github/actions.md) — the workflow that runs these tests.
-- [Repository configuration](../github/repository-configuration.md) — making a
-  green suite a condition of merging.
-- [`tests/test_players.py`](https://github.com/jparisu/nim-arena/blob/main/tests/test_players.py)
-  — the contract suite described above, in full.
+**Next:** [GitHub Actions](../github/actions.md) — the workflow that runs these tests.
+
+**Also:** [Repository configuration](../github/repository-configuration.md) · [`tests/test_players.py`](https://github.com/jparisu/nim-arena/blob/main/tests/test_players.py)

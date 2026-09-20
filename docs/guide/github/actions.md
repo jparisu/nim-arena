@@ -9,6 +9,8 @@ Es lo que convierte "las pruebas pasan en mi portátil" en "las pruebas pasan,
 demostrablemente, en una máquina limpia, para todas las versiones que decimos
 soportar" — que es la única afirmación sobre la que quien revisa puede actuar.
 
+---
+
 ## El vocabulario
 
 ```mermaid
@@ -40,6 +42,8 @@ aprenderlos pronto:
 - **`timeout-minutes:`** — un techo. Sin él, un job colgado consume hasta el
   límite de seis horas de GitHub y no te dice nada útil.
 
+---
+
 ## Los workflows de este repositorio
 
 Cuatro archivos, cada uno con un disparador y un trabajo distintos.
@@ -50,6 +54,8 @@ Cuatro archivos, cada uno con un disparador y un trabajo distintos.
 | [`docs.yml`](https://github.com/jparisu/nim-arena/blob/main/.github/workflows/docs.yml) | cada push a `main`, cada PR | construir este sitio con `--strict` |
 | [`tournament.yml`](https://github.com/jparisu/nim-arena/blob/main/.github/workflows/tournament.yml) | semanalmente, o bajo demanda | jugar el torneo, hacer commit del marcador |
 | [`pages.yml`](https://github.com/jparisu/nim-arena/blob/main/.github/workflows/pages.yml) | cambios en web/fuentes, o tras un torneo | construir la web y desplegarla en Pages |
+
+---
 
 ## Ejecutar las pruebas
 
@@ -120,7 +126,9 @@ Cuatro decisiones ahí dentro merecen copiarse:
   ejecución.
 - **`--repetitions 1`.** El valor por defecto es 10, que son más de mil partidas
   en cada push. Una prueba de humo demuestra que el runner arranca y termina; no
-  es la ejecución evaluada.
+  es la ejecución oficial.
+
+---
 
 ## Construir la documentación
 
@@ -161,9 +169,11 @@ objetivo; véase [MkDocs](../documentation/mkdocs.md).
     deja su check permanentemente en estado "Expected" — y una comprobación
     esperada que nunca llega bloquea la fusión **para siempre**. Un envío de
     jugador toca solo `players/` y `players.yaml`, así que un filtro `docs/**`
-    aquí haría imposible fusionar absolutamente todos los PR de estudiantes. La
+    aquí haría imposible fusionar absolutamente todos esos PR. La
     construcción tarda unos 25 segundos; ejecutarla siempre sale más barato que
     la confusión.
+
+---
 
 ## Ejecutar el torneo de forma programada
 
@@ -240,6 +250,8 @@ jobs:
     ese push, no solo el que tenías en mente. El historial de este repositorio
     todavía contiene commits así — por eso el mensaje de aquí es un simple
     `chore(tournament): update leaderboard`.
+
+---
 
 ## Desplegar la web — y la trampa que tiene
 
@@ -323,6 +335,8 @@ Dos detalles más:
   cancelar a mitad de publicación puede dejar un despliegue a medio aplicar. Mejor
   encolar que cancelar.
 
+---
+
 ## Mantener las actions al día
 
 `.github/dependabot.yml` pide a GitHub que abra un pull request cuando una action
@@ -343,6 +357,8 @@ updates:
 Agrupar las subidas en un PR al mes es la diferencia entre un recordatorio útil y
 un flujo de ruido que aprendes a ignorar.
 
+---
+
 ## Leer una ejecución fallida
 
 1. El PR muestra una ✗ roja. Pulsa **Details**.
@@ -355,9 +371,8 @@ un flujo de ruido que aprendes a ignorar.
 5. **Re-run jobs**, arriba a la derecha, es para infraestructura genuinamente
    inestable, no para confiar en que un fallo real desaparezca.
 
-## Adónde ir después
+---
 
-- [GitHub Pages](pages.md) — dónde publica el workflow de Pages.
-- [Configuración del repositorio](repository-configuration.md) — hacer que estas
-  comprobaciones sean *obligatorias* antes de fusionar.
-- [Tests](../python-library/testing.md) — qué está ejecutando `pytest` en realidad.
+**Siguiente:** [GitHub Pages](pages.md) — dónde publica el workflow de Pages.
+
+**También:** [Configuración del repositorio](repository-configuration.md) · [Tests](../python-library/testing.md)

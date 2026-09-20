@@ -5,6 +5,8 @@ digan a Python (y a `pip`) cómo construirla, instalarla y describirla. Esta
 página recorre la estructura que usa este repositorio y el propósito de cada
 archivo, para que puedas reproducirla en tu propio proyecto.
 
+---
+
 ## Estructura recomendada
 
 Este proyecto usa la **estructura `src/`**, la buena práctica actual para
@@ -54,7 +56,21 @@ El rasgo distintivo es que el paquete importable vive bajo `src/`, no en la raí
 del repositorio. La razón es sutil pero importante — véase
 [La estructura `src/`](#the-src-layout) más abajo.
 
+---
+
 ## Los archivos que importan
+
+De todo el árbol de arriba, estos son los que hacen el trabajo:
+
+| Archivo | Qué hace | ¿Obligatorio? |
+|---|---|---|
+| [`pyproject.toml`](#pyprojecttoml) | metadatos, dependencias y cómo se construye | ✅ sí |
+| [`__init__.py`](#__init__py) | marca el paquete y define su API pública | ✅ sí |
+| [`src/`](#the-src-layout) | dónde vive el paquete, y por qué no en la raíz | ✅ muy recomendable |
+| [`py.typed`](#pytyped) | avisa de que el paquete trae anotaciones de tipo | ⬜ si anotas |
+| [`tests/`](#tests-un-espejo-del-codigo) | un módulo de pruebas por módulo de código | ✅ sí |
+| [`conftest.py`](#conftestpy) | configuración de rutas para pytest | ⬜ a veces |
+| [`requirements.txt`](#requirementstxt) | fijar versiones de un despliegue | ⬜ rara vez |
 
 ### `pyproject.toml`
 
@@ -187,6 +203,8 @@ por línea, tradicionalmente con `pip install -r requirements.txt`. Es un sistem
 tradicional por compatibilidad, pero es redundante con `pyproject.toml`, que ya
 contiene la lista de dependencias y sus versiones. Este proyecto no tiene uno.
 
+---
+
 ## Versionado
 
 La versión de la librería se declara como `version` en `pyproject.toml` y se
@@ -208,8 +226,8 @@ Los números siguen el **versionado semántico**, `MAYOR.MENOR.PARCHE`:
 Para publicar una versión nueva, sube el número (en los dos sitios) y fusiónalo
 mediante el [flujo habitual de pull request](../github/pull-requests.md).
 
-## Adónde ir después
+---
 
-- [Instalación y uso](installation-and-usage.md) — instala este paquete e
-  impórtalo.
-- [API](api.md) — diseña la interfaz pública que expondrá `__init__.py`.
+**Siguiente:** [Instalación y uso](installation-and-usage.md) — instala este paquete e impórtalo.
+
+**También:** [API](api.md)

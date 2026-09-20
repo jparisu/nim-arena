@@ -12,6 +12,8 @@ a full workflow.
     Lines starting with `$` are commands you type; everything else is output.
     Paths and hashes come from a small example project.
 
+---
+
 ## Starting a repository
 
 ### `git init`
@@ -41,6 +43,8 @@ Receiving objects: 100% (120/120), 45.2 KiB, done.
 
 Cloning also sets up a remote called **`origin`** pointing back at the source,
 so you can `push` and `pull` without extra configuration.
+
+---
 
 ## Recording changes
 
@@ -96,6 +100,8 @@ $ git commit -m "feat(players): add the greedy bot"
     never includes new (untracked) files. Prefer an explicit `git add` while you
     are learning.
 
+---
+
 ## Inspecting
 
 ### `git log`
@@ -134,6 +140,8 @@ index 3b1f2a1..a2c4d9e 100644
 - `git diff --staged` shows what is staged (i.e. what the next commit will
   record).
 - `git diff main feature` compares two branches.
+
+---
 
 ## Branching and merging
 
@@ -184,6 +192,8 @@ Fast-forward
 If both branches changed the same lines, the merge stops with a **conflict** for
 you to resolve — see the [Example](example.md).
 
+---
+
 ## Synchronizing with a remote
 
 ### `git push`
@@ -216,6 +226,8 @@ Fast-forward
 Get into the habit of pulling **before** you start working, so you build on your
 teammates' latest changes rather than on a stale copy.
 
+---
+
 ## Quick reference
 
 | Command | Purpose |
@@ -233,6 +245,8 @@ teammates' latest changes rather than on a stale copy.
 | `git push` | Send commits to the remote. |
 | `git pull` | Bring remote commits into the current branch. |
 
+---
+
 ## Other useful commands
 
 - `git rebase <branch>` — reorganize commits to make the history more linear.
@@ -241,6 +255,8 @@ teammates' latest changes rather than on a stale copy.
 
 Other commands for undoing changes are covered in
 [Undoing changes](undoing-changes.md): `git restore`, `git reset`, `git stash`.
+
+---
 
 ## The `.gitignore` file
 
@@ -252,41 +268,40 @@ A **`.gitignore`** file, placed at the root of the repository, lists patterns
 for files Git should **ignore**: they never show up in `git status` and cannot
 be added by accident. Each line is a pattern; `#` starts a comment.
 
-Here is the `.gitignore` this very project uses — a good starting point for any
-Python project:
+| What is ignored | Why |
+|---|---|
+| caches and `__pycache__/` | they regenerate themselves on every run |
+| the virtual environment | it belongs to your machine, and it is large |
+| build artifacts | generated output: committing it makes every rebuild a diff |
+| editor settings | they are yours, not the project's |
+
+A valid starting point for any Python project:
 
 ```gitignore
 # Python
 __pycache__/
 *.py[cod]
 *.egg-info/
-.eggs/
 build/
 dist/
 .venv/
-venv/
-env/
 
 # Testing / tooling
 .pytest_cache/
 .ruff_cache/
 .coverage
-htmlcov/
 
 # MkDocs
 site/
-
-# Generated web assets (assembled by scripts/build_web.py or the Pages workflow)
-web/py/
-web/py.zip
-web/leaderboard.json
 
 # OS / editor
 .DS_Store
 .idea/
 .vscode/
-*.swp
 ```
+
+Add whatever your own project generates on top. Here, for instance, the bundle
+`scripts/build_web.py` assembles for the page (`web/py.zip`).
 
 !!! tip
     Add `.gitignore` **before** your first commit, so the noise never enters the
@@ -298,8 +313,8 @@ web/leaderboard.json
     is intentionally left out of this guide: for this project, understanding
     `main` and branches is enough.
 
-## Where to go next
+---
 
-- [Undoing changes](undoing-changes.md) — when a command went wrong, or you
-  changed your mind.
-- [Example](example.md) — these commands, applied end to end.
+**Next:** [Undoing changes](undoing-changes.md) — when a command went wrong, or you changed your mind.
+
+**Also:** [Example](example.md)

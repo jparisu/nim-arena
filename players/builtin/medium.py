@@ -18,7 +18,7 @@ class Medium(BasicMinimaxBot):
 
     @classmethod
     def get_authors(cls) -> list[str]:
-        return ["jparisu"]
+        return ["builtin"]
 
     @classmethod
     def get_icon(cls) -> str:

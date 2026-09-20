@@ -12,14 +12,25 @@ lo que separa una librería que da gusto usar de otra con la que se pelea.
     página para el *porqué* de una API, y aquella para el *qué* ofrece hoy la
     librería.
 
+---
+
 ## Qué es aquí una API
 
 Piensa en una librería como algo con dos caras:
 
-- la **API pública** — lo que la gente importa y llama, y lo que prometes
-  mantener estable entre versiones;
-- las **interioridades** — funciones auxiliares, módulos privados y estructuras
-  de datos que la hacen funcionar, y que puedes reescribir cuando quieras.
+```mermaid
+flowchart LR
+    U["👤 Quien la usa"] --> API["🚪 API pública<br/>Player · game · Registry"]
+    API --> INT["🔧 Interioridades<br/>manifest · tournament · bots"]
+
+    style API stroke-width:3px
+```
+
+| | API pública | Interioridades |
+|---|---|---|
+| Quién la toca | cualquiera que importe tu paquete | solo tú |
+| Puedes cambiarla | no sin romper a alguien | cuando quieras |
+| Cómo se marca | en `__all__`, documentada | con `_guion_bajo` delante |
 
 El valor de la distinción es la libertad: mientras la API pública mantenga su
 forma, puedes refactorizar todo lo que hay detrás sin romperle nada a nadie. El
@@ -51,23 +62,19 @@ que saber en qué módulo vive — ni que el torneo, justo al lado, es un archiv
 1600 líneas lleno de bifurcación de procesos y contabilidad en memoria compartida
 sobre el que no se le promete nada.
 
+---
+
 ## Diseñar una API buena
 
-Un puñado de principios hacen que una interfaz sea predecible y agradable:
+Cinco principios hacen que una interfaz sea predecible y agradable:
 
-- **Consistencia.** Las cosas parecidas deben parecerse. En `nimarena.game`,
-  todas las funciones reciben el estado como primer argumento y ninguna lo muta:
-  en cuanto has llamado a una, puedes predecir el resto.
-- **Firmas pequeñas y predecibles.** Pocos parámetros, valores por defecto
-  sensatos y ninguna sorpresa.
-- **Nombres con significado.** `legal_moves`, `is_terminal`, `nim_sum` dicen lo
-  que son. Evita abreviaturas que solo entiende quien las escribió.
-- **Anotaciones de tipo.** Anota parámetros y valores de retorno. Documentan la
-  interfaz, habilitan el autocompletado del editor y permiten que las
-  herramientas cacen errores antes de ejecutar. Añade un archivo `py.typed` para
-  que quien te use también se beneficie.
-- **Docstrings.** Cada objeto público lleva un docstring corto que dice qué hace,
-  qué recibe y qué devuelve.
+| Principio | Qué significa en la práctica |
+|---|---|
+| **Consistencia** | las cosas parecidas se parecen. En `nimarena.game` todas las funciones reciben el estado como primer argumento y ninguna lo muta: en cuanto has llamado a una, puedes predecir el resto |
+| **Firmas pequeñas** | pocos parámetros, valores por defecto sensatos, ninguna sorpresa |
+| **Nombres con significado** | `legal_moves`, `is_terminal`, `nim_sum` dicen lo que son. Evita abreviaturas que solo entiende quien las escribió |
+| **Anotaciones de tipo** | documentan la interfaz, habilitan el autocompletado y cazan errores antes de ejecutar. Añade `py.typed` para que quien te use se beneficie |
+| **Docstrings** | cada objeto público dice qué hace, qué recibe y qué devuelve |
 
 ```python
 def apply_move(state: State, move: Move) -> State:
@@ -88,19 +95,40 @@ def apply_move(state: State, move: Move) -> State:
 Las anotaciones y el docstring juntos le dicen a quien lo lea todo lo que
 necesita para llamar a `apply_move` correctamente, sin leer su cuerpo.
 
+---
+
 ## Diseñar una API que otros implementan
 
 Algunas librerías las llaman sus usuarios. Otras las **implementan** ellos: la
 librería define una forma y quien la usa aporta el código que la rellena. Una
 arena de juego es del segundo tipo — alguien de fuera escribe una clase y la
-librería la ejecuta. Eso invierte el problema de diseño, y tres decisiones
-cargan con casi todo el peso.
+librería la ejecuta.
+
+```mermaid
+flowchart LR
+    subgraph N["Librería normal"]
+        direction LR
+        U1["👤 Tú"] -->|"llamas"| L1["📦 Librería"]
+    end
+    subgraph P["Librería que se implementa"]
+        direction LR
+        L2["📦 Librería"] -->|"te llama"| U2["👤 Tu clase"]
+    end
+```
+
+Eso invierte el problema de diseño, y tres decisiones cargan con casi todo el
+peso:
+
+| Decisión | Porque quien llama necesita… |
+|---|---|
+| **clase base abstracta** | que Python rechace una implementación incompleta, en el momento del fallo |
+| **identidad en métodos de clase** | poder etiquetar un jugador **sin construirlo** |
+| **fábrica `create(seed)`** | una única vía de construcción, igual para todos |
 
 ### Una clase base abstracta es un contrato que Python impone
 
 ```python
 from abc import ABC, abstractmethod
-
 
 class Player(ABC):
     @classmethod
@@ -185,6 +213,8 @@ fuentes de verdad y una de las dos acabaría desviándose.
     explican exactamente las cuatro decisiones de arriba. A la siguiente persona
     que lo toque —muy posiblemente tú— no le hará falta volver a deducirlas.
 
+---
+
 ## Documentar la API automáticamente
 
 Una referencia de API escrita a mano se queda desfasada enseguida: alguien
@@ -213,9 +243,8 @@ Dos hábitos hacen que la página generada merezca leerse:
 - **Documenta el *porqué*, no la firma.** La firma ya está en la página. Lo que
   quien lee no puede ver es por qué existe el parámetro.
 
-## Adónde ir después
+---
 
-- [API de jugador](../../game/upload-a-bot/player-api.md) — las mismas ideas, aplicadas: el
-  contrato público real de `nimarena`.
-- [Tests](testing.md) — cómo verificar que la API se comporta como se diseñó.
-- [MkDocs](../documentation/mkdocs.md) — configurar mkdocstrings.
+**Siguiente:** [API de jugador](../../game/upload-a-bot/player-api.md) — las mismas ideas, aplicadas: el contrato público real de `nimarena`.
+
+**También:** [Tests](testing.md) · [MkDocs](../documentation/mkdocs.md)

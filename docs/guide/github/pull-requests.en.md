@@ -8,6 +8,8 @@ in one place and stays in the record afterwards.
 This page covers both halves of the job: **opening** a good pull request, and
 **handling** one that somebody else opened.
 
+---
+
 ## Branch PR or fork PR
 
 Which one you can open depends on whether you can write to the target repository.
@@ -49,6 +51,8 @@ $ git checkout -b add-corner-bot upstream/main
     would run. This is why a fork PR can run the tests but cannot publish a site
     or push a commit. It is a feature, not a misconfiguration.
 
+---
+
 ## Opening one
 
 1. **Push your branch.** The push output prints a link that opens the PR form;
@@ -76,6 +80,8 @@ A pull request worth reviewing is:
     You do not open a second PR to fix review comments. Commit on the same branch
     and push; the open PR updates itself, and the conversation stays in one
     place.
+
+---
 
 ## Pull request templates
 
@@ -182,6 +188,8 @@ the other one exists. This repository ships
     GitHub *does* show a chooser when there is more than one. This repository has
     three: a bug report, a new-player idea and a conduct report.
 
+---
+
 ## Reviewing someone else's pull request
 
 Opening a PR is the easy half. If your project accepts contributions, most of
@@ -264,6 +272,8 @@ only for whether it works:
 Anything suspicious is rejected on sight. There is no obligation to explain
 yourself past that.
 
+---
+
 ## Merging
 
 Three buttons, three histories:
@@ -274,7 +284,7 @@ Three buttons, three histories:
 | **Merge commit** | every commit, plus a merge commit | the individual commits are meaningful on their own |
 | **Rebase and merge** | every commit, replayed linearly | you want no merge commits at all |
 
-Squash is the safe default for student projects: the PR is the unit of work, and
+Squash is the safe default for a small project: the PR is the unit of work, and
 `main` reads as one line per change. Whichever you pick, be consistent —
 repository settings can disable the other two.
 
@@ -290,10 +300,8 @@ Not every proposal should be merged. Closing one is a normal outcome, not a
 failure — say why in a comment, thank the author, and close it. Leaving it open
 for months is worse for everyone than a clear "no".
 
-## Where to go next
+---
 
-- [Repository configuration](repository-configuration.md) — requiring reviews
-  and green checks before the merge button unlocks.
-- [GitHub Actions](actions.md) — what those checks actually run.
-- [Submit a player](../../game/upload-a-bot/submit-a-player.md) — this repository's own
-  contribution flow, end to end.
+**Next:** [Repository configuration](repository-configuration.md) — requiring reviews and green checks before the merge button unlocks.
+
+**Also:** [GitHub Actions](actions.md) · [Submit a player](../../game/upload-a-bot/submit-a-player.md)

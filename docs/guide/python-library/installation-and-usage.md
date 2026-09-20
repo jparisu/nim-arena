@@ -1,9 +1,15 @@
 # Instalación y uso
 
 Una vez que una librería está empaquetada ([Organización](organization.md)),
-usarla está a un `pip install` de distancia. Como la mayor parte del trabajo de
-este curso ocurre en **notebooks (Google Colab)**, la vía principal es instalar
-directamente desde GitHub — sin configuración local, sin clonar a mano.
+usarla está a un `pip install` de distancia. Hay dos caminos, y eliges según lo
+que estés haciendo:
+
+| Quiero… | Instala así | Al cambiar el código |
+|---|---|---|
+| 🧪 **usar** la librería (notebook, script) | [desde GitHub](#instalar-desde-github) | hay que reinstalar |
+| 🔧 **desarrollar** la librería | [local editable, `-e`](#instalar-en-local) | el cambio se ve al instante |
+
+---
 
 ## Instalar desde GitHub
 
@@ -37,6 +43,8 @@ pip install git+https://github.com/jparisu/nim-arena.git@a9d292d
     reciente de una rama elegida, con un solo comando y sin pasos manuales. Encaja
     de forma natural con un flujo de trabajo basado en notebooks.
 
+---
+
 ## Usarlo en un notebook
 
 En un notebook de Colab, instala en una celda (el `!` inicial ejecuta un comando de
@@ -63,6 +71,8 @@ print(game.nim_sum(state))           # 1
     versión, reinicia el entorno de ejecución (**Runtime → Restart**) para que se
     cargue el código nuevo. Python cachea los módulos importados durante toda la
     sesión.
+
+---
 
 ## Instalar en local
 
@@ -97,7 +107,8 @@ gracias a `[project.scripts]` en `pyproject.toml`:
 nim-tournament --no-subprocess --repetitions 1
 ```
 
-## Adónde ir después
+---
 
-- [API](api.md) — cómo debería ser una interfaz pública limpia para la librería.
-- [Pruebas](testing.md) — ejecuta y escribe la suite de pruebas.
+**Siguiente:** [API](api.md) — cómo debería ser una interfaz pública limpia para la librería.
+
+**También:** [Pruebas](testing.md)

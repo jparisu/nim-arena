@@ -1,71 +1,116 @@
 # Reglas del juego
 
-## Cómo funciona el NIM
+El NIM se juega con varias **filas** de **palos**. Una posición se escribe como
+la lista de palos que queda en cada fila:
 
-El NIM se juega con varias **filas** de **palos**. En cada turno, un jugador:
+```text
+     [3, 5, 7]
+
+fila 0 │ ▌ ▌ ▌
+fila 1 │ ▌ ▌ ▌ ▌ ▌
+fila 2 │ ▌ ▌ ▌ ▌ ▌ ▌ ▌
+```
+
+---
+
+## Cómo se juega
+
+En cada turno, un jugador:
 
 - elige **una fila**, y
 - retira **uno o más palos** de esa fila (nunca de más de una, y al menos uno).
 
 Los jugadores se alternan. **Gana quien retira el último palo.** Es la convención
-de *juego normal* — recuérdala, porque determina la estrategia perfecta. En el NIM
-**no hay empate**.
+de *juego normal* — recuérdala, porque determina la estrategia perfecta. En el
+NIM **no hay empate**.
 
-## Parametrización
+!!! example "Un turno"
+    Desde `[3, 5, 7]`, retirar 4 palos de la fila 2:
 
-El juego queda completamente parametrizado por su configuración inicial:
+    ```text
+    antes  [3, 5, 7]          después  [3, 5, 3]
 
-- el **número de filas** `R`;
-- los **palos por fila**, una lista de `R` enteros no negativos, p. ej. `[3, 5, 7]`
-  o `[1, 3, 5, 7]`.
+    fila 0 │ ▌ ▌ ▌            fila 0 │ ▌ ▌ ▌
+    fila 1 │ ▌ ▌ ▌ ▌ ▌        fila 1 │ ▌ ▌ ▌ ▌ ▌
+    fila 2 │ ▌ ▌ ▌ ▌ ▌ ▌ ▌    fila 2 │ ▌ ▌ ▌
+    ```
 
-Una partida se define por completo con su configuración inicial. Tanto la página
-web como el torneo permiten configurar esos valores. El conjunto integrado del
-torneo es `[3, 5, 7]`, `[1, 2, 3, 4, 5]` y `[4, 5, 6, 7, 8, 9]`; `--board` lo
-sustituye.
+    La jugada se escribe `(2, 4)`: fila 2, cuatro palos.
 
-## Representación del estado
+---
 
-El estado del juego es simplemente la lista actual de palos por fila, p. ej.
-`[3, 0, 4]`. Esta representación es **simple y serializable a JSON** — una lista
-de enteros. Es un requisito duro: la *misma* representación cruza de Python (el
-torneo) a JavaScript (el renderizado) y vuelve a Python (Pyodide, en el
-navegador). Nada de objetos propios en la frontera.
+## Los cuatro conceptos
 
-Una jugada es una tupla simple `(fila, cantidad)`: retirar `cantidad` palos de la
-fila `fila`.
+| Concepto | Cómo se representa | Ejemplo |
+|---|---|---|
+| **Posición** | lista de enteros, un número por fila | `[3, 0, 4]` |
+| **Jugada** | tupla `(fila, cantidad)` | `(2, 4)` |
+| **Partida** | queda definida por su posición inicial | `[3, 5, 7]` |
+| **Final** | todas las filas vacías | `[0, 0, 0]` |
 
-## Condición de final
+La partida termina cuando todas las filas están vacías.
+Gana quien hizo la
+última jugada.
 
-La partida termina cuando todas las filas están vacías (`[0, 0, ..., 0]`). Gana
-quien hizo la última jugada (quien retiró el último palo).
+!!! note "Tableros configurables"
+    Tanto la página web como el torneo permiten elegir cuántas filas hay y
+    cuántos palos tiene cada una. El torneo usa por defecto `[3, 5, 7]`,
+    `[1, 2, 3, 4, 5]` y `[4, 5, 6, 7, 8, 9]`.
 
-## La estrategia ganadora (nim-sum / XOR)
+---
 
-Para el NIM de juego normal, la estrategia óptima es clásica y se basa en el
+<!--
+## La estrategia ganadora: el nim-sum
+
+El NIM está **resuelto**. La estrategia óptima es clásica y se basa en el
 **nim-sum**: el XOR bit a bit de los tamaños de todas las filas.
 
-- Si el nim-sum de la posición actual es **distinto de cero**, quien mueve puede
-  forzar la victoria moviendo a una posición cuyo nim-sum sea **cero**.
-- Si el nim-sum es **cero**, quien mueve está en posición perdedora (frente a
-  juego perfecto) y solo puede dar largas.
+| Nim-sum de la posición | Quien mueve… |
+|---|---|
+| **distinto de cero** | está **ganando**: existe una jugada que lo deja a cero |
+| **cero** | está **perdiendo** frente a juego perfecto: solo puede dar largas |
 
-!!! example "Ejemplo trabajado"
-    Posición `[3, 5, 7]`. En binario: `011 ⊕ 101 ⊕ 111 = 001`, así que el nim-sum
-    es `1` — quien mueve está **ganando**. Una jugada ganadora debe dejar el
-    nim-sum en `0`. Aquí, reducir la fila 0 de `3` a `2` da `[2, 5, 7]`, cuyo
-    nim-sum es `010 ⊕ 101 ⊕ 111 = 000`.
+La receta, entonces, es: **deja siempre el nim-sum a cero**.
 
-Ningún jugador incluido calcula esto. `hard` reconoce *algunas* formas con nim-sum
-cero —filas espejadas, tableros de todo unos por paridad y unas pocas posiciones
-tabuladas— pero no ve la regla general, que es exactamente por lo que sigue siendo
-batible. Escribir el jugador que sí la ve es el primer envío evidente.
+!!! example "Ejemplo trabajado sobre `[3, 5, 7]`"
+    Se calcula el XOR de las filas, bit a bit:
 
-Prueba el **modo rayos X** de la [página web](advanced/web.md) para ver el nim-sum en vivo
-durante una partida.
+    | Fila | Palos | Binario |
+    |---|---|---|
+    | 0 | 3 | `011` |
+    | 1 | 5 | `101` |
+    | 2 | 7 | `111` |
+    | | **nim-sum** | **`001`** = 1 |
 
-## Adónde ir después
+    El nim-sum es `1`, así que quien mueve **está ganando**. Una jugada ganadora
+    debe dejarlo en `0`: reducir la fila 0 de `3` a `2` da `[2, 5, 7]`.
 
-- [Primeros pasos](getting-started.md) — instalar y jugar una partida.
-- [API de jugador](upload-a-bot/player-api.md) — convertir la estrategia de arriba en un
-  jugador.
+    | Fila | Palos | Binario |
+    |---|---|---|
+    | 0 | 2 | `010` |
+    | 1 | 5 | `101` |
+    | 2 | 7 | `111` |
+    | | **nim-sum** | **`000`** = 0 ✅ |
+
+!!! tip "Míralo en vivo"
+    El **modo rayos X** de la [página web](advanced/web.md) muestra el nim-sum
+    de la posición mientras juegas, y resalta la fila que tocaría el juego
+    óptimo.
+
+---
+
+## Por qué las IA incluidas siguen siendo batibles
+
+Ninguna de las cuatro IA que trae el proyecto calcula el nim-sum. `hard`
+reconoce *algunas* formas con nim-sum cero —filas espejadas, tableros de todo
+unos por paridad y unas pocas posiciones tabuladas— pero no ve la regla general.
+
+Por eso se le puede ganar, y por eso un jugador que **sí** aplique la regla
+completa les ganaría a todos.
+
+---
+-->
+
+**Siguiente:** [Primeros pasos](advanced/getting-started.md) — instala el paquete y juega
+una partida. O ve directo a la [API de jugador](upload-a-bot/player-api.md) para
+convertir esta estrategia en código.

@@ -8,6 +8,8 @@ versionado, buscador y previsualizaciones de pull request encima.
 Esta documentación se publica allí, en
 [nim-arena.readthedocs.io](https://nim-arena.readthedocs.io).
 
+---
+
 ## ¿Por qué no GitHub Pages y ya está?
 
 Los dos alojan sitios estáticos gratis. Resuelven problemas distintos.
@@ -31,6 +33,8 @@ despliegue de Pages ([GitHub Pages](../github/pages.md)) y este manual está en
 Read the Docs. Publicar la documentación allí también mantiene el workflow de
 Pages centrado en una sola tarea.
 
+---
+
 ## Importar un proyecto
 
 Una vez, desde la interfaz web:
@@ -49,6 +53,8 @@ Una vez, desde la interfaz web:
     interfaz web y no queda registrado en ninguna parte del repositorio. Si un
     fork no construye nada, es porque nadie lo importó — no porque la
     configuración esté mal.
+
+---
 
 ## `.readthedocs.yaml`
 
@@ -102,6 +108,8 @@ construcción, los bloques de API salen vacíos y la construcción puede aun as�
     construcción estricta en cada pull request. Read the Docs publica; la Action
     comprueba.
 
+---
+
 ## Versiones
 
 Una **versión** en Read the Docs es una rama o una etiqueta que construye y sirve
@@ -154,28 +162,23 @@ un solo despliegue y un selector de idioma dentro de la página; no obtienes un
 *proyecto de traducción* aparte por idioma en Read the Docs. Para un sitio de este
 tamaño el selector vale más que la URL más limpia.
 
-!!! danger "Define `site_url` desde el entorno, o el selector de idioma se rompe"
-    Material construye los `<link rel="alternate">` del selector de idioma a
-    partir de la **ruta** de `site_url`. Si la fijas a la raíz del sitio, el enlace
-    al inglés se convierte en `/en/` — que Read the Docs lee como su propio
-    *código de idioma*, no como nuestro subdirectorio. Busca un proyecto de
-    traducción, no lo encuentra, y acabas en una página sin estilos y con iconos
-    gigantes: el HTML se renderizó, la hoja de estilos dio 404.
+??? warning "Si publicas en dos idiomas: define `site_url` desde el entorno"
+    Material construye los enlaces del selector de idioma a partir de la **ruta**
+    de `site_url`. Si la fijas a la raíz, el enlace al inglés se convierte en
+    `/en/`, que Read the Docs lee como su propio *código de idioma* y no como tu
+    subdirectorio: acabas en una página sin estilos.
 
-    Read the Docs exporta `READTHEDOCS_CANONICAL_URL` en cada construcción —
-    distinta para cada versión y para cada previsualización de pull request. Léela
-    con la etiqueta `!ENV` de MkDocs y deja un valor de reserva para las
-    construcciones locales:
+    La solución es leer la variable que Read the Docs exporta en cada
+    construcción, con un valor de reserva para las locales:
 
     ```yaml
     site_url: !ENV [READTHEDOCS_CANONICAL_URL, "https://nim-arena.readthedocs.io/"]
     ```
 
-    El selector resuelve entonces a `/en/latest/en/` en producción y a
-    `/en/<numero-de-pr>/en/` dentro de una previsualización, así que nunca te saca
-    de la construcción que estás leyendo. La misma variable arregla el enlace
-    `canonical`, que si no apuntaría todas las páginas de la previsualización a
-    producción.
+    La misma variable arregla el enlace `canonical` dentro de las
+    previsualizaciones de pull request.
+
+---
 
 ## Previsualizaciones de pull request
 
@@ -189,6 +192,8 @@ construcción está aislada y produce un sitio desechable sin acceso a tu proyec
 Para un repositorio que acepta contribuciones externas, es el ajuste más útil de
 toda esta página.
 
+---
+
 ## La insignia
 
 El estado de la construcción está disponible como imagen, y por eso el README
@@ -200,6 +205,8 @@ lleva:
 
 Una construcción de documentación rota se ve entonces desde la portada, en lugar
 de en un correo que nadie abre.
+
+---
 
 ## Cuando una construcción falla
 
@@ -217,9 +224,8 @@ habituales, por frecuencia:
 4. **El archivo de configuración en el sitio equivocado.** `.readthedocs.yaml`
    tiene que estar en la raíz del repositorio, en la rama que se construye.
 
-## Adónde ir después
+---
 
-- [MkDocs](mkdocs.md) — la construcción que ejecuta este servicio.
-- [GitHub Pages](../github/pages.md) — el otro destino de publicación, y en qué es
-  mejor.
-- [Documentar un proyecto](documentation.md) — qué poner en las páginas.
+**Siguiente:** [MkDocs](mkdocs.md) — la construcción que ejecuta este servicio.
+
+**También:** [GitHub Pages](../github/pages.md) · [Documentar un proyecto](documentation.md)

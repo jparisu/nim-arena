@@ -1,186 +1,192 @@
 # The tournament
 
-A function in the library — and a matching GitHub Action — runs a tournament
-among all registered players and writes a machine-readable results file that the
-[web scoreboard](web.md) renders.
+The tournament runs **every registered player** against every other and writes a
+results file that the [web app](web.md) renders as a scoreboard.
 
-## The roster
+```mermaid
+flowchart LR
+    R["👥 Registered<br/>players"] --> T["⚔️ Ties<br/>round-robin"]
+    T --> G["🎮 Games<br/>on a time budget"]
+    G --> J["📊 leaderboard.json"]
+```
 
-Before any games are played, the roster is built by
-[`build_roster`][nimarena.tournament.build_roster]. A player kind can be entered
-**more than once**, which is what lets a kind compete against *itself* — a
-round-robin never pairs an instance with itself. Each copy gets its own seed
-(`0, 1, …`), so a bot that depends on randomness plays a different game each time
-and the run still repeats exactly. Copies are named `random_0`, `random_1`, and so
-on; the web scoreboard renders that suffix as a subscript, with the player's icon
-in front.
+You run it yourself with `nim-tournament`, and a scheduled GitHub Action runs it
+too.
 
-How many copies each kind gets is decided by the tournament, in
-[`copies_for`][nimarena.tournament.copies_for], from the manifest that admitted
-the player: `BUILTIN_PLAYER_COPIES` for the reference ladder in `players/builtin`, and
-`CUSTOM_PLAYER_COPIES` for a submission in `players/custom`. Today that is **2**
-and **1**: the reference ladder is the yardstick the scoreboard is read against
-and worth the extra games, while the submitted side is the one that grows with
-every merged pull request, and every pair of entrants plays a match.
-`--player-repetition` overrides every kind at once.
+---
 
-## A "match" is many games
+## A “tie” is many games
 
-In every format, a **match** between two players is played the same way: for each
-starting board, and for each player going first once, `--repetitions` games are
-played. So a match spans `len(boards) * 2 * repetitions` games. Alternating the
-first mover matters because in NIM the first player often has a decisive
-advantage.
+Two players do not play one game: they play a **series**. For each starting
+board, and with each of them moving first once, `--repetitions` games are
+played.
 
-## Formats (`--tournament`)
+```text
+games in a tie = number of boards × 2 × repetitions
+```
 
-| Format | Pairings | Classification |
-|--------|----------|----------------|
-| `simple` (default) | round-robin, every pair once | points (one per win) |
-| `league` | round-robin, every pair once | Elo rating (per game) |
-| `championship` | group phase + knockout bracket | points (overall) + a champion |
+With the defaults (3 boards, 3 repetitions) that is **18 games** per pair.
 
-- **simple** — the lightweight default: an all-play-all ranked by wins.
-- **league** — the same all-play-all, but ranked by an
-  [Elo rating][nimarena.elo] updated one game at a time (K=32, start 1500). Turn
-  it off with `--no-elo` to fall back to points.
-- **championship** — players are dealt into balanced **groups of four**; each
-  group plays a round-robin and its **top two advance** to a **seeded
-  single-elimination bracket** (byes for the top seeds when the count is not a
-  power of two). Every knockout tie is a full match.
+!!! info "Why who starts is alternated"
+    In NIM the first player usually has a decisive advantage. Without
+    alternating, the tournament would measure the draw instead of the skill.
 
-## Robustness, not security
+---
 
-Even well-meaning bots can hang, crash, or return an illegal move on some edge
+## The three formats
+
+| Format | Pairings | Ranking |
+|--------|----------|---------|
+| `simple` *(default)* | round-robin, each pair once | points (one per win) |
+| `league` | round-robin, each pair once | Elo rating |
+| `championship` | group stage + knockout bracket | points and a champion |
+
+Pick one with `--tournament`.
+
+??? info "Detail of `league` and `championship`"
+    **`league`** uses the same round-robin as `simple`, but ranks by an
+    [Elo rating][nimarena.elo] updated game by game (K=32, start 1500).
+    `--no-elo` falls back to points.
+
+    **`championship`** splits the players into balanced **groups of four**; each
+    group plays a round-robin and its **top two advance** to a seeded knockout
+    bracket (with byes for the top seeds when the count is not a power of two).
+    Each knockout round is a full tie.
+
+??? info "Why a player can show up as `hard_0` and `hard_1`"
+    A player type can be entered **more than once**, each copy with its own
+    seed, which is what lets a type compete against *itself* — a round-robin
+    never pairs an instance with itself. Copies are named `<type>_<seed>`, and
+    the scoreboard renders that suffix as a subscript.
+
+    Reference players are entered **twice** and PR submissions **once**, because
+    the submission side grows with every merged PR and the work grows with the
+    square of the roster. `--player-repetition` overrides it.
+
+---
+
+## Robustness: one bad bot never breaks the run
+
+Even well-meaning bots can hang, crash or return an illegal move in some corner
 case. The tournament survives all of it:
 
 | Failure | Result |
 |---------|--------|
-| exceeds its game budget, or hangs | forfeit (`forfeit_timeout`) |
-| raises an exception while playing | forfeit (`forfeit_error`) |
-| returns an illegal or malformed move | forfeit (`forfeit_illegal`) |
-| `create()` exceeds the build budget | forfeit (`forfeit_build_timeout`) |
-| `create()` raises | forfeit (`forfeit_build_error`) |
+| goes over its game budget, or hangs | loss (`forfeit_timeout`) |
+| raises an exception while playing | loss (`forfeit_error`) |
+| returns an illegal or malformed move | loss (`forfeit_illegal`) |
+| `create()` goes over the budget | loss (`forfeit_build_timeout`) |
+| `create()` raises an exception | loss (`forfeit_build_error`) |
 
-In every case the reason is logged and the run **continues**. One bad player
-never aborts the tournament.
+In every case the reason is recorded and the run **continues**.
 
-## Why timeouts live here (and not in the player)
+---
 
-The contract a stranger implements must stay tiny — see the
-[Player API](../upload-a-bot/player-api.md). Time control is a property of the *match*, so the
-caller owns it. This keeps the player a pure function of the board.
+## The time budgets
 
-### How the hard timeout works
+Each player gets **two budgets per game**, not per move:
 
-Each **game** runs in a separate process — one fork per game, not per move. If a
-bot hangs in an infinite loop the process is **terminated** and the bot forfeits;
-the tournament moves on. (Python threads cannot be force-killed, so a
-thread-based timeout could not honor this guarantee.)
+| Budget | Default | Covers |
+|---|---|---|
+| game (`--game-time-limit`) | 2 s | all your thinking time in that game, cumulative |
+| build (`--build-time-limit`) | 2 s | `create()` |
 
-Forking per game rather than per move is deliberate: a player's RNG position, its
-caches and its memo tables have to survive from one move to the next *within its
-own game*. A fork per move would reset all of it and quietly punish any bot that
-remembers anything.
-
-A single-process "soft timeout" mode (`--no-subprocess`) is available for fast
-local runs; it still measures elapsed time and forfeits over-budget players, but
-cannot interrupt a true infinite loop.
-
-### The budgets are chess clocks
-
-Each player gets **two** budgets *per game*, not per move:
-
-- a **game budget** (`--game-time-limit`, default 2 s) that its thinking time is
-  charged against, cumulatively across all its moves. A bot may legitimately burn
-  most of it on one hard position and play the rest instantly;
-- a **build budget** (`--build-time-limit`, default 2 s) for `create()`, kept
-  separate so precomputation cannot be smuggled into the constructor for free.
-
-Because both players may legitimately spend their whole budget, the process is
-killed only after `2 × (game + build) + grace`. When that happens the runner still
-knows *who* to blame: the child records its phase, the active player and its
-running totals in shared memory **before** entering any player code, so the parent
-can read them after the kill. A constructor that hangs is attributed to its own
-player (`forfeit_build_timeout`), not to its opponent.
+They are cumulative: a bot can burn nearly all of its budget on a hard position
+and play the rest instantly. They are kept apart so free precomputation cannot
+be smuggled into the constructor.
 
 !!! warning "Timing is measured in CI"
-    The graded tournament runs on **GitHub's runners**, which are slower and more
-    variable than a laptop. A bot that passes on a fast machine can still time out
-    in the graded run. That is a stated rule, not a surprise — choose a generous
-    budget and write efficient code.
+    The official tournament runs on **GitHub runners**, slower and more variable
+    than a laptop. A bot that passes on your machine can still time out there.
+    It is a stated rule, not a surprise.
+
+??? info "How the limit is actually enforced"
+    Each **game** runs in its own process. If a bot hangs in an infinite loop,
+    the process is **killed** and the bot loses; the tournament goes on. Python
+    threads cannot be force-killed, so a thread-based timeout could not
+    guarantee this.
+
+    Forking per game and not per move is deliberate: a player's caches and
+    random-generator position have to survive from one move to the next *within
+    their own game*.
+
+    `--no-subprocess` gives a single-process “soft timeout” mode for quick local
+    runs; it still forfeits anyone who overruns, but it cannot interrupt a real
+    infinite loop.
+
+---
 
 ## Running it
 
 ```bash
-# Default: a "simple" tournament, 2 s per player per game, 3 games per board
-# and first-mover.
+# The usual: simple tournament, writes the ranking
 nim-tournament --out results/leaderboard.json
 
-# A league ranked by Elo, with a generous 2-second budget.
-nim-tournament --tournament league --time-limit 2.0
+# A league ranked by Elo
+nim-tournament --tournament league
 
-# A championship with a single, fast game per board (soft timeout).
-nim-tournament --tournament championship --repetitions 1 --no-subprocess
+# Fast, for testing your bot while you write it
+nim-tournament --no-subprocess
 ```
 
-| Flag | Default | Meaning |
-|------|---------|---------|
+The options you will actually use:
+
+| Option | Default | Meaning |
+|--------|---------|---------|
+| `--out` | — | where to write the results file |
 | `--tournament` | `simple` | `simple`, `league` or `championship` |
-| `--time-limit` | `2.0` | per-player budget in **seconds**, for a whole game *and* for construction |
-| `--game-time-limit` | — | override just the thinking budget |
-| `--build-time-limit` | — | override just the construction budget |
-| `--no-time-limit` | off | enforce nothing (never use with untrusted players) |
-| `--board` | `3,5,7` · `1,2,3,4,5` · `4,5,6,7,8,9` | a starting board, e.g. `--board 3,5,7`; repeatable, and replaces the defaults |
-| `--group-size` | `4` | championship only: players per group |
-| `--advance-per-group` | `2` | championship only: who advances |
-| `--player-repetition` | *each kind's own* | override the copies entered for every kind |
-| `--repetitions` | `3` | games per (board, first-mover) in a match |
-| `--elo` / `--no-elo` | on | use Elo for the league classification |
-| `--no-subprocess` | off | soft, single-process timeout (fast, local) |
+| `--board` | three boards | one starting board, e.g. `--board 3,5,7`; repeatable |
+| `--no-subprocess` | off | single-process soft timeout (fast, local) |
 
-## The results file
+??? info "Every option"
+    | Option | Default | Meaning |
+    |--------|---------|---------|
+    | `--time-limit` | `2.0` | per-player budget in seconds, for a whole game *and* for building |
+    | `--game-time-limit` | — | overrides the thinking budget only |
+    | `--build-time-limit` | — | overrides the build budget only |
+    | `--no-time-limit` | off | enforces nothing (never with untrusted players) |
+    | `--repetitions` | `3` | games per (board, who starts) |
+    | `--player-repetition` | *per type* | overrides the entered copies |
+    | `--group-size` | `4` | championship only: players per group |
+    | `--advance-per-group` | `2` | championship only: how many advance |
+    | `--elo` / `--no-elo` | on | use Elo for the league ranking |
 
-The tournament writes `results/leaderboard.json`. Its structure — and how the web
-page turns it into a scoreboard — has its own page:
-**[The scoreboard](scoreboard.md)**.
+---
 
-## Ranking and the expected order
+## How ranking works
 
 `simple` and `championship` rank by **points** (one per win); `league` ranks by
-**Elo**. Ties break on **fewer forfeits**, then on **name**, so the order is fully
-deterministic.
+**Elo**. Ties are broken by **fewer forfeit losses** and then by **name**, so the
+order is fully deterministic.
 
-!!! note "Average move time is deliberately *not* a tie-break"
-    It would reward the wrong thing. A player that forfeits every game records no
-    move times at all, so it would win any tie-break on speed. Forfeits come
-    first for exactly that reason.
+!!! note "Move time is *not* a tiebreaker, on purpose"
+    It would reward the wrong thing: a player that loses every game by forfeit
+    records no move time at all, so it would win any speed tiebreak. That is
+    exactly why forfeits come first.
 
-Across enough games the reference players land in the expected order:
+### The expected order
 
+With enough games, the reference players settle like this:
+
+```text
+⚔️ hard   >   🧠 medium   >   🌱 easy   ≈   🎲 random
 ```
-hard  >  medium  >  easy  ≈  random
-```
 
-`hard` searches 4 plies with alpha-beta and recognizes several endgames outright,
-which makes it strong — but it cannot compute the nim-sum, so it is still
-beatable. `medium` runs the same search at 2 plies with a deliberately weak
-total-sticks heuristic: solid right at the end of a game, unreliable before that.
+- **`hard`** searches 4 plies with alpha-beta pruning and recognizes several
+  endgames outright. Strong, but it cannot compute the nim-sum, so it stays
+  beatable.
+- **`medium`** runs the same search at 2 plies with a deliberately weak
+  heuristic: solid at the very end of a game, unreliable before that.
+- **`easy` and `random` are not ordered against each other**, on purpose.
+  Emptying the largest row is barely better than random, and which one comes out
+  ahead depends on the draw. If they swap places between runs, nothing is wrong.
 
-`easy` and `random` are deliberately **not** ordered against each other. Emptying
-the largest row is barely better than random in NIM, and which of the two lands
-ahead depends on the draw. If they swap places between runs, nothing is wrong.
+!!! note "In `league`, points and rank can disagree"
+    Rank comes from Elo while the table also shows points, so a player with more
+    points can finish *below* one with fewer. That is Elo working as intended: it
+    weighs *who* you beat, not only how often.
 
-!!! note "Points and rank can disagree"
-    In `league` mode the rank comes from Elo while the table also shows points, so
-    a player with more points can sit *below* one with fewer. That is Elo working
-    as intended — it weights *who* you beat, not just how often.
+---
 
-## Where to go next
-
-- [The scoreboard](scoreboard.md) — what the tournament writes, and how it is
-  rendered.
-- [Player API](../upload-a-bot/player-api.md) — the contract the tournament calls.
-- [Submit a player](../upload-a-bot/submit-a-player.md) — get your bot into the next run.
-- [API reference](api.md) — `run_tournament`, the roster helpers and the Elo
-  module, generated from the source.
+**Next:** [The scoreboard](scoreboard.md) — what the tournament writes, and how
+it becomes the table you see.

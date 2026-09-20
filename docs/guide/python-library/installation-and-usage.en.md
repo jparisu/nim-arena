@@ -1,9 +1,14 @@
 # Installation and usage
 
 Once a library is packaged ([Organization](organization.md)), using it is a
-`pip install` away. There are two paths: installing straight from GitHub, which
-is what a notebook wants, and an editable local install, which is what you need
-to develop the library itself.
+`pip install` away. There are two paths, and you pick by what you are doing:
+
+| I want to… | Install like this | When the code changes |
+|---|---|---|
+| 🧪 **use** the library (notebook, script) | [from GitHub](#install-from-github) | you reinstall |
+| 🔧 **develop** the library | [local editable, `-e`](#install-locally) | the change is live at once |
+
+---
 
 ## Install from GitHub
 
@@ -36,6 +41,8 @@ pip install git+https://github.com/jparisu/nim-arena.git@a9d292d
     chosen branch, with a single command and no manual steps. It is the natural
     fit for a notebook-based workflow.
 
+---
+
 ## Use it in a notebook
 
 In a Colab notebook, install in a cell (the leading `!` runs a shell command),
@@ -61,6 +68,8 @@ print(game.nim_sum(state))           # 1
     If you had already imported `nimarena` in a notebook and then install a
     new version, restart the runtime (**Runtime → Restart**) so the new code is
     picked up. Python caches imported modules for the life of the session.
+
+---
 
 ## Install locally
 
@@ -93,8 +102,8 @@ The install also puts the project's console script on your `PATH`, courtesy of
 nim-tournament --no-subprocess --repetitions 1
 ```
 
-## Where to go next
+---
 
-- [API](api.md) — what a clean public interface for the library should look
-  like.
-- [Testing](testing.md) — run and write the test suite.
+**Next:** [API](api.md) — what a clean public interface for the library should look like.
+
+**Also:** [Testing](testing.md)

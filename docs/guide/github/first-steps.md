@@ -4,6 +4,8 @@ Esta página te lleva de *no tener cuenta* a *tener tu propio repositorio en
 GitHub*, listo para el [flujo de trabajo](workflow.md) que sigue. Si ya tienes
 cuenta y un repositorio, puedes ojearla y saltar adelante.
 
+---
+
 ## Crear una cuenta
 
 Ve a [github.com](https://github.com) y regístrate. Una cuenta gratuita basta
@@ -22,19 +24,24 @@ Dos pasos iniciales conviene hacerlos bien:
       HTTPS, o
     - una **clave SSH**, un par de claves cuya mitad pública añades a GitHub.
 
-!!! tip "¿Cuál debo usar?"
-    Para trabajar en notebooks o hacer push de vez en cuando, un **PAT sobre
-    HTTPS** es lo más simple: créalo en **Settings → Developer settings →
-    Personal access tokens**, y pégalo cuando Git te pida una contraseña. Para
-    trabajo local frecuente, una **clave SSH** (añadida en **Settings → SSH and
-    GPG keys**) evita tener que reescribir nada. Cualquiera vale — elige una y
-    sigue adelante.
+!!! tip "Si no tienes preferencia, usa un PAT"
+    Un **PAT sobre HTTPS** es el camino más corto: lo creas en la web, lo pegas
+    cuando Git te pida una contraseña y ya está. Una **clave SSH** es algo más de
+    montaje al principio y más cómoda después, si trabajas en local a diario.
+
+    | | PAT sobre HTTPS | Clave SSH |
+    |---|---|---|
+    | Montarlo | pegar un token | generar un par de claves |
+    | Caduca | sí, hay que renovarlo | no |
+    | Mejor para | notebooks, push ocasional | trabajo local diario |
+
+    **Elige una y sigue adelante.** Se puede cambiar después sin volver a clonar.
 
 ### Configurar la autenticación en tu máquina
 
-Elige una de las dos pestañas para autenticarte. No necesitas las dos.
+Elige una de las dos pestañas. No necesitas las dos.
 
-=== "PAT sobre HTTPS"
+=== "PAT sobre HTTPS (recomendado)"
 
     **1. Crea el token.** En GitHub, **Settings → Developer settings → Personal
     access tokens → Fine-grained tokens → Generate new token**. Ponle un nombre,
@@ -132,6 +139,8 @@ git config --global user.name "Tu Nombre"
 git config --global user.email "tu-correo@ejemplo.com"
 ```
 
+---
+
 ## Crear un repositorio
 
 Haz clic en **New** (el botón verde en tu página de repositorios) y rellena:
@@ -186,6 +195,8 @@ license = "MIT"
     vacía: un repositorio público sin licencia es el único error de aquí que
     tiene consecuencias reales.
 
+---
+
 ## Configurarlo
 
 Conviene cambiar pronto algunos ajustes, desde la pestaña **Settings** del
@@ -201,6 +212,8 @@ La configuración que *impone* un flujo de trabajo de equipo saludable —proteg
 `main`, exigir revisiones y comprobaciones que pasen— es lo bastante importante
 como para tener su propia página: [Configuración del repositorio](repository-configuration.md).
 Configúrala una vez que el flujo de trabajo y las Actions estén en su sitio.
+
+---
 
 ## Explorar
 
@@ -219,6 +232,8 @@ legible cualquier proyecto:
 Navegar por un proyecto bien llevado —leer cómo se describen sus pull requests y
 cómo se discuten sus issues— es una de las mejores formas de aprender las
 convenciones de la colaboración en software.
+
+---
 
 ## Issues y pull requests
 
@@ -255,8 +270,8 @@ tema de la página siguiente.
     [Pull requests](pull-requests.md#plantillas-de-pull-request), donde se cubre
     el mismo mecanismo para los PR.
 
-## Adónde ir después
+---
 
-- [Flujo de trabajo](workflow.md) — el ciclo completo rama → commit → pull request
-  → merge.
-- [Pull requests](pull-requests.md) — la página siguiente, en profundidad.
+**Siguiente:** [Flujo de trabajo](workflow.md) — el ciclo completo rama → commit → pull request → merge.
+
+**También:** [Pull requests](pull-requests.md)

@@ -10,6 +10,8 @@ through a reviewed, tested pull request.
     exist — which is why this page comes after [Workflow](workflow.md) and
     [GitHub Actions](actions.md). Set the rules up once those are in place.
 
+---
+
 ## Branch protection and rulesets
 
 By default, anyone with write access can push straight to `main`. A **ruleset**
@@ -32,6 +34,8 @@ flowchart LR
     PR -->|review + checks pass| M[main]
 ```
 
+---
+
 ## Required reviews
 
 Inside the "Require a pull request" rule, set **Require approvals** to at least
@@ -47,6 +51,8 @@ Two related options are worth knowing:
   certain paths must be approved by their designated owner.
 - **Require signed commits.** Only commits carrying a verified signature may
   land; see [Workflow § Commit signing](workflow.md#commit-signing).
+
+---
 
 ## Required status checks
 
@@ -74,18 +80,20 @@ approves it. Automated quality gates and human review reinforce each other:
     request to include the latest `main` before it can merge, so the checks ran
     against what will actually land — not against a stale base.
 
+---
+
 ## Other useful settings
 
 A few more settings keep the repository tidy, mostly under **Settings → General**
 and the ruleset:
 
-- **Automatically delete head branches.** After a pull request is merged, its
-  branch is removed — no manual cleanup, no clutter of dead branches.
-- **Require linear history.** Forbids merge commits on `main`, keeping the
-  history a straight line (pairs well with *squash* merges).
-- **Require conversation resolution before merging.** Every review comment must
-  be marked resolved before the merge button unlocks, so no feedback is silently
-  dropped.
+| Setting | What it buys you |
+|---|---|
+| **Automatically delete head branches** | the branch is removed when the PR merges: no manual cleanup, no dead branches piling up |
+| **Require linear history** | forbids merge commits on `main`, keeping the history a straight line (pairs well with *squash* merges) |
+| **Require conversation resolution** | no review comment is silently dropped: it must be marked resolved before merging |
+
+---
 
 ## Good practices
 
@@ -112,7 +120,8 @@ Together, the enforced rules and these habits are what let a team move quickly
     tournament and then goes quiet over a holiday comes back to no results at
     all. Re-enable it from the Actions tab.
 
-## Where to go next
+---
 
-- [Pull requests](pull-requests.md) — what the review rules above apply to.
-- [GitHub Pages](pages.md) — publishing a static site from the repository.
+**Next:** [Pull requests](pull-requests.md) — what the review rules above apply to.
+
+**Also:** [GitHub Pages](pages.md)

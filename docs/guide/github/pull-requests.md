@@ -8,6 +8,8 @@ ocurre en un solo sitio y queda registrado después.
 Esta página cubre las dos mitades del trabajo: **abrir** un buen pull request y
 **gestionar** el que ha abierto otra persona.
 
+---
+
 ## PR de rama o PR de fork
 
 Cuál puedes abrir depende de si tienes permiso de escritura en el repositorio de
@@ -51,6 +53,8 @@ $ git checkout -b add-corner-bot upstream/main
     las pruebas pero no publicar un sitio ni hacer un commit. Es una
     característica, no un error de configuración.
 
+---
+
 ## Abrir uno
 
 1. **Sube tu rama.** La salida del push imprime un enlace que abre el formulario
@@ -80,6 +84,8 @@ Un pull request que merece la pena revisar es:
     No se abre un segundo PR para corregir los comentarios de revisión. Haz
     commit en la misma rama y súbelo; el PR abierto se actualiza solo y la
     conversación se queda en un único sitio.
+
+---
 
 ## Plantillas de pull request
 
@@ -190,6 +196,8 @@ avisa de que existe la otra. Este repositorio incluye
     Este repositorio tiene tres: informe de error, idea de jugador e informe de
     conducta.
 
+---
+
 ## Revisar el pull request de otra persona
 
 Abrir un PR es la mitad fácil. Si tu proyecto acepta contribuciones, la mayor
@@ -276,6 +284,8 @@ solo por si funciona:
 Cualquier cosa sospechosa se rechaza a la vista. No hay obligación de explicarse
 más allá de eso.
 
+---
+
 ## Fusionar
 
 Tres botones, tres historiales:
@@ -286,7 +296,7 @@ Tres botones, tres historiales:
 | **Merge commit** | todos los commits, más un commit de fusión | los commits tienen sentido por sí solos |
 | **Rebase and merge** | todos los commits, reproducidos en línea | no quieres ningún commit de fusión |
 
-*Squash* es el valor por defecto seguro para proyectos de estudiantes: el PR es
+*Squash* es el valor por defecto seguro para un proyecto pequeño: el PR es
 la unidad de trabajo y `main` se lee como una línea por cambio. Elijas la que
 elijas, sé consistente — la configuración del repositorio puede desactivar las
 otras dos.
@@ -304,10 +314,8 @@ No toda propuesta debe fusionarse. Cerrar una es un desenlace normal, no un
 fracaso: di por qué en un comentario, agradece el trabajo y ciérralo. Dejarlo
 abierto durante meses es peor para todos que un "no" claro.
 
-## Adónde ir después
+---
 
-- [Configuración del repositorio](repository-configuration.md) — exigir
-  revisiones y comprobaciones en verde antes de desbloquear el botón de fusión.
-- [GitHub Actions](actions.md) — qué ejecutan realmente esas comprobaciones.
-- [Enviar un jugador](../../game/upload-a-bot/submit-a-player.md) — el flujo de contribución
-  de este repositorio, de principio a fin.
+**Siguiente:** [Configuración del repositorio](repository-configuration.md) — exigir revisiones y comprobaciones en verde antes de desbloquear el botón de fusión.
+
+**También:** [GitHub Actions](actions.md) · [Enviar un jugador](../../game/upload-a-bot/submit-a-player.md)

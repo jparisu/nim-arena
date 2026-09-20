@@ -4,6 +4,8 @@ Documentation is the interface between your project and everyone who is not you 
 including you in six months. This page is about what to write, where to keep it,
 and how to stop it going stale.
 
+---
+
 ## Docs-as-code
 
 The rule that makes everything else work: **documentation lives in the
@@ -27,6 +29,8 @@ is worse than absent, because a reader trusts it.
     *"Docs updated if behavior changed."* One line, and it moves documentation
     from something you mean to do into something the reviewer asks about.
 
+---
+
 ## The four kinds, and why you need more than one
 
 A common failure is writing one document and expecting it to serve everybody. It
@@ -43,6 +47,8 @@ things.
 You do not need all four on day one. You do need to know which one you are
 writing, because mixing them is what produces a page that is too long for a
 beginner and too vague for an expert.
+
+---
 
 ## Where each piece belongs
 
@@ -62,6 +68,8 @@ README that grows past two screens is a documentation site trying to escape.
 **Docstrings are the reference.** Written once, next to the code they describe,
 and rendered into the site by [mkdocstrings](mkdocs.md#api-pages-from-docstrings).
 One copy of the truth, so a renamed parameter cannot leave a stale page behind.
+
+---
 
 ## Writing that people read
 
@@ -83,9 +91,8 @@ One copy of the truth, so a renamed parameter cannot leave a stale page behind.
     A comment that describes behavior which has since changed is worse than no
     comment. When you change code, grep for the thing you renamed.
 
-## Where to go next
+---
 
-- [MkDocs](mkdocs.md) — building all of this into a website.
-- [Read the Docs](readthedocs.md) — publishing it.
-- [API](../python-library/api.md) — writing the docstrings the reference is
-  generated from.
+**Next:** [MkDocs](mkdocs.md) — building all of this into a website.
+
+**Also:** [Read the Docs](readthedocs.md) · [API](../python-library/api.md)

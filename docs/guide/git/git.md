@@ -8,25 +8,24 @@ software hoy en día, utilizada por la mayoría de empresas y desarrolladores.
 Esta página explica de dónde viene Git, qué problema resuelve y el modelo mental
 que necesitas antes de aprender ningún comando.
 
+---
+
 ## Un poco de historia
 
 Antes del control de versiones, guardar el historial de un proyecto significaba
 copiar carpetas a mano: `proyecto/`, `proyecto-final/`, `proyecto-final-REAL/`.
-Eso no escala, es propenso a errores y hace que colaborar sea doloroso.
 
-Git fue creado en **2005** por **Linus Torvalds**, la misma persona que inició el
-núcleo de Linux. El núcleo lo desarrollan miles de colaboradores, y la
-herramienta que usaban dejó de estar disponible de forma gratuita. Torvalds
-necesitaba algo **rápido**, **distribuido** y capaz de manejar un historial
-enorme sin ralentizarse. Ninguna herramienta existente encajaba, así que
-escribió la suya en unas pocas semanas.
+Git lo escribió **Linus Torvalds en 2005** para el núcleo de Linux, que
+desarrollan miles de personas a la vez. Necesitaba algo rápido, capaz de manejar
+un historial enorme y, sobre todo, **distribuido**.
 
-La palabra clave es **distribuido**. En la generación anterior de herramientas
-(como Subversion o CVS) había un único servidor central que guardaba *el*
-historial; tenías que estar conectado a él para hacer un commit. En Git, **cada
-clon de un repositorio es una copia completa de todo el historial**. Puedes
-hacer commits, crear ramas, inspeccionar el log y viajar al pasado sin conexión
-de red. Compartir con los demás es un paso aparte y explícito.
+Distribuido es la palabra clave, y sigue siendo la diferencia que más se nota:
+
+| | Centralizado (CVS, Subversion) | Distribuido (Git) |
+|---|---|---|
+| Quién tiene el historial | un servidor central | **cada clon, entero** |
+| Para hacer un commit | hay que estar conectado | trabajas sin red |
+| Compartir | es lo mismo que guardar | es un paso aparte y explícito |
 
 ```mermaid
 flowchart LR
@@ -44,8 +43,7 @@ flowchart LR
     end
 ```
 
-Hoy Git es, con gran diferencia, el sistema de control de versiones más usado del
-mundo, y conocerlo es una habilidad profesional básica.
+---
 
 ## Por qué usar control de versiones
 
@@ -61,6 +59,7 @@ que cuesta prescindir una vez las tienes:
   archivos a la vez. Git fusiona sus cambios y, cuando dos personas editan las
   mismas líneas, te indica exactamente dónde hace falta una decisión humana.
 
+---
 
 ## Las tres áreas
 
@@ -102,9 +101,8 @@ Leyendo el diagrama de izquierda a derecha:
     registrar y separar cambios no relacionados en commits distintos y con
     sentido, en lugar de un único volcado enorme.
 
-## Adónde ir después
+---
 
-- [Organización](organization.md) — cómo se estructuran realmente los commits, las
-  ramas y el historial.
-- [Comandos](commands.md) — el conjunto de comandos del día a día, uno a uno.
-- [Ejemplo](example.md) — todo el flujo aplicado a este mismo repositorio.
+**Siguiente:** [Organización](organization.md) — cómo se estructuran realmente los commits, las ramas y el historial.
+
+**También:** [Comandos](commands.md) · [Ejemplo](example.md)

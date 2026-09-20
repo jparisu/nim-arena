@@ -10,6 +10,8 @@ and a web page all install and import the same way.
 This page sorts out the vocabulary, explains what a library buys you, and shows
 at a well-known example to imitate.
 
+---
+
 ## Module, package, library, distribution
 
 These four words are often used loosely. In Python they mean specific things:
@@ -36,6 +38,8 @@ In this project, `src/nimarena/` is the **package**, the API it exposes makes
 it a **library**, and `pyproject.toml` is what turns it into an installable
 **distribution** (see [Organization](organization.md)).
 
+---
+
 ## What a library gives you
 
 Why package code instead of just keeping a `utils.py` around? A library gives
@@ -52,6 +56,8 @@ you four things:
   "I need version 0.1" and get reproducible behavior.
 - **Distribution.** A single `pip install` command delivers the code and its
   dependencies to anyone, anywhere — including a Google Colab notebook.
+
+---
 
 ## A concrete example
 
@@ -91,10 +97,8 @@ works with no arguments; and `legal_moves`, `is_terminal` and `nim_sum` need no
 glossary. Designing that surface deliberately is what
 [the API page](api.md) is about.
 
-## Where to go next
+---
 
-- [Organization](organization.md) — the files and folders that turn this code
-  into an installable library.
-- [Installation and usage](installation-and-usage.md) — installing `nimarena`
-  from GitHub and using it in a notebook.
-- [API](api.md) — deciding what the public surface should be.
+**Next:** [Organization](organization.md) — the files and folders that turn this code into an installable library.
+
+**Also:** [Installation and usage](installation-and-usage.md) · [API](api.md)

@@ -11,6 +11,8 @@ que cada cambio pase por un pull request revisado y probado.
     [Flujo de trabajo](workflow.md) y [GitHub Actions](actions.md). Configura las
     reglas cuando esas piezas ya estén en su sitio.
 
+---
+
 ## Protección de ramas y rulesets
 
 Por defecto, cualquiera con acceso de escritura puede hacer push directamente a
@@ -33,6 +35,8 @@ flowchart LR
     PR -->|revisión + comprobaciones OK| M[main]
 ```
 
+---
+
 ## Revisiones obligatorias
 
 Dentro de la regla "Require a pull request", pon **Require approvals** en al menos
@@ -48,6 +52,8 @@ Vale la pena conocer dos opciones relacionadas:
   cambios en ciertas rutas deben aprobarlos sus propietarios designados.
 - **Require signed commits.** Solo entran los commits con una firma verificada;
   véase [Flujo de trabajo § Firma de commits](workflow.md#firma-de-commits).
+
+---
 
 ## Comprobaciones de estado obligatorias
 
@@ -78,18 +84,20 @@ humana se refuerzan mutuamente:
     que las comprobaciones se ejecutaron contra lo que realmente va a entrar — no
     contra una base desactualizada.
 
+---
+
 ## Otros ajustes útiles
 
 Unos cuantos ajustes más mantienen el repositorio ordenado, en su mayoría bajo
 **Settings → General** y el ruleset:
 
-- **Automatically delete head branches.** Después de fusionar un pull request, su
-  rama se elimina — sin limpieza manual, sin acumulación de ramas muertas.
-- **Require linear history.** Prohíbe los commits de fusión en `main`, manteniendo
-  el historial en línea recta (combina bien con las fusiones *squash*).
-- **Require conversation resolution before merging.** Cada comentario de revisión
-  debe marcarse como resuelto antes de que se desbloquee el botón de fusión, para
-  que ningún comentario se descarte en silencio.
+| Ajuste | Qué consigue |
+|---|---|
+| **Automatically delete head branches** | la rama se borra al fusionar el PR: sin limpieza manual, sin ramas muertas acumulándose |
+| **Require linear history** | prohíbe los commits de fusión en `main` y deja el historial en línea recta (combina bien con *squash*) |
+| **Require conversation resolution** | ningún comentario de revisión se descarta en silencio: hay que marcarlo como resuelto antes de fusionar |
+
+---
 
 ## Buenas prácticas
 
@@ -118,8 +126,8 @@ moverse rápido *sin* romper `main` ni pisarse el trabajo unos a otros.
     torneo semanal y se queda en silencio durante unas vacaciones vuelve sin
     ningún resultado. Reactívalo desde la pestaña Actions.
 
-## Adónde ir después
+---
 
-- [Pull requests](pull-requests.md) — aquello a lo que se aplican las reglas de
-  revisión de arriba.
-- [GitHub Pages](pages.md) — publicar un sitio estático desde el repositorio.
+**Siguiente:** [Pull requests](pull-requests.md) — aquello a lo que se aplican las reglas de revisión de arriba.
+
+**También:** [GitHub Pages](pages.md)

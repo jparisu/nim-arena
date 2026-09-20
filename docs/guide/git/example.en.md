@@ -19,6 +19,27 @@ author and the timestamp.
     $ git config --global user.email "you@example.com"
     ```
 
+---
+
+## What you are going to build
+
+```mermaid
+gitGraph
+    commit id: "init"
+    commit id: "README"
+    branch add-rules
+    checkout add-rules
+    commit id: "rules"
+    checkout main
+    commit id: "edit README"
+    merge add-rules id: "conflict → resolved"
+```
+
+Six steps: create the repository, make commits, branch, cause a conflict on
+purpose, resolve it, and push it to GitHub.
+
+---
+
 ## 1. Create the repository
 
 Start in an empty folder and turn it into a Git repository:
@@ -36,6 +57,8 @@ the history (see [Commands § .gitignore](commands.md#the-gitignore-file)):
 ```console
 $ printf '__pycache__/\n.venv/\nsite/\n' > .gitignore
 ```
+
+---
 
 ## 2. Add files and make the first commit
 
@@ -82,6 +105,8 @@ $ git commit -m "Add README"
  1 file changed, 2 insertions(+)
 ```
 
+---
+
 ## 3. Inspect the state
 
 Three commands answer "where am I?":
@@ -101,6 +126,8 @@ $ git diff
 `git log` shows the two commits, `git status` confirms there is nothing pending,
 and `git diff` prints nothing because there are no uncommitted changes. This is
 the clean starting point for new work.
+
+---
 
 ## 4. Create a branch and work on it
 
@@ -134,6 +161,8 @@ README.md          # RULES.md is not here; it lives on the other branch
 $ git checkout rules-page
 Switched to branch 'rules-page'
 ```
+
+---
 
 ## 5. Merge the branch back — and resolve a conflict
 
@@ -221,6 +250,8 @@ $ git branch -d rules-page
 Deleted branch rules-page (was e4f5a6b).
 ```
 
+---
+
 ## 6. Connect a remote and push
 
 So far everything lives on your machine. To share it, create an empty repository
@@ -239,6 +270,8 @@ branch 'main' set up to track 'origin/main'.
 
 The `-u` flag links your local `main` to `origin/main`, so from now on a plain
 `git push` and `git pull` are enough.
+
+---
 
 ## Recap
 

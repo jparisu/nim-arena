@@ -10,6 +10,8 @@ la documentación que estás leyendo se publica aparte en
 [Read the Docs](../documentation/readthedocs.md). Dos artefactos, dos servicios,
 un repositorio.
 
+---
+
 ## Qué significa "estático", y por qué basta
 
 Pages sirve HTML, CSS, JavaScript, imágenes y JSON. No ejecuta código en el
@@ -25,6 +27,8 @@ sirve dinámicamente y, aun así, nada se reimplementa.
 
 La regla práctica: si tu sitio puede ser una carpeta de archivos, Pages es la
 respuesta correcta más simple.
+
+---
 
 ## Activarlo
 
@@ -46,6 +50,8 @@ subirse a mano.
     puesto en "deploy from a branch" falla con un error de permisos que no
     menciona la causa. Si un despliegue de Pages falla sin motivo visible,
     comprueba esto primero.
+
+---
 
 ## Cómo funciona un despliegue de Pages
 
@@ -103,6 +109,8 @@ publique nada de una construcción fallida.
 Cancelar un despliegue a medias puede dejar el sitio a medio aplicar, así que las
 ejecuciones se encolan en vez de interrumpirse.
 
+---
+
 ## Cuando el sitio no se vuelve a desplegar
 
 Dos causas explican casi todos los casos.
@@ -125,6 +133,8 @@ termine el workflow del torneo:
 La historia completa está en
 [GitHub Actions](actions.md#desplegar-la-web-y-la-trampa-que-tiene).
 
+---
+
 ## Los pull requests no pueden desplegar
 
 Un workflow disparado por un pull request **desde un fork** se ejecuta sin
@@ -140,6 +150,8 @@ Consecuencias prácticas:
 - Todo lo que deba verificarse antes de fusionar va en una comprobación que *sí*
   pueda ejecutarse en un PR de fork —las pruebas, la construcción estricta de la
   documentación— y no en el despliegue.
+
+---
 
 ## Publicar un sitio propio
 
@@ -158,9 +170,8 @@ que merece la pena aprender:
     una construcción convierte cada reconstrucción en un diff y cada fusión en un
     conflicto.
 
-## Adónde ir después
+---
 
-- [GitHub Actions](actions.md) — el workflow que hace el despliegue.
-- [Read the Docs](../documentation/readthedocs.md) — la otra forma de publicar un
-  sitio de documentación, y cuándo preferirla.
-- [La página web](../../game/advanced/web.md) — qué publica realmente este repositorio.
+**Siguiente:** [GitHub Actions](actions.md) — el workflow que hace el despliegue.
+
+**También:** [Read the Docs](../documentation/readthedocs.md) · [La página web](../../game/advanced/web.md)

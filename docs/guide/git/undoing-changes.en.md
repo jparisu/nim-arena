@@ -11,6 +11,8 @@ case. This page covers the three you actually need — `restore`, `reset` and
     committed, so Git cannot bring them back. When in doubt, prefer `git stash`,
     which sets work aside without destroying it.
 
+---
+
 ## `git restore` — discard changes in the working directory
 
 Use `restore` to throw away edits you have **not committed** and go back to the
@@ -36,6 +38,8 @@ $ git restore --staged README.md   # unstage, keep the changes
 
 - `git restore <file>` → discard uncommitted edits to that file.
 - `git restore --staged <file>` → unstage, but keep the edits.
+
+---
 
 ## `git reset` — move the branch pointer
 
@@ -73,6 +77,8 @@ Here `HEAD~1` means "one commit before the current one".
     will conflict. On shared branches, undo a commit with `git revert` (which
     records a *new* commit that undoes an old one) instead.
 
+---
+
 ## `git stash` — set changes aside
 
 Sometimes you are in the middle of something when you need a clean working
@@ -104,6 +110,8 @@ $ git stash pop      # re-apply the most recent stash and remove it from the sta
 Unlike `reset --hard`, `stash` is **safe**: nothing is destroyed, so it is the
 right first reflex whenever you just need to park your work for a moment.
 
+---
+
 ## Which one do I need?
 
 | Your situation | Command |
@@ -119,7 +127,6 @@ right first reflex whenever you just need to park your work for a moment.
     is safe. If it is **uncommitted**, Git has no copy — so `stash` before you do
     anything destructive.
 
-## Where to go next
+---
 
-- [Example](example.md) — a full walkthrough that puts commits, branches and
-  merges together.
+**Next:** [Example](example.md) — a full walkthrough that puts commits, branches and merges together.

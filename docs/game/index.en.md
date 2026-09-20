@@ -1,25 +1,48 @@
 # The game
 
-This is the **reference manual of NIM Arena**: what the project contains, how the
-pieces fit, and how you add a player of your own.
+The manual of **NIM Arena**: what the project contains, how the pieces fit, and
+how you add a player of your own.
 
-!!! info "Reference, not tutorial"
-    These pages document this repository **as it is**. They assume you already
-    know Git, GitHub and Python well enough to follow along.
+---
 
-    The other half of this site teaches those tools instead, using this same
-    repository as the worked example: the
-    [Guide](../guide/index.md).
+## The shortest path to a player of your own
+
+```mermaid
+flowchart LR
+    A["1 · Rules<br/>5 minutes"] --> B["2 · Install<br/>and play"]
+    B --> C["3 · Copy the<br/>example bot"]
+    C --> D["4 · Open<br/>a PR"]
+    D --> E["🏆 Into the tournament"]
+```
+
+| Step | What you do | Page |
+|---|---|---|
+| 1 | Understand NIM and the strategy that wins it | [Game rules](rules.md) |
+| 2 | Install the package and play a game | [Getting started](getting-started.md) |
+| 3 | Write your AI: one class, one method | [Player API](upload-a-bot/player-api.md) |
+| 4 | Send it as a pull request | [Submit a player](upload-a-bot/submit-a-player.md) |
+
+---
 
 ## Start here
 
 <div class="grid cards" markdown>
 
-- [**Game rules**](rules.md) — how NIM works, and the XOR strategy that wins it.
-- [**Getting started**](getting-started.md) — install, play, run the tests and the
-  tournament.
+- :material-book-open-variant:{ .lg .middle } **[Game rules](rules.md)**
+
+    ---
+
+    How NIM works, and the XOR strategy that wins it. Five minutes.
+
+- :material-rocket-launch:{ .lg .middle } **[Getting started](getting-started.md)**
+
+    ---
+
+    Install, play a game, run the tests and the tournament.
 
 </div>
+
+---
 
 ## Then pick your path
 
@@ -47,16 +70,6 @@ pieces fit, and how you add a player of your own.
 
 </div>
 
-## The one big idea
-
-> The game rules and every AI are written **once, in Python**. That exact same
-> code runs both the graded tournament (in CI) and live play in the browser (via
-> Pyodide). **One source of truth.** The rules are never re-implemented in
-> JavaScript.
-
-## The shortest path to a player of your own
-
-1. Read the [rules](rules.md) — five minutes.
-2. [Install](getting-started.md) the package.
-3. Copy the minimal example from the [Player API](upload-a-bot/player-api.md).
-4. Add one line to `players/custom/players.yaml` and [open a PR](upload-a-bot/submit-a-player.md).
+!!! tip "Are Git, forks or pull requests new to you?"
+    The [Guide](../guide/index.md) teaches them from scratch, using this same
+    repository as the worked example.

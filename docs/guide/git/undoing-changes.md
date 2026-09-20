@@ -11,6 +11,8 @@ necesitas —`restore`, `reset` y `stash`— y una guía para elegir el correcto
     confirmaron, así que Git no puede recuperarlos. Ante la duda, prefiere
     `git stash`, que aparta el trabajo sin destruirlo.
 
+---
+
 ## `git restore` — descartar cambios en el directorio de trabajo
 
 Usa `restore` para tirar ediciones que **no has confirmado** y volver a la última
@@ -37,6 +39,8 @@ $ git restore --staged README.md   # quita de preparación, conserva los cambios
 - `git restore <archivo>` → descarta ediciones sin confirmar de ese archivo.
 - `git restore --staged <archivo>` → quita de preparación, pero conserva las
   ediciones.
+
+---
 
 ## `git reset` — mover el puntero de la rama
 
@@ -75,6 +79,8 @@ Aquí `HEAD~1` significa "un commit antes del actual".
     conflicto. En ramas compartidas, deshaz un commit con `git revert` (que
     registra un *nuevo* commit que deshace uno antiguo) en su lugar.
 
+---
+
 ## `git stash` — apartar cambios
 
 A veces estás en mitad de algo y necesitas un directorio de trabajo limpio ahora
@@ -106,6 +112,8 @@ A diferencia de `reset --hard`, `stash` es **seguro**: no se destruye nada, así
 que es el primer reflejo correcto siempre que solo necesites aparcar tu trabajo
 un momento.
 
+---
+
 ## ¿Cuál necesito?
 
 | Tu situación | Comando |
@@ -121,7 +129,6 @@ un momento.
     deshacer es seguro. Si está **sin confirmar**, Git no tiene copia — así que
     haz `stash` antes de hacer nada destructivo.
 
-## Adónde ir después
+---
 
-- [Ejemplo](example.md) — un recorrido completo que junta commits, ramas y
-  fusiones.
+**Siguiente:** [Ejemplo](example.md) — un recorrido completo que junta commits, ramas y fusiones.

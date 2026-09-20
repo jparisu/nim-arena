@@ -1,26 +1,23 @@
 # El juego
 
-Este es el **manual de referencia de NIM Arena**: qué contiene el proyecto, cómo
-encajan las piezas y cómo añadir un jugador propio.
+El manual de **NIM Arena**: qué contiene el proyecto, cómo encajan las piezas y
+cómo añadir un jugador propio.
 
-!!! info "Referencia, no tutorial"
-    Estas páginas documentan este repositorio **tal y como es**. Dan por supuesto
-    que ya sabes de Git, GitHub y Python lo suficiente para seguirlas.
-
-    La otra mitad del sitio enseña justamente esas herramientas, usando este
-    mismo repositorio como ejemplo: la
-    [Guía](../guide/index.md).
+---
 
 ## Empieza aquí
 
 <div class="grid cards" markdown>
 
-- [**Reglas del juego**](rules.md) — cómo funciona el NIM y la estrategia XOR que
-  lo gana.
-- [**Primeros pasos**](getting-started.md) — instalar, jugar, ejecutar las pruebas
-  y el torneo.
+- :material-book-open-variant:{ .lg .middle } **[Reglas del juego](rules.md)**
+
+    ---
+
+    Cómo funciona el NIM y la estrategia XOR que lo gana. Cinco minutos.
 
 </div>
+
+---
 
 ## Después elige tu camino
 
@@ -48,16 +45,6 @@ encajan las piezas y cómo añadir un jugador propio.
 
 </div>
 
-## La idea central
-
-> Las reglas del juego y todas las IA se escriben **una sola vez, en Python**. Ese
-> mismo código ejecuta tanto el torneo evaluado (en CI) como el juego en vivo en
-> el navegador (vía Pyodide). **Una única fuente de verdad.** Las reglas nunca se
-> reimplementan en JavaScript.
-
-## El camino más corto hasta tu propio jugador
-
-1. Lee las [reglas](rules.md) — cinco minutos.
-2. [Instala](getting-started.md) el paquete.
-3. Copia el ejemplo mínimo de la [API de jugador](upload-a-bot/player-api.md).
-4. Añade una línea a `players/custom/players.yaml` y [abre un PR](upload-a-bot/submit-a-player.md).
+!!! tip "¿Te dan miedo conceptos como Git, forks o pull requests?"
+    La [Guía](../guide/index.md) te enseña desde cero, con este mismo
+    repositorio como ejemplo.

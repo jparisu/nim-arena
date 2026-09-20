@@ -8,6 +8,8 @@ capacidad de importar tu propio paquete.
 Para un proyecto cuya lógica ya está en Python, esta es la característica que
 hace que toda la ruta estática funcione.
 
+---
+
 ## Por qué importa
 
 Sin ella, una página estática que juegue a tu juego necesita las reglas **en
@@ -29,6 +31,8 @@ flowchart LR
     La página de este repositorio ejecuta el mismo paquete `nimarena` que el
     torneo. Las reglas **nunca** se reimplementan en JavaScript. Mira
     [La página web](../../../game/advanced/web.md).
+
+---
 
 ## Cargarlo
 
@@ -62,6 +66,8 @@ ejecución con `micropip`. Cualquier cosa con extensiones en C no se puede, a
 menos que Pyodide la haya construido — lo que descarta buena parte de los
 rincones menos comunes del ecosistema científico. Compruébalo antes de depender
 de una librería.
+
+---
 
 ## Meter tu propio paquete
 
@@ -105,6 +111,8 @@ commiteado.
     `.gitignore` y deja que lo produzca la construcción. Mira
     [Comandos](../../git/commands.md#el-archivo-gitignore).
 
+---
+
 ## El puente
 
 No llames a tu paquete desde JavaScript directamente. Escribe **un módulo de
@@ -146,6 +154,8 @@ funciones, cada una recibiendo y devolviendo cadenas. Cuando la página necesite
 algo nuevo, añades una función al puente en lugar de meter la mano más adentro
 del paquete desde JavaScript.
 
+---
+
 ## Lo que paga quien visita
 
 Pyodide ocupa unos 10 MB antes de tu propio código. En una primera visita eso
@@ -167,6 +177,8 @@ lee como un fallo para todo el que no la haya visto antes.
 
 La segunda visita es rápida: el navegador cachea los archivos de la CDN.
 
+---
+
 ## Límites
 
 | No hay | Consecuencia |
@@ -187,7 +199,7 @@ Dos respuestas prácticas, y este repositorio toma la primera:
 
 - **Aceptarlo.** El juego en vivo es de mejor esfuerzo; la exigencia le
   corresponde al torneo, que se ejecuta en CI, donde los timeouts son reales.
-  Es la elección honesta para un proyecto de estudiantes.
+  Es la elección honesta para un proyecto de este tamaño.
 - **Mover Python a un Web Worker.** Correcto, y una cantidad considerable de
   maquinaria extra para un juego que responde en milisegundos.
 
@@ -196,9 +208,8 @@ Dos respuestas prácticas, y este repositorio toma la primera:
     en la página. Si un movimiento tarda más de un segundo, la interfaz va a
     parecer rota aunque no haya nada mal.
 
-## Adónde ir después
+---
 
-- [HTML, CSS y JavaScript](html-js.md) — la página que llama al puente.
-- [GitHub Pages](../../github/pages.md) — publicar el resultado.
-- [La página web](../../../game/advanced/web.md) — este repositorio haciendo
-  todo esto, documentado por completo.
+**Siguiente:** [HTML, CSS y JavaScript](html-js.md) — la página que llama al puente.
+
+**También:** [GitHub Pages](../../github/pages.md) · [La página web](../../../game/advanced/web.md)

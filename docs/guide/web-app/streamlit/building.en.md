@@ -19,6 +19,8 @@ worth using.
     is an illustration of the technique, not a file you will find in the
     repository.
 
+---
+
 ## The one thing you must understand: the rerun
 
 Streamlit has no callbacks, no component tree and no render function. Instead:
@@ -44,6 +46,8 @@ corollaries:
 
 The fixes for those two are `st.session_state` and the cache decorators, below.
 Learn those and Streamlit stops being surprising.
+
+---
 
 ## Widgets
 
@@ -76,6 +80,8 @@ The rest of the vocabulary is small:
 | `st.button` | a button |
 | `st.dataframe`, `st.table` | a table |
 | `st.success`, `st.error`, `st.warning`, `st.info` | a coloured message |
+
+---
 
 ## Layout
 
@@ -116,6 +122,8 @@ for row, count in enumerate(state):
     `DuplicateWidgetID`. Pass an explicit `key=` built from the loop variables,
     as above.
 
+---
+
 ## Keeping state between reruns
 
 `st.session_state` is a dictionary that survives reruns, one per browser
@@ -153,6 +161,8 @@ Streamlit bug there is.
     the page die with a stack trace. The engine stays strict; the app stays
     polite.
 
+---
+
 ## Not repeating expensive work
 
 Two decorators, and the difference between them matters:
@@ -177,6 +187,8 @@ sometimes a cache of its own; sharing one instance between two visitors makes
 their games interfere. Build a fresh one per session with `Player.create(seed)`
 and put it in `st.session_state`.
 
+---
+
 ## The app is a shell
 
 This is the part that matters for the project, not just for Streamlit.
@@ -194,6 +206,8 @@ bots import.
 
 The test is simple — if you deleted `app.py`, could you still play a full game
 from a Python prompt? If not, logic has leaked into the interface.
+
+---
 
 ## Project layout
 
@@ -223,8 +237,8 @@ Installing your own package from Git — rather than copying the source next to
 as well as on your laptop. See
 [Installation and usage](../../python-library/installation-and-usage.md).
 
-## Where to go next
+---
 
-- [Streamlit Community Cloud](cloud.md) — putting it online.
-- [API](../../python-library/api.md) — designing the package this app calls.
-- [Static web](../static-web/index.md) — the other route, with no server.
+**Next:** [Streamlit Community Cloud](cloud.md) — putting it online.
+
+**Also:** [API](../../python-library/api.md) · [Static web](../static-web/index.md)

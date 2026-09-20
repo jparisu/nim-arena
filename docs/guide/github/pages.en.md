@@ -10,6 +10,8 @@ documentation you are reading is published separately on
 [Read the Docs](../documentation/readthedocs.md). Two artifacts, two hosts, one
 repository.
 
+---
+
 ## What "static" means, and why it is enough
 
 Pages will serve HTML, CSS, JavaScript, images and JSON. It will not run code on
@@ -24,6 +26,8 @@ dynamically, and yet nothing is re-implemented either.
 
 The rule of thumb: if your site can be a folder of files, Pages is the simplest
 correct answer.
+
+---
 
 ## Enabling it
 
@@ -43,6 +47,8 @@ bundled, compiled, assembled — rather than committed by hand.
     correct workflow deploying to a repository still set to "deploy from a
     branch" fails with a permissions error that does not mention the cause. If a
     Pages deploy fails for no visible reason, check this first.
+
+---
 
 ## How a Pages deploy works
 
@@ -100,6 +106,8 @@ published from a build that failed.
 workflow. Cancelling a deploy halfway can leave the site in a half-applied state,
 so runs queue rather than interrupt each other.
 
+---
+
 ## When the site does not redeploy
 
 Two failure modes account for almost all of them.
@@ -121,6 +129,8 @@ finishing:
 
 The full story is in [GitHub Actions](actions.md#deploying-the-web-app-and-the-trap-in-it).
 
+---
+
 ## Pull requests cannot deploy
 
 A workflow triggered by a pull request **from a fork** runs without secrets and
@@ -134,6 +144,8 @@ Practical consequences:
   or `mkdocs serve` for a docs change), not by looking for a preview link.
 - Anything that must be verified before merge belongs in a check that *can* run
   on a fork PR — the tests, the strict docs build — not in the deploy.
+
+---
 
 ## Publishing a site of your own
 
@@ -152,9 +164,8 @@ done. The version worth learning:
     assembled by `scripts/build_web.py` during the deploy. Committing build
     output makes every rebuild a diff, and every merge a conflict.
 
-## Where to go next
+---
 
-- [GitHub Actions](actions.md) — the workflow that does the deploying.
-- [Read the Docs](../documentation/readthedocs.md) — the other way to publish a
-  documentation site, and when to prefer it.
-- [The web app](../../game/advanced/web.md) — what this repository actually publishes.
+**Next:** [GitHub Actions](actions.md) — the workflow that does the deploying.
+
+**Also:** [Read the Docs](../documentation/readthedocs.md) · [The web app](../../game/advanced/web.md)

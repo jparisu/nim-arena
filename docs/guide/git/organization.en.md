@@ -4,6 +4,8 @@ To use Git with confidence, it helps to know what it stores under the hood. This
 page explains the three ideas everything else is built on: **commits**,
 **diffs** and **branches** — and how they add up to a project **history**.
 
+---
+
 ## Commits as snapshots
 
 A **commit** is a saved point in the project's history. The most common
@@ -43,6 +45,8 @@ changed, every hash from that point on would change too. In practice you rarely
 type a full hash — the first 7 characters (`772a47a`) are enough to identify a
 commit.
 
+---
+
 ## Diffs
 
 While a commit stores a snapshot, what you usually *want to see* is the
@@ -71,6 +75,8 @@ A diff is read like this:
 Diffs are everywhere in Git: they are how `git diff` shows your uncommitted
 work, how `git log -p` shows what each commit changed, and how a pull request on
 GitHub shows what it proposes.
+
+---
 
 ## Branches
 
@@ -142,6 +148,8 @@ decide which version wins. This is a **merge conflict**: Git pauses and asks you
 to edit the file and choose. Conflicts are a normal part of collaboration, not
 an error — the [Example](example.md) page walks through resolving one.
 
+---
+
 ## History
 
 Chaining commits produces the project's **history** — the story of how it
@@ -162,9 +170,8 @@ What makes a history easy to read:
     [GitHub section](../github/workflow.md), because in practice that is where a
     clean history pays off: in pull requests and code review.
 
-## Where to go next
+---
 
-- [Commands](commands.md) — the commands that create commits, branches and
-  diffs.
-- [Undoing changes](undoing-changes.md) — how to move pointers and discard work
-  safely.
+**Next:** [Commands](commands.md) — the commands that create commits, branches and diffs.
+
+**Also:** [Undoing changes](undoing-changes.md)

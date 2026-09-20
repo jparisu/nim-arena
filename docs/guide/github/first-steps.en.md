@@ -4,6 +4,8 @@ This page takes you from *no account* to *a repository of your own on GitHub*,
 ready for the [workflow](workflow.md) that follows. If you already have an
 account and a repository, you can skim it and jump ahead.
 
+---
+
 ## Create an account
 
 Go to [github.com](https://github.com) and sign up. A free account is enough for
@@ -21,18 +23,24 @@ Two early steps are worth doing well:
       or
     - an **SSH key**, a key pair whose public half you add to GitHub.
 
-!!! tip "Which one should I use?"
-    For working in notebooks or occasional pushes, a **PAT over HTTPS** is the
-    simplest: create it in **Settings → Developer settings → Personal access
-    tokens**, and paste it when Git asks for a password. For frequent local
-    work, an **SSH key** (added in **Settings → SSH and GPG keys**) avoids
-    retyping anything. Either is fine — pick one and move on.
+!!! tip "If you have no preference, use a PAT"
+    A **PAT over HTTPS** is the shortest path: create it on the website, paste
+    it when Git asks for a password, done. An **SSH key** is a bit more setup up
+    front and more comfortable afterwards, if you work locally every day.
+
+    | | PAT over HTTPS | SSH key |
+    |---|---|---|
+    | Setting it up | paste a token | generate a key pair |
+    | Expires | yes, needs renewing | no |
+    | Best for | notebooks, occasional pushes | daily local work |
+
+    **Pick one and move on.** You can switch later without re-cloning.
 
 ### Set up authentication on your machine
 
-Pick one of the two tabs to authenticate. You do not need both.
+Pick one of the two tabs. You do not need both.
 
-=== "PAT over HTTPS"
+=== "PAT over HTTPS (recommended)"
 
     **1. Create the token.** On GitHub, **Settings → Developer settings →
     Personal access tokens → Fine-grained tokens → Generate new token**. Give it
@@ -131,6 +139,8 @@ git config --global user.name "Your Name"
 git config --global user.email "your-email@example.com"
 ```
 
+---
+
 ## Create a repository
 
 Click **New** (the green button on your repositories page) and fill in:
@@ -183,6 +193,8 @@ license = "MIT"
     empty — an unlicensed public repository is the one mistake here that has
     real consequences.
 
+---
+
 ## Set it up
 
 A few settings are worth changing early, from the repository's **Settings** tab
@@ -198,6 +210,8 @@ Configuration that *enforces* a healthy team workflow — protecting `main`,
 requiring reviews and passing checks — is important enough to have its own page:
 [Repository configuration](repository-configuration.md). Set that up once the
 workflow and Actions are in place.
+
+---
 
 ## Explore
 
@@ -215,6 +229,8 @@ Every repository has the same tabs, and knowing them makes any project readable:
 Browsing a well-run project — reading how its pull requests are described and how
 its issues are discussed — is one of the best ways to learn the conventions of
 software collaboration.
+
+---
 
 ## Issues and pull requests
 
@@ -250,8 +266,8 @@ subject of the next page.
     [Pull requests](pull-requests.md#pull-request-templates), where the same
     mechanism is covered for PRs.
 
-## Where to go next
+---
 
-- [Workflow](workflow.md) — the full branch → commit → pull request → merge
-  cycle.
-- [Pull requests](pull-requests.md) — the next page, in depth.
+**Next:** [Workflow](workflow.md) — the full branch → commit → pull request → merge cycle.
+
+**Also:** [Pull requests](pull-requests.md)

@@ -11,6 +11,8 @@ importan exactamente igual.
 Esta página ordena el vocabulario, explica qué te aporta una librería y muestra
 un ejemplo conocido a imitar.
 
+---
+
 ## Módulo, paquete, librería, distribución
 
 Estas cuatro palabras se usan a menudo de forma imprecisa. En Python significan
@@ -39,6 +41,8 @@ En este proyecto, `src/nimarena/` es el **paquete**, la API que expone lo
 convierte en una **librería**, y `pyproject.toml` es lo que lo convierte en una
 **distribución** instalable (véase [Organización](organization.md)).
 
+---
+
 ## Qué te aporta una librería
 
 ¿Por qué empaquetar código en lugar de tener por ahí un simple `utils.py`? Una
@@ -57,6 +61,8 @@ librería te da cuatro cosas:
 - **Distribución.** Un solo comando `pip install` entrega el código y sus
   dependencias a cualquiera, en cualquier lugar — incluido un notebook de Google
   Colab.
+
+---
 
 ## Un ejemplo concreto
 
@@ -96,9 +102,8 @@ funciones puras que reciben todas el estado primero y ninguna lo muta;
 `nim_sum` no necesitan glosario. Diseñar esa superficie deliberadamente es de lo
 que trata [la página de API](api.md).
 
-## Adónde ir después
+---
 
-- [Organización](organization.md) — los archivos y carpetas que convierten este
-  código en una librería instalable.
-- [Instalación y uso](installation-and-usage.md) — instalar `nimarena` desde
-  GitHub y usarlo en un notebook.
+**Siguiente:** [Organización](organization.md) — los archivos y carpetas que convierten este código en una librería instalable.
+
+**También:** [Instalación y uso](installation-and-usage.md)

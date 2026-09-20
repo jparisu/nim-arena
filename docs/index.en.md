@@ -1,10 +1,44 @@
 # NIM Arena
 
-**NIM Arena** is an educational project built entirely on GitHub, centered on the
-game of NIM.
+A complete project built on GitHub around the game of **NIM**: a Python library
+holding the rules and several AIs, a page where you play against them, a
+tournament that pits them against each other on its own, and these docs.
 
-This site is **two separate documentations** that happen to share one address.
-Pick the one you came for — they cross-link, but they never mix:
+[![Tests](https://github.com/jparisu/nim-arena/actions/workflows/tests.yml/badge.svg)](https://github.com/jparisu/nim-arena/actions/workflows/tests.yml)
+[![Tournament](https://github.com/jparisu/nim-arena/actions/workflows/tournament.yml/badge.svg)](https://github.com/jparisu/nim-arena/actions/workflows/tournament.yml)
+[![Docs](https://readthedocs.org/projects/nim-arena/badge/?version=latest)](https://nim-arena.readthedocs.io)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/jparisu/nim-arena/blob/main/LICENSE)
+
+[:material-play: Play now](https://jparisu.github.io/nim-arena){ .md-button .md-button--primary }
+[:material-github: See the code](https://github.com/jparisu/nim-arena){ .md-button }
+
+---
+
+## What is inside
+
+```mermaid
+flowchart LR
+    LIB["🐍 nimarena<br/>the rules and the AIs"]
+    WEB["🌐 Web page<br/>you play"]
+    CI["🏆 Tournament<br/>the AIs compete"]
+    BOARD["📊 Leaderboard"]
+
+    LIB --> WEB
+    LIB --> CI
+    CI --> BOARD
+    BOARD --> WEB
+```
+
+| Piece | What it is | Where |
+|---|---|---|
+| 🐍 **Library** | the rules of NIM and four AIs, in Python | [The game](game/index.md) |
+| 🌐 **Web page** | play against any AI, nothing to install | [play](https://jparisu.github.io/nim-arena) |
+| 🏆 **Tournament** | runs every AI against every other and publishes a ranking | [The tournament](game/advanced/tournament.md) |
+| 🤖 **Your AI** | you write one class and send it as a pull request | [Upload a bot](game/upload-a-bot/index.md) |
+
+---
+
+## Where to start
 
 <div class="grid cards" markdown>
 
@@ -12,62 +46,31 @@ Pick the one you came for — they cross-link, but they never mix:
 
     ---
 
-    *What this project is.* The reference manual of this repository: the
-    [rules of NIM](game/rules.md), the `nimarena` Python package, and the two
-    paths through it — [upload a new bot](game/upload-a-bot/index.md) if you
-    want to write an AI, [advanced documentation](game/advanced/index.md) if you
-    want the machinery.
+    The manual of this project: the [rules of NIM](game/rules.md), the
+    `nimarena` library, and how to [write your own AI](game/upload-a-bot/index.md)
+    and get it into the tournament.
 
-    Read this to **play, or to write an AI of your own**.
+    Read it to **play or to write a bot**.
 
 - :material-book-open-page-variant:{ .lg .middle } **[Guide](guide/index.md)**
 
     ---
 
-    *How to build one yourself.* The tools and techniques behind a project like
-    this: [Git](guide/git/index.md), [GitHub](guide/github/index.md),
-    [Python packaging](guide/python-library/index.md), a
-    [web app](guide/web-app/index.md) and
-    [documentation](guide/documentation/index.md) — with this repository as the
-    worked example throughout.
+    The tools a project like this is built with:
+    [Git](guide/git/index.md), [GitHub](guide/github/index.md),
+    [Python](guide/python-library/index.md),
+    [web](guide/web-app/index.md) and
+    [documentation](guide/documentation/index.md).
 
-    Read this to **build and ship a project of your own**. Start with the
+    Read it to **build a project of your own**. Start with the
     [step-by-step guide](guide/step-by-step.md).
 
 </div>
 
-!!! tip "Which half am I reading?"
-    A page that documents **this repository's behaviour** lives under *The game*.
-    A page that **teaches a technique** lives under *Guide*. If you ever
-    have to guess, the page is in the wrong half — say so in an issue.
-
-## Try it
-
-```bash
-git clone https://github.com/jparisu/nim-arena
-cd nim-arena
-python -m venv .venv && source .venv/bin/activate
-pip install -e ".[dev]"
-
-pytest                                            # run the tests
-nim-tournament --out results/leaderboard.json     # run a tournament
-```
-
-Or play against the AIs in your browser, no install at all:
-[**jparisu.github.io/nim-arena**](https://jparisu.github.io/nim-arena).
+---
 
 ## The one big idea
 
 > The game rules and every AI are written **once, in Python**. That exact same
-> code runs both the graded tournament (in CI) and live play in the browser (via
-> Pyodide). **One source of truth.** The rules are never re-implemented in
-> JavaScript.
-
-## About this site
-
-It is written in English and Spanish from a single source tree; use the language
-switcher in the header. Every push to `main` rebuilds it on Read the Docs.
-
-How it is built — MkDocs, the `mkdocs.yml` configuration and the Read the Docs
-deployment — is itself part of the course:
-[Guide → Documentation](guide/documentation/index.md).
+> code runs the tournament (in CI) and live play in the browser (via Pyodide).
+> **One source of truth.** The rules are never re-implemented in JavaScript.

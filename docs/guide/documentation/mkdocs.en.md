@@ -6,6 +6,8 @@
 
 This site is a MkDocs project, so every example on this page is real.
 
+---
+
 ## The two commands
 
 ```bash
@@ -22,6 +24,8 @@ while you write.
 link is a warning printed into a log nobody reads; with it, the build fails and
 the pull request goes red. Use it locally before pushing.
 
+---
+
 ## `mkdocs.yml`
 
 One file configures everything. The blocks, in the order you will care about
@@ -32,7 +36,8 @@ them:
 ```yaml
 site_name: NIM Arena
 site_description: >-
-  NIM Arena — the reference manual of the project and a student guide…
+  NIM Arena — the reference manual of the project and the guide to building
+  one of your own…
 site_url: https://nim-arena.readthedocs.io
 repo_url: https://github.com/jparisu/nim-arena
 repo_name: jparisu/nim-arena
@@ -167,6 +172,8 @@ flowchart LR
     while the page is visibly broken. If a card grid renders as a bullet list of
     literal text, that is the cause.
 
+---
+
 ## API pages from docstrings
 
 Writing a reference by hand guarantees it goes stale.
@@ -197,6 +204,8 @@ argument table and a link to the source lines:
 into tables. Pick a style, declare it once, and write every docstring that way —
 see [API](../python-library/api.md).
 
+---
+
 ## Extra CSS
 
 `extra_css` loads your own stylesheet last, so you can override the theme:
@@ -211,14 +220,22 @@ both light and dark mode, and widening the content column so the workflow YAML
 blocks are not cramped. Keep it small — every rule you add is one the theme's
 next version can fight with.
 
+---
+
 ## Two languages from one tree
 
-The site ships in English and Spanish through
-[mkdocs-static-i18n](https://ultrabug.github.io/mkdocs-static-i18n/). The
-convention is a **filename suffix**: the **default** language owns the
-*unsuffixed* file and every other language adds its locale. Here Spanish is the
-default, so `page.md` is Spanish and `page.en.md` is its English twin, side by
-side in the same folder.
+This site publishes in Spanish and English from a single `docs/` folder, using
+[mkdocs-static-i18n](https://ultrabug.github.io/mkdocs-static-i18n/). **You do
+not need this for your project** — one language is a perfectly good answer — but
+if you want two, this is how.
+
+The convention is a **filename suffix**: the default language keeps the
+unsuffixed file, and each extra language adds its own.
+
+| File | Language |
+|---|---|
+| `rules.md` | Spanish (the default language) |
+| `rules.en.md` | English |
 
 ```yaml
 plugins:
@@ -236,35 +253,18 @@ plugins:
           build: true
           nav_translations:
             Reglas del juego: Game rules
-            Guía: Guide
 ```
 
-- The **default** language is built at the site root; the others under their
-  locale, here `/en/`. Which language is default is not a free choice of
-  labels: the plugin requires the default locale to be the one with no suffix.
-  Swapping defaults means renaming every page file.
-- The `nav` is declared **once**, with the paths of the unsuffixed files and
-  titles in the default language. `nav_translations` then maps those titles into
-  each other language.
-- `fallback_to_default: true` serves the default-language page when a
-  translation does not exist yet — so a half-translated site still builds and
-  still navigates.
-- Sidebar labels live in `mkdocs.yml`, not in any page, which is why they need
-  `nav_translations` at all.
-- Order matters: `i18n` reconfigures the search index per language, so `search`
-  must already be registered above it.
+Three things worth knowing before you start:
 
-One build, one deploy, and Material puts a **language switcher** in the header —
-readers change language without leaving the page they are on.
+- The `nav` is declared **once**, with the unsuffixed paths, and
+  `nav_translations` translates the sidebar titles.
+- `fallback_to_default: true` serves the default-language page when the
+  translation does not exist yet, so a half-translated site still builds.
+- Changing the default language **forces you to rename every file**, so pick it
+  at the start.
 
 !!! tip "Generated reference pages stay in English"
     A page whose body comes from docstrings renders the same text in every
-    locale. Translate the prose around it, and say so with a short banner above
-    the directive rather than pretending the reference is bilingual.
-
-## Where to go next
-
-- [Read the Docs](readthedocs.md) — building and hosting this automatically.
-- [GitHub Actions](../github/actions.md#building-the-documentation) — the
-  `--strict` build that runs on every pull request.
-- [API](../python-library/api.md) — writing docstrings worth generating from.
+    language. Translate the prose around it and say so in a short note, instead
+    of pretending the reference is bilingual.

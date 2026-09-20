@@ -1,8 +1,8 @@
 site_name: NIM Arena
 site_description: >-
-  NIM Arena — two documentations in one site: The game, the reference manual of
-  this project (rules, player API, tournament and web app), and the Student
-  guide, how to build a project like it with Git, GitHub, Python and MkDocs.
+  NIM Arena — the reference manual of this project (rules, player API,
+  tournament and web app), plus the Guide to building one of your own with Git,
+  GitHub, Python and MkDocs.
 # Where the built site actually lives. This is NOT cosmetic: the i18n language
 # switcher builds its `<link rel="alternate">` hrefs from the *path* of site_url,
 # so a hardcoded root sends the English link to `/en/` — which on Read the Docs is
@@ -45,7 +45,7 @@ theme:
     #
     # `navigation.sections` and `navigation.expand` are deliberately absent too:
     # both hold the whole tree open at once, which flattens "The game" and
-    # "Student guide" into one long list and loses the distinction. Without them
+    # "Guide" into one long list and loses the distinction. Without them
     # only the section you are reading is expanded.
     - navigation.top
     - navigation.tracking
@@ -82,13 +82,13 @@ nav:
   - El juego:
       - game/index.md
       - Reglas del juego: game/rules.md
-      - Primeros pasos: game/getting-started.md
       - Subir un bot nuevo:
           - game/upload-a-bot/index.md
           - 1. API de jugador: game/upload-a-bot/player-api.md
           - 2. Enviar un jugador: game/upload-a-bot/submit-a-player.md
       - Documentación avanzada:
           - game/advanced/index.md
+          - Primeros pasos: game/getting-started.md
           - Estructura del código: game/advanced/code-structure.md
           - El marcador: game/advanced/scoreboard.md
           - El torneo: game/advanced/tournament.md
@@ -202,10 +202,9 @@ plugins:
           name: English
           build: true
           site_description: >-
-            NIM Arena — two documentations in one site: The game, the reference
-            manual of this project (rules, player API, tournament and web app),
-            and the Guide, how to build a project like it with Git, GitHub,
-            Python and MkDocs.
+            NIM Arena — the reference manual of this project (rules, player
+            API, tournament and web app), plus the Guide to building one of your
+            own with Git, GitHub, Python and MkDocs.
           # The `nav:` titles above are Spanish, so these map Spanish -> English.
           nav_translations:
             Inicio: Home

@@ -8,6 +8,8 @@ versioning, search and pull request previews on top.
 This documentation is published there, at
 [nim-arena.readthedocs.io](https://nim-arena.readthedocs.io).
 
+---
+
 ## Why not just GitHub Pages?
 
 Both host static sites for free. They solve different problems.
@@ -29,6 +31,8 @@ This project uses both, for different artifacts: the playable web app is a Pages
 deployment ([GitHub Pages](../github/pages.md)), and this manual is on Read the
 Docs. Publishing the docs there also keeps the Pages workflow focused on one job.
 
+---
+
 ## Importing a project
 
 Once, through the web interface:
@@ -45,6 +49,8 @@ Once, through the web interface:
     Like the Pages source setting, connecting the repository is done in a web UI
     and is not recorded anywhere in the repository. If a fork builds nothing, it
     is because nobody imported it — not because the configuration is wrong.
+
+---
 
 ## `.readthedocs.yaml`
 
@@ -95,6 +101,8 @@ environment, the API blocks come out empty and the build may still succeed.
     [Docs workflow](../github/actions.md#building-the-documentation) running the
     strict build on every pull request. Read the Docs publishes; the Action
     checks.
+
+---
 
 ## Versions
 
@@ -147,26 +155,22 @@ deploy, and an in-page language switcher; you do not get a separate Read the Doc
 *translation project* per language. For a site this size the switcher is worth
 more than the tidier URL.
 
-!!! danger "Set `site_url` from the environment, or the language switcher breaks"
-    Material builds the language switcher's `<link rel="alternate">` hrefs from
-    the **path** of `site_url`. Hardcode it to the site root and the English link
-    becomes `/en/` — which Read the Docs reads as its own *language slug*, not as
-    our subdirectory. It looks for a translation project, finds none, and you
-    land on an unstyled page of giant icons: the HTML rendered, the stylesheet
-    404ed.
+??? warning "If you publish in two languages: set `site_url` from the environment"
+    Material builds the language switcher's links from the **path** of
+    `site_url`. Hardcode it to the site root and the English link becomes
+    `/en/`, which Read the Docs reads as its own *language slug* rather than your
+    subdirectory: you land on an unstyled page.
 
-    Read the Docs exports `READTHEDOCS_CANONICAL_URL` on every build — different
-    for each version and for each pull-request preview. Read it with MkDocs'
-    `!ENV` tag and keep a fallback for local builds:
+    The fix is to read the variable Read the Docs exports on every build, with a
+    fallback for local ones:
 
     ```yaml
     site_url: !ENV [READTHEDOCS_CANONICAL_URL, "https://nim-arena.readthedocs.io/"]
     ```
 
-    The switcher then resolves to `/en/latest/en/` in production and to
-    `/en/<pr-number>/en/` inside a preview, so it never throws you out of the
-    build you are reading. The same variable fixes the `canonical` link, which
-    would otherwise point every preview page at production.
+    The same variable fixes the `canonical` link inside pull-request previews.
+
+---
 
 ## Pull request previews
 
@@ -180,6 +184,8 @@ sandboxed and produces a throwaway site with no access to your project. For a
 repository that takes outside contributions, it is the single most useful setting
 on this page.
 
+---
+
 ## The badge
 
 The build status is available as an image, which is why the README carries:
@@ -190,6 +196,8 @@ The build status is available as an image, which is why the README carries:
 
 A broken documentation build is then visible from the front page, rather than in
 an email nobody opens.
+
+---
 
 ## When a build fails
 
@@ -206,9 +214,8 @@ order of frequency:
 4. **The config file in the wrong place.** `.readthedocs.yaml` must be at the
    repository root, on the branch being built.
 
-## Where to go next
+---
 
-- [MkDocs](mkdocs.md) — the build this service runs.
-- [GitHub Pages](../github/pages.md) — the other publishing target, and what it
-  is better at.
-- [Documenting a project](documentation.md) — what to put in the pages.
+**Next:** [MkDocs](mkdocs.md) — the build this service runs.
+
+**Also:** [GitHub Pages](../github/pages.md) · [Documenting a project](documentation.md)

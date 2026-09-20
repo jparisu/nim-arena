@@ -5,37 +5,68 @@ This is the whole project, in order, on one page.
 You are going to build a **two-player turn-based game**: the rules as a Python
 library, an interface other people's bots can plug into, a bot of your own, a
 page anyone can play on, and a tournament that ranks every bot and publishes the
-result. At the end it is a real open-source project, not an exercise.
+result.
+
+---
+
+## The whole path
+
+```mermaid
+flowchart LR
+    S0["0 · Repository"] --> S1["1 · The game"]
+    S1 --> S2["2 · The platform"]
+    S2 --> S3["3 · The bot"]
+    S3 --> S4["4 · The web app"]
+    S4 --> S5["5 · The tournament"]
+```
+
+| Step | What you build | When it ends, you have |
+|---|---|---|
+| **0** | the repository | an empty project that is public, installable, protected and documented |
+| **1** | the rules | a correct game, playable from a Python prompt |
+| **2** | the `Player` interface | a platform an outsider can plug a bot into |
+| **3** | your AI | a bot worth playing, with measured results |
+| **4** | the web app | a public URL where anyone plays against it |
+| **5** | the tournament | a ranking that publishes itself |
 
 Every task below says what to do, links to the section of this
 [Guide](index.md) that explains it, and ends with a **Result** — the concrete
 thing you should be able to see. Tick a task when you can see its result, not
 when you feel finished.
 
-## How this works
+---
 
-Three rules. They matter more than any individual task below.
+## Three rules, before you start
 
-**One big step, one pull request.** Branch off `main`, build the step, open a
-pull request, have a teammate review it, merge. Nobody commits to `main` — not
-even for a typo, not even on the last day. This is what makes the history
-readable and the project recoverable when something breaks. See
-[Workflow](github/workflow.md) and [Pull requests](github/pull-requests.md).
+They matter more than any individual task below.
 
-**A step is not done when the code runs.** It is done when the tests pass, the
-documentation says the thing exists, the checks are green and the branch is
-merged. Code written now and tested "later" is code tested never. See
-[Testing](python-library/testing.md) and
-[Documenting a project](documentation/documentation.md).
+!!! tip "1 · One big step, one pull request"
+    Branch off `main`, build the step, open a pull request, have a teammate
+    review it, merge. Nobody commits to `main` — not even for a typo, not even
+    on the last day.
 
-**Something playable at every stage.** Each big step ends with something you can
-put in front of a person. That is deliberate: a project that only works at the
-end is a project you cannot tell the state of.
+    This is what makes the history readable and the project recoverable when
+    something breaks. See [Workflow](github/workflow.md) and
+    [Pull requests](github/pull-requests.md).
 
-!!! tip "The order is a dependency order, not a schedule"
+!!! tip "2 · A step is not done when the code runs"
+    It is done when the tests pass, the documentation says the thing exists, the
+    checks are green and the branch is merged.
+
+    Code written now and tested "later" is code tested never. See
+    [Testing](python-library/testing.md) and
+    [Documenting a project](documentation/documentation.md).
+
+!!! tip "3 · Something playable at every stage"
+    Each big step ends with something you can put in front of a person.
+
+    That is deliberate: a project that only works at the end is a project you
+    cannot tell the state of.
+
+!!! note "The order is a dependency order, not a schedule"
     Each step needs the one before it — the bot needs the interface, the
-    interface needs the rules. Within a step, tasks can be split across the
-    team and done in parallel.
+    interface needs the rules. Within a step, tasks can be split across the team
+    and done in parallel.
 
 ---
 
@@ -686,21 +717,6 @@ Who is actually best — decided automatically, and published.
 
 ---
 
-## What you should have
+**Next:** [Git](git/index.md) · [GitHub](github/index.md) · [Python library](python-library/index.md) · [Web app](web-app/index.md) · [Documentation](documentation/index.md) — the five sections, in depth.
 
-| After | There is |
-| --- | --- |
-| **Step 0** | a public, installable, protected, tested, documented empty project |
-| **Step 1** | a correct game, playable from a Python prompt |
-| **Step 2** | an interface a stranger can write a bot against, and a test that checks them |
-| **Step 3** | a bot worth playing, with measured results |
-| **Step 4** | a public URL where anyone plays your game against it |
-| **Step 5** | a tournament that ranks every bot and publishes the table by itself |
-
-## Where to go next
-
-- [Git](git/index.md) · [GitHub](github/index.md) ·
-  [Python library](python-library/index.md) · [Web app](web-app/index.md) ·
-  [Documentation](documentation/index.md) — the five sections, in depth.
-- [The game](../game/index.md) — this repository as a finished example of
-  everything above.
+**Also:** [The game](../game/index.md)

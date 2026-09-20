@@ -13,6 +13,8 @@ Tres archivos, tres asuntos. Los atributos `style="…"` en línea y los
 manejadores `onclick="…"` funcionan, y son la forma en que una página se vuelve
 imposible de mantener para la tercera semana.
 
+---
+
 ## La página más pequeña que funciona
 
 ```html
@@ -45,7 +47,20 @@ Tres detalles de ahí no son decoración:
   elementos de arriba. Un script en `<head>` se ejecuta primero y no encuentra
   nada.
 
+---
+
 ## El DOM, en cuatro llamadas
+
+El navegador convierte tu HTML en un árbol de objetos —el **DOM**— que JavaScript
+puede leer y modificar. Ese es todo el ciclo de una página estática:
+
+```mermaid
+flowchart LR
+    H["📄 HTML<br/>la estructura"] --> D["🌳 DOM<br/>el árbol en memoria"]
+    D --> J["⚡ JavaScript<br/>lo lee y lo cambia"]
+    J --> D
+    C["🎨 CSS"] --> D
+```
 
 El **DOM** es el modelo de objetos vivo que el navegador tiene de la página.
 Cambiarlo cambia lo que hay en pantalla, de inmediato. No necesitas casi nada
@@ -82,6 +97,8 @@ const el = (tag, cls, txt) => {
 };
 ```
 
+---
+
 ## Cargar datos sin backend
 
 Una página estática no puede consultar una base de datos, pero sí puede leer un
@@ -112,6 +129,8 @@ perfectamente.
     contraseña o una solución en un archivo que el navegador descarga. Si
     necesitas un secreto, necesitas un servidor — mira
     [Alojamiento](../hosting.md).
+
+---
 
 ## Que siga siendo legible según crece
 
@@ -152,6 +171,8 @@ pestaña.
 pantalla de juego como la de torneo. Dos copias de un renderizador divergen;
 una copia no puede.
 
+---
+
 ## Fallar en voz alta
 
 Una página estática no tiene log de servidor. Cuando algo lanza una excepción,
@@ -179,6 +200,8 @@ línea recta significa que una excepción a mitad de camino deja los botones
 *posteriores* sin manejador alguno — y esos botones fallan luego de una forma
 que no apunta ni de lejos a la causa.
 
+---
+
 ## Ejecutarla en local
 
 Sirve la carpeta. No abras el archivo.
@@ -193,10 +216,8 @@ navegador bloquea `fetch()` por seguridad. Tu página cargará, se verá
 correcta, y fallará en silencio al leer cualquiera de sus datos — un fallo
 confuso con un arreglo de una línea.
 
-## Adónde ir después
+---
 
-- [Python en el navegador](pyodide.md) — ejecutar tu paquete en el cliente,
-  para no escribir las reglas dos veces.
-- [GitHub Pages](../../github/pages.md) — publicar la carpeta, gratis.
-- [La página web](../../../game/advanced/web.md) — la página de este
-  repositorio, documentada de principio a fin.
+**Siguiente:** [Python en el navegador](pyodide.md) — ejecutar tu paquete en el cliente, para no escribir las reglas dos veces.
+
+**También:** [GitHub Pages](../../github/pages.md) · [La página web](../../../game/advanced/web.md)

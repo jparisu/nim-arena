@@ -35,17 +35,10 @@ at the top of the ladder.
 
 ## Add your own
 
-1. Copy [`builtin/random.py`](builtin/random.py) to `custom/<your_bot>.py`.
-2. Rename the class and fill in `get_name`, `get_authors`, `get_description` and
-   `get_icon` (one emoji, not already taken).
-3. Implement `choose_move(state) -> (row, count)` — or inherit a strategy from
-   `nimarena.bots` and override `create` to configure it.
-4. Add one entry to [`custom/players.yaml`](custom/players.yaml): just `file` and
-   `class`.
-5. Run `nim-tournament --no-subprocess` and watch your bot play.
-6. Open a Pull Request.
+Copy [`builtin/random.py`](builtin/random.py) into `custom/`, rename the class,
+implement `choose_move`, add one entry to
+[`custom/players.yaml`](custom/players.yaml), and open a Pull Request.
 
-Your name must be unique across all admitted players; CI rejects a duplicate.
-
-Full walkthrough: **[CONTRIBUTING.md](../CONTRIBUTING.md)** and the
-[online docs](https://nim-arena.readthedocs.io/en/latest/game/upload-a-bot/submit-a-player/).
+The step-by-step walkthrough, with the code to copy and the acceptance criteria,
+is in the docs: **[Submit a player](https://nim-arena.readthedocs.io/en/latest/en/game/upload-a-bot/submit-a-player/)**
+(short version: [CONTRIBUTING.md](../CONTRIBUTING.md)).

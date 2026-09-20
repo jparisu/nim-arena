@@ -5,6 +5,8 @@ Python (and `pip`) how to build, install and describe it. This page walks
 through the layout this repository uses and the purpose of each file, so you can
 reproduce it in your own project.
 
+---
+
 ## Recommended layout
 
 This project uses the **`src/` layout**, the current best practice for Python
@@ -52,7 +54,21 @@ The distinguishing feature is that the importable package lives under `src/`, no
 at the repository root. The reason is subtle but important — see
 [The `src/` layout](#the-src-layout) below.
 
+---
+
 ## The files that matter
+
+Of the whole tree above, these are the ones doing the work:
+
+| File | What it does | Required? |
+|---|---|---|
+| [`pyproject.toml`](#pyprojecttoml) | metadata, dependencies and how it is built | ✅ yes |
+| [`__init__.py`](#__init__py) | marks the package and defines its public API | ✅ yes |
+| [`src/`](#the-src-layout) | where the package lives, and why not at the root | ✅ strongly recommended |
+| [`py.typed`](#pytyped) | announces that the package ships type hints | ⬜ if you annotate |
+| [`tests/`](#tests-mirroring-the-source) | one test module per source module | ✅ yes |
+| [`conftest.py`](#conftestpy) | path setup for pytest | ⬜ sometimes |
+| [`requirements.txt`](#requirementstxt) | pinning a deployment's versions | ⬜ rarely |
 
 ### `pyproject.toml`
 
@@ -183,6 +199,8 @@ This is a traditional system for keeping compatibility, but it is redundant with
 `pyproject.toml`, which already holds the list of dependencies and their versions.
 This project does not have one.
 
+---
+
 ## Versioning
 
 The library's version is declared as `version` in `pyproject.toml` and mirrored by
@@ -203,8 +221,8 @@ The numbers follow **semantic versioning**, `MAJOR.MINOR.PATCH`:
 To release a new version, bump the number (in both places) and merge it through
 the usual [pull-request workflow](../github/pull-requests.md).
 
-## Where to go next
+---
 
-- [Installation and usage](installation-and-usage.md) — install this package and
-  import it.
-- [API](api.md) — design the public interface that `__init__.py` will expose.
+**Next:** [Installation and usage](installation-and-usage.md) — install this package and import it.
+
+**Also:** [API](api.md)

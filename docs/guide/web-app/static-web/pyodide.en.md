@@ -8,6 +8,8 @@ own package.
 For a project whose logic is already in Python, this is the feature that makes
 the whole static route work.
 
+---
+
 ## Why it matters
 
 Without it, a static page that plays your game needs the rules **in
@@ -26,9 +28,11 @@ flowchart LR
 ```
 
 !!! quote "One source of truth"
-    This repository's page runs the same `nimarena` package as the graded
+    This repository's page runs the same `nimarena` package as the
     tournament. The rules are **never** re-implemented in JavaScript. See
     [The web app](../../../game/advanced/web.md).
+
+---
 
 ## Loading it
 
@@ -61,6 +65,8 @@ Anything pure-Python that it does not ship can be installed at runtime with
 `micropip`. Anything with compiled C extensions cannot, unless Pyodide has built
 it — which rules out most of the scientific stack's less common corners. Check
 before you depend on a library.
+
+---
 
 ## Getting your own package in
 
@@ -101,6 +107,8 @@ deploying, so the published archive is always built from the committed source.
     `web/py.zip` is build output. Committing it makes every rebuild a diff and
     every merge a conflict — `.gitignore` it and let the build produce it. See
     [Commands](../../git/commands.md#the-gitignore-file).
+
+---
 
 ## The bridge
 
@@ -143,6 +151,8 @@ each taking and returning strings. When the page needs something new, you add a
 function to the bridge rather than reaching deeper into the package from
 JavaScript.
 
+---
+
 ## What the user pays for
 
 Pyodide is roughly 10 MB before your own code. On a first visit that is a real
@@ -164,6 +174,8 @@ failure to everybody who has not seen it before.
 
 The second visit is fast: the browser caches the CDN files.
 
+---
+
 ## Limits
 
 | No | Consequence |
@@ -183,7 +195,7 @@ Two practical responses, and this repository takes the first:
 
 - **Accept it.** Live play is best-effort; enforcement belongs to the
   tournament, which runs in CI where timeouts are real. This is the honest
-  choice for a student project.
+  choice for a project this size.
 - **Move Python to a Web Worker.** Correct, and a significant amount of extra
   machinery for a game that answers in milliseconds.
 
@@ -192,9 +204,8 @@ Two practical responses, and this repository takes the first:
     page. If a move takes longer than about a second, the interface will feel
     broken even though nothing is wrong.
 
-## Where to go next
+---
 
-- [HTML, CSS and JavaScript](html-js.md) — the page that calls the bridge.
-- [GitHub Pages](../../github/pages.md) — publishing the result.
-- [The web app](../../../game/advanced/web.md) — this repository doing all of
-  this, documented in full.
+**Next:** [HTML, CSS and JavaScript](html-js.md) — the page that calls the bridge.
+
+**Also:** [GitHub Pages](../../github/pages.md) · [The web app](../../../game/advanced/web.md)

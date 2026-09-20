@@ -1,127 +1,19 @@
 # API de jugador
 
-Esta es la **columna vertebral del proyecto**. Todo —el torneo, la página web y
-cada bot enviado desde fuera— depende de ella. Es deliberadamente **mínima**: un
-jugador dice quién es e implementa un método.
+Para crear tu propio jugador de NIM para este repositorio, solo debes implementar la clase `Player`.
+Es esta clase tienes un método que decide la jugada, esta será la estrategia de tu jugador.
+Esta página te ayuda a escribir tu propio bot desde 0.
 
-## La interfaz
+---
 
-Un jugador es una subclase de `nimarena.player.Player`:
-
-```python
-from abc import ABC, abstractmethod
-
-class Player(ABC):
-    # --- identidad: legible sin construir el jugador ---
-    @classmethod
-    @abstractmethod
-    def get_name(cls) -> str: ...
-
-    @classmethod
-    @abstractmethod
-    def get_authors(cls) -> list[str]: ...
-
-    @classmethod
-    @abstractmethod
-    def get_description(cls) -> str: ...
-
-    @classmethod
-    @abstractmethod
-    def get_icon(cls) -> str: ...          # un emoji
-
-    # --- construcción: la única puerta de entrada del torneo ---
-    @classmethod
-    def create(cls, seed: int) -> "Player":
-        return cls()          # sobreescríbelo si tu bot recibe argumentos
-
-    # --- jugar ---
-    @abstractmethod
-    def choose_move(self, state: list[int]) -> tuple[int, int]: ...
-```
-
-Implementas exactamente cinco cosas:
-
-1. **`get_name()`** — único entre todos los jugadores admitidos;
-2. **`get_authors()`** — una lista no vacía de nombres;
-3. **`get_description()`** — una o dos frases sobre tu *estrategia*;
-4. **`get_icon()`** — un único emoji mostrado junto a tu nombre;
-5. **`choose_move(self, state)`** — la decisión en sí.
-
-`get_icon` es un emoji y no una imagen porque tiene que renderizar en tres sitios
-que no pueden manejar marcado: el marcador, una opción `<select>` nativa de la
-página web (solo texto) y la documentación en texto plano. Que sea **un** solo
-glifo — las secuencias de dos glifos rompen la alineación de las tablas. Los
-jugadores incluidos usan 🎲 `random`, 🌱 `easy`, 🧠 `medium`, ⚔️ `hard`.
-
-`create(seed)` es opcional: por defecto llama a `cls()`.
-
-!!! note "Por qué la identidad va en métodos de clase"
-    El torneo, la documentación y la página web necesitan etiquetar a un jugador
-    *sin construir uno*. Como son abstractos, Python mismo se niega a instanciar
-    una subclase que se haya olvidado de alguno:
-
-    ```text
-    TypeError: Can't instantiate abstract class MyBot without an
-               implementation for abstract method 'get_name'
-    ```
-
-## Semillas, y por qué existe `create`
-
-El torneo construye todos los jugadores mediante `create(seed)` y nunca llamando
-a la clase directamente. Recibes una semilla quieras o no — ignórala si tu bot es
-determinista:
-
-```python
-@classmethod
-def create(cls, seed: int) -> "MyBot":
-    return cls(depth=4, seed=seed)
-```
-
-Como `create` es un método de clase, la semilla también puede cambiar cómo se
-*configura* tu bot, no solo cómo desempata.
-
-## Tipos exactos y convenciones
-
-### Entrada: `state`
-
-- Tipo: `list[int]`.
-- `len(state)` es el número de filas.
-- `state[i]` es el número de palos que quedan en la **fila `i`** (las filas están
-  **indexadas desde 0**).
-- Una fila puede estar a `0` (vacía). El `state` que recibes **nunca** es todo
-  ceros (en ese caso la partida ha acabado y no se te pide jugada).
-- **Trata `state` como de solo lectura.** No lo mutes. Si necesitas modificarlo,
-  copia primero (`list(state)`).
-
-### Salida: la jugada `(fila, cantidad)`
-
-- Tipo: `tuple[int, int]`.
-- `fila` — el índice base 0 de la fila de la que retirar: `0 <= fila < len(state)`.
-- `cantidad` — cuántos palos retirar: `1 <= cantidad <= state[fila]`.
-
-### Qué significa «legal»
-
-Una jugada `(fila, cantidad)` es **legal** desde `state` exactamente cuando:
-
-```text
-0 <= fila < len(state)   Y   1 <= cantidad <= state[fila]
-```
-
-La única fuente de verdad es
-[`nimarena.game.is_legal`](../advanced/code-structure.md). En el torneo, devolver una jugada
-**ilegal**, **lanzar una excepción** o **agotar el presupuesto de tiempo** hacen
-que tu jugador **pierda esa partida** (el torneo registra el motivo y continúa —
-nunca se cae).
-
-## Ejemplo mínimo para copiar y pegar
+## Empieza copiando esto
 
 El jugador correcto más pequeño: retirar siempre un palo de la primera fila no
-vacía.
+vacía. Cópialo, cámbiale el nombre y ya tienes un bot válido.
 
 ```python
 from nimarena.game import State
 from nimarena.player import Player
-
 
 class OneStickBot(Player):
     @classmethod
@@ -147,130 +39,228 @@ class OneStickBot(Player):
         raise AssertionError("never called on an empty board")
 ```
 
-## Reutilizar una estrategia incluida
+Ese bot juega partidas legales de principio a fin. Pierde casi todas, pero
+**compite**. A partir de aquí solo cambias `choose_move`.
 
-Las búsquedas que hay detrás de los jugadores de referencia son API pública en
-[`nimarena.bots`](../advanced/code-structure.md). Si quieres competir en la *evaluación* en
-lugar de reescribir una búsqueda, hereda de una y sobreescribe sus ganchos. Esto
-es `players/builtin/hard.py` completo:
+---
 
-```python
-from nimarena.bots import SmartMinimaxBot
+## Lo que acabas de implementar
 
-DEPTH = 4
-
-
-class Hard(SmartMinimaxBot):
-    @classmethod
-    def get_name(cls) -> str:
-        return "hard"
-
-    @classmethod
-    def get_authors(cls) -> list[str]:
-        return ["jparisu"]
-
-    @classmethod
-    def get_description(cls) -> str:
-        return f"Minimax with alpha-beta pruning, searching {DEPTH} plies."
-
-    @classmethod
-    def get_icon(cls) -> str:
-        return "⚔️"
-
-    @classmethod
-    def create(cls, seed: int) -> "Hard":
-        return cls(depth=DEPTH, seed=seed)
+```mermaid
+flowchart LR
+    T["🏆 El torneo"] -->|"state = [3, 5, 7]"| B["🤖 Tu bot<br/>choose_move"]
+    B -->|"(0, 1)"| T
 ```
 
-`MinimaxBot` te da negamax con poda alfa-beta y dos ganchos que sobreescribir:
+Son cinco métodos: cuatro dicen **quién eres** y uno **juega**.
 
-| Gancho | Devuelve | Significado |
-|--------|----------|-------------|
-| `evaluate(state)` | float estrictamente dentro de `(LOSS, WIN)` | puntúa una posición al llegar al límite de profundidad |
-| `known_value(state)` | float, o `None` | el valor **exacto** de una posición que ya conoces |
+| Método | Devuelve | Qué es |
+|---|---|---|
+| `get_name()` | `str` | tu nombre, **único** entre todos los jugadores admitidos |
+| `get_authors()` | `list[str]` | lista no vacía de nombres |
+| `get_description()` | `str` | una o dos frases sobre tu *estrategia* |
+| `get_icon()` | `str` | **un** emoji, que se muestra junto a tu nombre |
+| `choose_move(state)` | `tuple[int, int]` | la decisión: `(fila, cantidad)` |
 
-`known_value` se consulta en cada nodo antes del corte por profundidad, así que
-una posición reconocida termina esa rama de inmediato. Debe ser exacto —nunca una
-estimación— porque un valor exacto es seguro con cualquier ventana alfa-beta,
-mientras que un resultado de *búsqueda* cacheado no lo es.
+Los cuatro primeros son `@classmethod` porque el torneo, la web y la
+documentación necesitan etiquetar a un jugador **sin construir uno**.
+
+!!! note "Python no te deja olvidarte de ninguno"
+    Los cinco son abstractos, así que una subclase incompleta falla al
+    instanciarse, con un mensaje que dice cuál falta:
+
+    ```text
+    TypeError: Can't instantiate abstract class MyBot without an
+               implementation for abstract method 'get_name'
+    ```
+
+!!! tip "Que el icono sea un solo glifo"
+    Se renderiza en sitios que no admiten marcado (el marcador, un `<select>`
+    nativo), y una secuencia de dos glifos rompe la alineación de las tablas.
+    Los incluidos usan 🎲 `random`, 🌱 `easy`, 🧠 `medium`, ⚔️ `hard`.
+
+---
+
+## Los tipos exactos
+
+### Lo que recibes: `state`
+
+Una **lista de enteros**: los palos que quedan en cada fila.
+
+```python
+state = [3, 0, 4]     # fila 0 → 3 palos, fila 1 → vacía, fila 2 → 4 palos
+```
+
+| Dato | Regla |
+|---|---|
+| Tipo | `list[int]` |
+| `len(state)` | número de filas |
+| `state[i]` | palos en la **fila `i`**, indexada desde **0** |
+| Filas vacías | pueden existir (`0`) |
+| Tablero vacío | **nunca** lo recibes: ahí la partida ya ha acabado |
+
+
+### Lo que devuelves: la jugada
+
+Una **tupla de dos enteros**, `(fila, cantidad)`.
+
+```python
+return (2, 4)         # retira 4 palos de la fila 2
+```
+
+Una jugada es **legal** exactamente cuando:
+
+```text
+0 <= fila < len(state)   Y   1 <= cantidad <= state[fila]
+```
+
+La única fuente de verdad es `nimarena.game.is_legal`. Devuelve una tupla real
+de dos `int`: booleanos, listas, generadores y aridades incorrectas se rechazan.
+
+---
 
 ## Utilidades que puedes usar
 
-Tu jugador puede importar utilidades puras de `nimarena.game`:
+Tu bot puede importar funciones puras de `nimarena.game`. No tienes que
+reimplementar ninguna de estas:
 
 | Función | Para qué |
-|---------|----------|
+|---|---|
 | `legal_moves(state)` | todas las jugadas `(fila, cantidad)` legales |
 | `is_legal(state, move)` | comprobar una jugada |
 | `apply_move(state, move)` | un estado **nuevo** con la jugada aplicada (sin mutar) |
 | `is_terminal(state)` | `True` si el tablero está vacío |
-| `nim_sum(state)` | XOR bit a bit de las filas (la señal de la estrategia ganadora) |
 | `total_sticks(state)` | palos restantes en total |
 
-## Extras opcionales (fuera del contrato)
+---
 
-Más allá de los accesores de identidad y de `choose_move`, todo es opcional. Los
-jugadores basados en minimax rellenan un diccionario `self.last_info` tras cada
-jugada con la profundidad explorada, la puntuación y el número de nodos, que la
-página web lee para su panel «¿por qué ha hecho eso?». Puedes hacer lo mismo, pero
-nunca es obligatorio: el torneo lo ignora.
+## Las reglas del entorno
 
-!!! warning "Mantenlo pequeño"
-    No busques historial de jugadas, temporizadores ni la identidad del rival
-    dentro de `choose_move`. Eso pertenece al *torneo que te llama*, no al
-    contrato. Un jugador es una función pura del tablero.
+El contrato es diminuto, pero el torneo que llama a tu bot tiene sus propias
+reglas. No aparecen en ninguna firma de método, así que es fácil olvidarlas.
 
-## Lo que el torneo exige además del contrato
+### Tienes un presupuesto de tiempo por partida
 
-La interfaz es diminuta; el *entorno* en que se ejecuta tiene sus propias reglas.
-Ninguna aparece en una firma de método, así que es fácil olvidarlas.
+**2 segundos para toda la partida**, no por jugada. Es acumulativo: puedes
+quemar 1,5 s en una posición difícil y jugar el resto al instante. Hay un
+segundo presupuesto aparte de 2 s para construir tu jugador.
 
-**Dos presupuestos de tiempo, por partida, no por jugada.** Tienes un presupuesto
-para `create()` y otro aparte para todo tu pensamiento en esa partida, ambos con
-2 segundos por defecto. El tiempo de pensar es acumulativo: gastar 1,5 s en una
-posición difícil está bien y te deja 0,5 s para el resto. Mantenerlos separados es
-lo que impide colar precálculo gratis en el constructor.
+!!! warning "El tiempo se mide en los runners de GitHub"
+    Son más lentos y más variables que tu portátil. Un bot que cabe en el
+    presupuesto en local todavía puede agotar el tiempo en la ejecución
+    oficial. Escribe código eficiente.
 
-**Tu estado sobrevive a la partida, y solo a la partida.** Se bifurca un proceso
-por partida, así que las cachés, tablas de memoización y la posición del generador
-aleatorio de una instancia persisten de jugada a jugada dentro de su propia
-partida — y desaparecen al terminarla. No intentes arrastrar nada entre partidas.
-
-**Cada fallo es la pérdida de esa partida, nunca la caída de la ejecución.**
+### Cada fallo cuesta esa partida, nunca la ejecución
 
 | Qué hiciste | Se registra como |
 |---|---|
 | Superaste tu presupuesto de partida, o te colgaste | `forfeit_timeout` |
 | Lanzaste una excepción al elegir jugada | `forfeit_error` |
 | Devolviste algo que no es una `(fila, cantidad)` legal | `forfeit_illegal` |
-| Superaste el presupuesto de construcción en `create()` | `forfeit_build_timeout` |
-| Lanzaste una excepción en `create()` | `forfeit_build_error` |
+| Superaste el presupuesto al construirte | `forfeit_build_timeout` |
+| Lanzaste una excepción al construirte | `forfeit_build_error` |
 
-Un constructor colgado se le imputa a **tu** jugador, no al del rival: el ejecutor
-registra en qué jugador está antes de entrar en nada de tu código.
+En todos los casos pierdes **esa** partida, se registra el motivo y el torneo
+continúa. Nunca se cae por tu culpa — pero un bot que falla no se fusiona.
 
-**«Legal» se comprueba de forma estricta.** La jugada se normaliza una sola vez
-antes de cualquier prueba de legalidad: booleanos, no enteros, aridad incorrecta y
-generadores se rechazan ahí. Devuelve una tupla real de dos `int`.
+### Tu estado vive dentro de una partida
 
-**Los tiempos se miden en los runners de GitHub**, más lentos y variables que tu
-portátil. Un bot que cabe en el presupuesto en local todavía puede agotar el
-tiempo en la ejecución evaluada.
+Las cachés, tablas de memoización y la posición de tu generador aleatorio
+persisten de jugada a jugada **dentro de su propia partida**, y desaparecen al
+terminarla. No intentes arrastrar nada entre partidas.
 
-## Tu nombre en los resultados
+!!! warning "Mantenlo pequeño"
+    No busques historial de jugadas, temporizadores ni la identidad del rival
+    dentro de `choose_move`. Eso pertenece al *torneo que te llama*, no al
+    contrato. **Un jugador es una función pura del tablero.**
 
-`get_name()` devuelve tu *tipo* — `"hard"`. El torneo puede inscribir un tipo más
-de una vez, cada copia con su semilla, y las nombra `hard_0`, `hard_1`. Una
-torneo inscribe tu tipo una vez y cada jugador de referencia dos (ver
-[la plantilla](../advanced/tournament.md#la-plantilla)). Ese nombre de plantilla es el que
-aparece en la clasificación; `Player.name` lo devuelve para la instancia y recae en `get_name()`
-cuando no está fijado. Nunca fijes `_display_name` tú.
+---
 
-## Adónde ir después
+## Si tu bot usa azar: `create(seed)`
 
-- [Enviar un jugador](submit-a-player.md) — el flujo de PR, paso a paso.
-- [Reglas del juego](../rules.md) — la estrategia ganadora que ningún jugador
-  incluido implementa.
-- [El torneo](../advanced/tournament.md) — quien te llama, en detalle.
-- [Referencia de la API](../advanced/api.md) — la clase `Player` en sí, generada desde el
-  código fuente.
+El torneo construye todos los jugadores llamando a `create(seed)`, nunca a la
+clase directamente. Por defecto hace `cls()`, así que **puedes ignorarlo**. Si
+tu bot usa azar o necesita configuración, sobreescríbelo:
+
+```python
+@classmethod
+def create(cls, seed: int) -> "MyBot":
+    return cls(depth=4, seed=seed)
+```
+
+Usar la semilla que te dan hace que tus partidas sean reproducibles: la misma
+ejecución del torneo da el mismo resultado dos veces.
+
+---
+
+## Extras opcionales
+
+??? tip "Reutilizar una de nuestras búsquedas en vez de escribir la tuya"
+    Las búsquedas que hay detrás de los jugadores de referencia son API pública
+    en `nimarena.bots`. Puedes heredar de una y sobreescribir sus métodos. Esto
+    es `players/builtin/random.py` al completo:
+
+    ```python
+    from __future__ import annotations
+    import random
+
+    from nimarena.bots import SmartMinimaxBot
+    from nimarena.game import Move, State, legal_moves
+
+    DEPTH = 4
+
+    class Random(RandomBot):
+        """Picks a legal move uniformly at random."""
+
+        def __init__(self, seed: int | None = None) -> None:
+            """Create the bot.
+
+            Args:
+                seed: seed for the private RNG. A private RNG keeps the bot
+                    reproducible without touching global random state.
+            """
+            self._rng = random.Random(seed)
+
+        @classmethod
+        def create(cls, seed: int) -> RandomBot:
+            """Build an instance seeded for one game."""
+            return cls(seed=seed)
+
+        @classmethod
+        def get_name(cls) -> str:
+            return "random"
+
+        @classmethod
+        def get_authors(cls) -> list[str]:
+            return ["builtin"]
+
+        @classmethod
+        def get_icon(cls) -> str:
+            return "🎲"
+
+        @classmethod
+        def get_description(cls) -> str:
+            return (
+                "Picks uniformly at random among all legal moves. No strategy at all "
+                "— the baseline every other player has to beat."
+            )
+
+        def choose_move(self, state: State) -> Move:
+            """Return a legal move chosen uniformly at random."""
+            return self._rng.choice(legal_moves(state))
+
+    Puedes ver el código fuente [aquí](https://github.com/jparisu/nim-arena/blob/main/players/random.py).
+
+    ```
+
+
+??? tip "Publicar tu razonamiento para el panel «¿por qué ha hecho eso?»"
+    Los jugadores basados en minimax rellenan un diccionario `self.last_info`
+    tras cada jugada con la profundidad explorada, la puntuación y el número de
+    nodos. La [página web](../advanced/web.md) lo lee y lo muestra. Puedes hacer
+    lo mismo, pero nunca es obligatorio: el torneo lo ignora.
+
+---
+
+**Siguiente:** [Enviar un jugador](submit-a-player.md) — el flujo de pull
+request, paso a paso.

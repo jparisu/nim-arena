@@ -1,126 +1,19 @@
-# Player API reference
+# Player API
 
-This is the **spine of the project**. Everything — the tournament, the web page,
-and every externally submitted bot — depends on it. It is deliberately
-**minimal**: a player says who it is, and implements one method.
+A NIM Arena player is **a class with one method that decides the move**. That is
+the whole contract. This page walks through it, starting from a bot that already
+works.
 
-## The interface
+---
 
-A player is a subclass of `nimarena.player.Player`:
+## Start by copying this
 
-```python
-from abc import ABC, abstractmethod
-
-class Player(ABC):
-    # --- identity: readable without constructing the player ---
-    @classmethod
-    @abstractmethod
-    def get_name(cls) -> str: ...
-
-    @classmethod
-    @abstractmethod
-    def get_authors(cls) -> list[str]: ...
-
-    @classmethod
-    @abstractmethod
-    def get_description(cls) -> str: ...
-
-    @classmethod
-    @abstractmethod
-    def get_icon(cls) -> str: ...          # one emoji
-
-    # --- construction: the tournament's only entry point ---
-    @classmethod
-    def create(cls, seed: int) -> "Player":
-        return cls()          # override if your bot takes arguments
-
-    # --- playing ---
-    @abstractmethod
-    def choose_move(self, state: list[int]) -> tuple[int, int]: ...
-```
-
-You implement exactly five things:
-
-1. **`get_name()`** — unique across every admitted player;
-2. **`get_authors()`** — a non-empty list of names;
-3. **`get_description()`** — a sentence or two about your *strategy*;
-4. **`get_icon()`** — a single emoji shown beside your name;
-5. **`choose_move(self, state)`** — the actual decision.
-
-`get_icon` is emoji rather than an image because it has to render in three places
-that cannot all handle markup: the scoreboard, a native `<select>` option in the web
-app (text only), and plain-text docs. Keep it to **one** glyph — two-glyph sequences
-break table alignment. The shipped players use 🎲 `random`, 🌱 `easy`, 🧠 `medium`,
-⚔️ `hard`.
-
-`create(seed)` is optional: the default calls `cls()`.
-
-!!! note "Why the identity is on classmethods"
-    The tournament, the docs and the web app all need to label a player *without
-    building one*. Because they are abstract, Python itself refuses to instantiate
-    a subclass that forgot one:
-
-    ```text
-    TypeError: Can't instantiate abstract class MyBot without an
-               implementation for abstract method 'get_name'
-    ```
-
-## Seeds, and why `create` exists
-
-The tournament builds every player through `create(seed)` and never by calling the
-class directly. You get a seed whether or not you want one — ignore it if your bot
-is deterministic:
-
-```python
-@classmethod
-def create(cls, seed: int) -> "MyBot":
-    return cls(depth=4, seed=seed)
-```
-
-Because `create` is a classmethod, the seed can also change how your bot is
-*configured*, not just how it breaks ties.
-
-## Exact types and conventions
-
-### Input: `state`
-
-- Type: `list[int]`.
-- `len(state)` is the number of rows.
-- `state[i]` is the number of sticks remaining in **row `i`** (rows are
-  **0-indexed**).
-- A row may be `0` (empty). `state` passed to you is **never** all-zeros (the game
-  is over then, so you are not asked to move).
-- **Treat `state` as read-only.** Do not mutate it. If you need to modify it,
-  copy first (`list(state)`).
-
-### Output: the move `(row, count)`
-
-- Type: `tuple[int, int]`.
-- `row` — the 0-based index of the row to take from: `0 <= row < len(state)`.
-- `count` — how many sticks to remove: `1 <= count <= state[row]`.
-
-### What "legal" means
-
-A move `(row, count)` is **legal** from `state` exactly when:
-
-```text
-0 <= row < len(state)   AND   1 <= count <= state[row]
-```
-
-The single source of truth is [`nimarena.game.is_legal`](../advanced/code-structure.md). In
-the tournament, returning an **illegal** move, **raising an exception**, or
-**exceeding the time budget** all make your player **forfeit that game** (the
-tournament logs the reason and continues — it never crashes).
-
-## Minimal copy-paste example
-
-The smallest correct player: always remove one stick from the first non-empty
-row.
+The smallest correct player: always take one stick from the first non-empty row.
+Copy it, rename it, and you have a valid bot.
 
 ```python
 from nimarena.game import State
 from nimarena.player import Player
-
 
 class OneStickBot(Player):
     @classmethod
@@ -146,129 +39,215 @@ class OneStickBot(Player):
         raise AssertionError("never called on an empty board")
 ```
 
-## Reusing a shipped strategy
+That bot plays legal games from start to finish. It loses almost all of them,
+but it **competes**. From here on you only change `choose_move`.
 
-The searches behind the reference players are public API in
-[`nimarena.bots`](../advanced/code-structure.md). If you want to compete on *evaluation*
-rather than rewrite a search, inherit one and override its hooks. This is the
-whole of `players/builtin/hard.py`:
+---
 
-```python
-from nimarena.bots import SmartMinimaxBot
+## What you just implemented
 
-DEPTH = 4
-
-
-class Hard(SmartMinimaxBot):
-    @classmethod
-    def get_name(cls) -> str:
-        return "hard"
-
-    @classmethod
-    def get_authors(cls) -> list[str]:
-        return ["jparisu"]
-
-    @classmethod
-    def get_description(cls) -> str:
-        return f"Minimax with alpha-beta pruning, searching {DEPTH} plies."
-
-    @classmethod
-    def get_icon(cls) -> str:
-        return "⚔️"
-
-    @classmethod
-    def create(cls, seed: int) -> "Hard":
-        return cls(depth=DEPTH, seed=seed)
+```mermaid
+flowchart LR
+    T["🏆 The tournament"] -->|"state = [3, 5, 7]"| B["🤖 Your bot<br/>choose_move"]
+    B -->|"(0, 1)"| T
 ```
 
-`MinimaxBot` gives you negamax with alpha-beta and two hooks to override:
+Five methods: four say **who you are**, one **plays**.
 
-| Hook | Return | Meaning |
-|------|--------|---------|
-| `evaluate(state)` | float strictly inside `(LOSS, WIN)` | score a position at the depth limit |
-| `known_value(state)` | float, or `None` | the **exact** value of a position you already know |
+| Method | Returns | What it is |
+|---|---|---|
+| `get_name()` | `str` | your name, **unique** across all admitted players |
+| `get_authors()` | `list[str]` | a non-empty list of names |
+| `get_description()` | `str` | one or two sentences about your *strategy* |
+| `get_icon()` | `str` | **one** emoji, shown next to your name |
+| `choose_move(state)` | `tuple[int, int]` | the decision: `(row, count)` |
 
-`known_value` is consulted at every node before the depth cutoff, so a recognized
-position ends that branch immediately. It must be exact — never a guess — because
-an exact value is safe to use at any alpha-beta window, whereas a cached *search*
-result is not.
+The first four are `@classmethod` because the tournament, the web app and the
+docs need to label a player **without constructing one**.
 
-## Helpers you may use
+!!! note "Python will not let you forget one"
+    All five are abstract, so an incomplete subclass fails to instantiate, with a
+    message naming the one you missed:
 
-Your player may import pure helpers from `nimarena.game`:
+    ```text
+    TypeError: Can't instantiate abstract class MyBot without an
+               implementation for abstract method 'get_name'
+    ```
 
-| Function | Purpose |
-|----------|---------|
-| `legal_moves(state)` | all legal `(row, count)` moves |
+!!! tip "Keep the icon to a single glyph"
+    It renders in places that cannot handle markup (the scoreboard, a native
+    `<select>`), and a two-glyph sequence breaks table alignment. The shipped
+    ones use 🎲 `random`, 🌱 `easy`, 🧠 `medium`, ⚔️ `hard`.
+
+---
+
+## The exact types
+
+### What you receive: `state`
+
+A **list of ints**: the sticks left in each row.
+
+```python
+state = [3, 0, 4]     # row 0 → 3 sticks, row 1 → empty, row 2 → 4 sticks
+```
+
+| Fact | Rule |
+|---|---|
+| Type | `list[int]` |
+| `len(state)` | number of rows |
+| `state[i]` | sticks in **row `i`**, **0-indexed** |
+| Empty rows | can exist (`0`) |
+| Empty board | you **never** receive one: the game is already over |
+
+!!! warning "Treat `state` as read-only"
+    Do not mutate it. If you need to change it, copy first: `list(state)`. A bot
+    that mutates the board it was given corrupts the game, and the tests reject
+    it.
+
+### What you return: the move
+
+A **tuple of two ints**, `(row, count)`.
+
+```python
+return (2, 4)         # remove 4 sticks from row 2
+```
+
+A move is **legal** exactly when:
+
+```text
+0 <= row < len(state)   AND   1 <= count <= state[row]
+```
+
+The single source of truth is `nimarena.game.is_legal`. Return a real tuple of
+two `int`s: booleans, lists, generators and wrong arities are all rejected.
+
+---
+
+## Helpers you can use
+
+Your bot can import pure functions from `nimarena.game`. You do not have to
+reimplement any of these:
+
+| Function | What for |
+|---|---|
+| `legal_moves(state)` | every legal `(row, count)` move |
 | `is_legal(state, move)` | check a move |
 | `apply_move(state, move)` | a **new** state with the move applied (no mutation) |
 | `is_terminal(state)` | `True` if the board is empty |
-| `nim_sum(state)` | bitwise XOR of the rows (the winning-strategy signal) |
+| `nim_sum(state)` | bitwise XOR of the rows — the signal behind the [winning strategy](../rules.md) |
 | `total_sticks(state)` | total sticks remaining |
 
-## Optional extras (not part of the contract)
+---
 
-Beyond the identity accessors and `choose_move`, everything is optional. The
-minimax-based players set a `self.last_info` dict after each move recording the
-searched depth, the score and the node count, which the web app reads for its
-"Why did it do that?" panel. You are free to do the same, but you never have to —
-the tournament ignores it.
+## The rules of the environment
 
-!!! warning "Keep it small"
-    Do not reach for move history, timers, or opponent identity inside
-    `choose_move`. Those belong to the *tournament that calls you*, not to the
-    contract. A player is a pure function of the board.
+The contract is tiny, but the tournament that calls your bot has rules of its
+own. None of them appear in a method signature, so they are easy to forget.
 
-## What the tournament demands on top of the contract
+### You get a time budget per game
 
-The interface is tiny; the *environment* it runs in has rules of its own. None of
-them appear in a method signature, so they are easy to forget.
+**2 seconds for the whole game**, not per move. It is cumulative: you can burn
+1.5 s on a hard position and play the rest instantly. There is a separate 2 s
+budget for constructing your player.
 
-**Two time budgets, per game, not per move.** You get one budget for `create()`
-and a separate one for all of your thinking in that game, both defaulting to 2
-seconds. Thinking time is cumulative: spending 1.5 s on one hard position is fine,
-and leaves you 0.5 s for the rest. Keeping the budgets separate is what stops
-precomputation being smuggled into the constructor for free.
+!!! warning "Timing is measured on GitHub runners"
+    They are slower and more variable than your laptop. A bot that fits the
+    budget locally can still time out in the official run. Write efficient code.
 
-**Your state survives the game, and only the game.** One process is forked per
-game, so an instance's caches, memo tables and RNG position persist from move to
-move within its own game — and are gone at the end of it. Do not try to carry
-anything across games.
-
-**Every failure is a forfeit of that one game, never a crash of the run.**
+### Every failure costs that game, never the run
 
 | What you did | Recorded as |
 |---|---|
-| Ran past your game budget, or hung | `forfeit_timeout` |
-| Raised while choosing a move | `forfeit_error` |
+| Went over your game budget, or hung | `forfeit_timeout` |
+| Raised an exception while choosing a move | `forfeit_error` |
 | Returned something that is not a legal `(row, count)` | `forfeit_illegal` |
-| Ran past the build budget in `create()` | `forfeit_build_timeout` |
-| Raised in `create()` | `forfeit_build_error` |
+| Went over the budget while being constructed | `forfeit_build_timeout` |
+| Raised an exception while being constructed | `forfeit_build_error` |
 
-A hung constructor is blamed on **your** player, not your opponent's — the runner
-records which player it is inside before it enters any of your code.
+In every case you lose **that** game, the reason is recorded, and the tournament
+continues. It never crashes because of you — but a bot that fails is not merged.
 
-**"Legal" is checked strictly.** The move is normalized once before any legality
-test: booleans, non-integers, wrong arity and generators are all rejected there.
-Return a real 2-tuple of `int`s.
+### Your state lives inside one game
 
-**Timings are measured on GitHub's runners**, which are slower and more variable
-than your laptop. A bot that fits the budget locally can still time out in the
-graded run.
+Caches, memo tables and your random generator's position survive from move to
+move **within their own game**, and disappear when it ends. Do not try to carry
+anything between games.
 
-## Your name in the results
+!!! warning "Keep it small"
+    Do not go looking for move history, timers or the opponent's identity inside
+    `choose_move`. That belongs to the *tournament calling you*, not to the
+    contract. **A player is a pure function of the board.**
 
-`get_name()` returns your *kind* — `"hard"`. The tournament may enter a kind more
-than once, each copy with its own seed, and names them `hard_0`, `hard_1`. A
-tournament enters your kind once and each reference player twice (see
-[the roster](../advanced/tournament.md#the-roster)). That roster name is what appears in the
-standings;
-`Player.name` returns it for the instance, falling back to `get_name()` when it is
-unset. Never set `_display_name` yourself.
+---
 
-## Where to go next
+## If your bot uses randomness: `create(seed)`
 
-- [Submit a player](submit-a-player.md) — the PR flow, step by step.
-- [Game rules](../rules.md) — the winning strategy no shipped player implements.
-- [The tournament](../advanced/tournament.md) — the caller, in detail.
-- [API reference](../advanced/api.md) — the `Player` class itself, generated from the source.
+The tournament builds every player by calling `create(seed)`, never the class
+directly. It defaults to `cls()`, so **you can ignore it**. If your bot uses
+randomness or needs configuration, override it:
+
+```python
+@classmethod
+def create(cls, seed: int) -> "MyBot":
+    return cls(depth=4, seed=seed)
+```
+
+Using the seed you are handed makes your games reproducible: the same tournament
+run gives the same result twice.
+
+---
+
+## Optional extras
+
+??? tip "Reuse one of our searches instead of writing your own"
+    The searches behind the reference players are public API in `nimarena.bots`.
+    You can subclass one and override its hooks. This is all of
+    `players/builtin/hard.py`:
+
+    ```python
+    from nimarena.bots import SmartMinimaxBot
+
+    DEPTH = 4
+
+    class Hard(SmartMinimaxBot):
+        @classmethod
+        def get_name(cls) -> str:
+            return "hard"
+
+        @classmethod
+        def get_authors(cls) -> list[str]:
+            return ["jparisu"]
+
+        @classmethod
+        def get_description(cls) -> str:
+            return f"Minimax with alpha-beta pruning, searching {DEPTH} plies."
+
+        @classmethod
+        def get_icon(cls) -> str:
+            return "⚔️"
+
+        @classmethod
+        def create(cls, seed: int) -> "Hard":
+            return cls(depth=DEPTH, seed=seed)
+    ```
+
+    `MinimaxBot` gives you negamax with alpha-beta pruning and two hooks:
+
+    | Hook | Returns | Meaning |
+    |------|---------|---------|
+    | `evaluate(state)` | float inside `(LOSS, WIN)` | scores a position at the depth limit |
+    | `known_value(state)` | float, or `None` | the **exact** value of a position you already know |
+
+    `known_value` is consulted before the depth cutoff, so a recognized position
+    ends that branch immediately. It must be exact, never an estimate.
+
+??? tip "Publish your reasoning for the “why did it do that?” panel"
+    The minimax-based players fill a `self.last_info` dictionary after each move
+    with the depth searched, the score and the node count. The
+    [web app](../advanced/web.md) reads it and displays it. You can do the same,
+    but it is never required: the tournament ignores it.
+
+---
+
+**Next:** [Submit a player](submit-a-player.md) — the pull request flow, step by
+step.

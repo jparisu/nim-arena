@@ -19,6 +19,8 @@ de por qué merece la pena usar Streamlit.
     que sea concreto, pero es una ilustración de la técnica, no un archivo que
     vayas a encontrar en el repositorio.
 
+---
+
 ## Lo único que tienes que entender: la reejecución
 
 Streamlit no tiene callbacks, ni árbol de componentes, ni función de renderizado.
@@ -46,6 +48,8 @@ corolarios inmediatos:
 
 Las soluciones a esas dos cosas son `st.session_state` y los decoradores de
 caché, más abajo. Apréndetelos y Streamlit deja de sorprenderte.
+
+---
 
 ## Widgets
 
@@ -78,6 +82,8 @@ El resto del vocabulario es corto:
 | `st.button` | un botón |
 | `st.dataframe`, `st.table` | una tabla |
 | `st.success`, `st.error`, `st.warning`, `st.info` | un mensaje de color |
+
+---
 
 ## Maquetación
 
@@ -118,6 +124,8 @@ for fila, cuantos in enumerate(state):
     `DuplicateWidgetID`. Pasa una `key=` explícita construida con las variables
     del bucle, como arriba.
 
+---
+
 ## Conservar el estado entre reejecuciones
 
 `st.session_state` es un diccionario que sobrevive a las reejecuciones, uno por
@@ -154,6 +162,8 @@ el tablero en cada clic, que es el error más común que existe en Streamlit.
     y muestra `st.error(...)` en lugar de dejar que la página muera con una
     traza. El motor sigue siendo estricto; la aplicación, educada.
 
+---
+
 ## No repetir el trabajo caro
 
 Dos decoradores, y la diferencia entre ellos importa:
@@ -179,6 +189,8 @@ semilla y a veces una caché propia; compartir una instancia entre dos visitante
 hace que sus partidas interfieran. Construye una nueva por sesión con
 `Player.create(seed)` y guárdala en `st.session_state`.
 
+---
+
 ## La aplicación es una cáscara
 
 Esta es la parte que importa para el proyecto, no solo para Streamlit.
@@ -197,6 +209,8 @@ tests, el torneo y los bots de los demás.
 La prueba es sencilla: si borrases `app.py`, ¿podrías seguir jugando una
 partida completa desde un prompt de Python? Si no, la lógica se ha filtrado a
 la interfaz.
+
+---
 
 ## Estructura del proyecto
 
@@ -226,9 +240,8 @@ Instalar tu propio paquete desde Git —en lugar de copiar el código junto a
 también en el despliegue, y no solo en tu portátil. Mira
 [Instalación y uso](../../python-library/installation-and-usage.md).
 
-## Adónde ir después
+---
 
-- [Streamlit Community Cloud](cloud.md) — ponerla en línea.
-- [API](../../python-library/api.md) — diseñar el paquete al que llama esta
-  aplicación.
-- [Web estática](../static-web/index.md) — la otra ruta, sin servidor.
+**Siguiente:** [Streamlit Community Cloud](cloud.md) — ponerla en línea.
+
+**También:** [API](../../python-library/api.md) · [Web estática](../static-web/index.md)

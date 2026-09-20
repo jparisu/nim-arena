@@ -6,25 +6,25 @@ instante en lugar de que un usuario se entere más tarde. Esta página explica p
 qué importan, cómo se organiza la carpeta `tests/`, cómo escribirlas y ejecutarlas
 con **pytest**, y cómo se convierten en una puerta automática en cada pull request.
 
+---
+
 ## Por qué pruebas unitarias
 
 Una **prueba unitaria** ejercita una pieza pequeña de la librería de forma
 aislada y afirma que se comporta como se espera. Su verdadero valor aflora con el
 tiempo:
 
-- **Detectan regresiones.** Cuando cambias la búsqueda de `minimax.py`, las
-  pruebas te dicen al instante si has roto el oráculo de finales de encima.
-- **Hacen segura la refactorización.** Puedes reescribir las entrañas de la
-  [API](api.md) con libertad, porque una suite que pasa demuestra que el
-  comportamiento público no ha cambiado.
-- **Documentan el comportamiento.** Una prueba es un ejemplo ejecutable de cómo se
-  supone que se llama a una función y qué debería devolver.
-- **Habilitan la colaboración.** En un equipo, las pruebas son cómo confías en el
-  pull request de un compañero sin releerlo entero — las comprobaciones están en
-  verde.
+| Te da | Lo que eso significa un martes cualquiera |
+|---|---|
+| 🛡️ **Detectan regresiones** | cambias la búsqueda de `minimax.py` y sabes al instante si has roto el oráculo de finales de encima |
+| 🔧 **Refactorizar sin miedo** | puedes reescribir las entrañas de la [API](api.md) con libertad: una suite en verde demuestra que el comportamiento público no ha cambiado |
+| 📖 **Documentan** | una prueba es un ejemplo ejecutable de cómo se llama a una función y qué debería devolver |
+| 🤝 **Habilitan el trabajo en equipo** | confías en el pull request de otra persona sin releerlo entero, porque las comprobaciones están en verde |
 
 El coste es pequeño y se paga una vez; el beneficio se acumula cada vez que el
 código cambia.
+
+---
 
 ## La estructura `tests/`
 
@@ -60,12 +60,10 @@ La forma más simple — llama a la cosa y afirma algo sobre ella:
 # tests/test_game.py
 from nimarena.game import apply_move, is_terminal, nim_sum
 
-
 def test_apply_move_does_not_mutate_the_input():
     state = [3, 5, 7]
     apply_move(state, (0, 2))
     assert state == [3, 5, 7]
-
 
 def test_nim_sum_of_a_balanced_position_is_zero():
     assert nim_sum([2, 5, 7]) == 0
@@ -74,6 +72,8 @@ def test_nim_sum_of_a_balanced_position_is_zero():
 Cada función prueba un hecho, y su nombre dice cuál es — de modo que un informe
 de fallo se lee como una frase:
 `test_apply_move_does_not_mutate_the_input failed`.
+
+---
 
 ## Escribir y ejecutar pruebas con `pytest`
 
@@ -114,7 +114,6 @@ Las funciones del día a día que usarás:
     ```python
     LADDER = ["random", "easy", "medium", "hard"]
 
-
     @pytest.mark.parametrize("name", LADDER)
     def test_every_player_declares_its_identity(name):
         cls = type(load_players().get(name))
@@ -142,6 +141,8 @@ Las funciones del día a día que usarás:
     tus pruebas siguen pasando a través de refactorizaciones internas y solo fallan
     cuando el comportamiento realmente cambia — que es de lo que se trata.
 
+---
+
 ## Probar un contrato que implementan otros
 
 Cuando tu librería define una interfaz que rellenan personas de fuera (véase
@@ -158,6 +159,8 @@ propósito —`CrashBot`, `CheatBot`, `SlowBot`, `SlowBuildBot`, `GeneratorBot`,
 ejecución continúa. Esa es la diferencia entre un ejecutor que funciona y un
 ejecutor que puedes dejar desatendido con el código de un desconocido dentro.
 
+---
+
 ## Pruebas en integración continua
 
 Ejecutar las pruebas en local está bien; ejecutarlas **automáticamente en cada
@@ -173,10 +176,8 @@ local, la CI y la protección de ramas forman entonces una cadena — detectas
 problemas pronto, la CI detecta lo que se te escapó, y las reglas se aseguran de que
 nada roto llegue a `main`.
 
-## Adónde ir después
+---
 
-- [GitHub Actions](../github/actions.md) — el workflow que ejecuta estas pruebas.
-- [Configuración del repositorio](../github/repository-configuration.md) — hacer
-  de una suite en verde una condición para fusionar.
-- [`tests/test_players.py`](https://github.com/jparisu/nim-arena/blob/main/tests/test_players.py)
-  — la batería de contrato descrita arriba, completa.
+**Siguiente:** [GitHub Actions](../github/actions.md) — el workflow que ejecuta estas pruebas.
+
+**También:** [Configuración del repositorio](../github/repository-configuration.md) · [`tests/test_players.py`](https://github.com/jparisu/nim-arena/blob/main/tests/test_players.py)

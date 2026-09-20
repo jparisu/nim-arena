@@ -7,6 +7,8 @@ it running.
 
 It is the shortest path from "it works on my laptop" to "here is a link".
 
+---
+
 ## Deploying
 
 1. Sign in at [share.streamlit.io](https://share.streamlit.io) **with your
@@ -28,6 +30,8 @@ It is the shortest path from "it works on my laptop" to "here is a link".
 
 The app is public from the moment it is deployed. There is no separate
 "publish" step.
+
+---
 
 ## Dependencies
 
@@ -53,6 +57,8 @@ same package the tests run against, rather than whatever happens to sit next to
 `app.py`. See
 [Installation and usage](../../python-library/installation-and-usage.md).
 
+---
+
 ## Every push redeploys
 
 Push to the branch you deployed and the app restarts on the new commit. There is
@@ -68,6 +74,8 @@ protect `main`, require the tests to pass, and merge through pull requests. See
     every failed deploy is one of three things, and the log names which:
     a package missing from `requirements.txt`, a Python version mismatch, or an
     exception at import time in `app.py`.
+
+---
 
 ## Configuration and secrets
 
@@ -87,6 +95,8 @@ This is one genuine advantage over a [static page](../static-web/index.md),
 where a secret is impossible by construction. For a game project you probably
 need none of it — but if you find yourself wanting one, this is where it goes,
 and `.gitignore` is where `.streamlit/secrets.toml` goes.
+
+---
 
 ## The limits that will bite you
 
@@ -109,6 +119,8 @@ the data to the repository from a [workflow](../../github/actions.md) and have
 the app read it. A leaderboard produced by CI and read by the app is the normal
 shape; see [The scoreboard](../../../game/advanced/scoreboard.md).
 
+---
+
 ## When to move off it
 
 Three signals, in increasing order of seriousness:
@@ -124,10 +136,8 @@ For a two-player turn-based game with a bot opponent, none of these should
 arrive. The whole game fits comfortably inside a free process, or inside the
 visitor's browser.
 
-## Where to go next
+---
 
-- [Building the app](building.md) — the script this deploys.
-- [Static web](../static-web/index.md) — the route with no server to fall
-  asleep.
-- [Repository configuration](../../github/repository-configuration.md) —
-  stopping a broken commit from becoming a broken public app.
+**Next:** [Building the app](building.md) — the script this deploys.
+
+**Also:** [Static web](../static-web/index.md) · [Repository configuration](../../github/repository-configuration.md)

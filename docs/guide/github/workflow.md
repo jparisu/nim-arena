@@ -17,6 +17,8 @@ flowchart LR
     H -.->|siguiente tarea| A
 ```
 
+---
+
 ## Rama o fork
 
 Hay dos maneras de conseguir tu propia copia para trabajar, según si puedes
@@ -41,17 +43,18 @@ escribir en el repositorio:
     Un nombre de rama como `add-corner-bot` o `fix-championship-seeding` le dice a
     todo el mundo para qué es de un vistazo. Evita `patch-1` o `test`.
 
+---
+
 ## Buenas prácticas de commit
 
 La [sección de Git](../git/organization.md#historial) presentó *por qué* importa
-un historial limpio; aquí está *cómo* producirlo. Un buen commit es:
+un historial limpio; aquí está *cómo* producirlo.
 
-- **Atómico** — un cambio coherente por commit. "Add the corner bot" y "Fix typo
-  in README" son dos commits, no uno.
-- **Bien descrito** — el mensaje dice qué hace el commit, en imperativo:
-  `Add a depth limit to the minimax search`, no `changes` ni `wip`.
-- **Autocontenido** — el proyecto debería seguir funcionando tras cada commit, de
-  modo que cualquier commit pueda revisarse o revertirse por sí solo.
+| Un buen commit es… | En la práctica | ❌ Lo que no vale |
+|---|---|---|
+| **Atómico** | un cambio coherente por commit | "Add the corner bot **y** fix typo in README" |
+| **Bien descrito** | el mensaje dice qué hace, en imperativo | `changes`, `wip`, `.` |
+| **Autocontenido** | el proyecto sigue funcionando tras cada commit | un commit que solo compila junto al siguiente |
 
 Una convención muy usada es **Conventional Commits**, que antepone al mensaje un
 tipo:
@@ -80,6 +83,8 @@ Adoptar una convención es opcional, pero hace el historial fácil de ojear e
 incluso puede impulsar automatización más adelante. Lo que más importa es la
 **consistencia dentro del equipo**.
 
+---
+
 ## Firma de commits
 
 Cualquiera puede poner lo que quiera en `user.name` y `user.email`, así que por
@@ -105,6 +110,8 @@ Luego añade esa clave una segunda vez en GitHub, como **Signing Key**, en
     luego decidir si exigirla (véase
     [Configuración del repositorio](repository-configuration.md)).
 
+---
+
 ## Pull request
 
 Una vez subida tu rama, abre un **pull request** (PR) para proponer fusionarla en
@@ -128,6 +135,8 @@ estricta de la documentación — todo sobre tu rama, todo informado en el PR.
 Los pull requests tienen su propia página: consulta
 [**Pull requests**](pull-requests.md) para plantillas, mecánica de revisión y
 estrategias de fusión.
+
+---
 
 ## Revisión y merge
 
@@ -157,11 +166,8 @@ Y el ciclo vuelve a empezar con la siguiente tarea.
     cada rama desde un `main` actualizado evita la mayoría de los conflictos de
     fusión antes de que puedan ocurrir.
 
-## Adónde ir después
+---
 
-- [Pull requests](pull-requests.md) — la anatomía de un PR, su plantilla y cómo
-  revisar uno.
-- [Configuración del repositorio](repository-configuration.md) — cómo *exigir*
-  revisiones y comprobaciones que pasen antes de una fusión.
-- [GitHub Actions](actions.md) — las comprobaciones automatizadas que se ejecutan
-  en cada pull request.
+**Siguiente:** [Pull requests](pull-requests.md) — la anatomía de un PR, su plantilla y cómo revisar uno.
+
+**También:** [Configuración del repositorio](repository-configuration.md) · [GitHub Actions](actions.md)

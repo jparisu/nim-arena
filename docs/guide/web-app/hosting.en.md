@@ -7,6 +7,8 @@ be, what it costs, and the one distinction that decides everything else.
 Get this choice right first. It determines which of the two routes in this
 section you take, how you deploy, and what your app is allowed to do.
 
+---
+
 ## Static or dynamic
 
 A host is **static** if it only hands out files it already has, unchanged. A
@@ -45,6 +47,8 @@ Everything follows from that line:
     key in a static page. If your design needs a secret, you need a dynamic
     host, and then you need to keep the secret out of the repository too.
 
+---
+
 ## Interactive does not mean dynamic
 
 The usual mistake is assuming that a page which *does things* needs a server.
@@ -66,6 +70,8 @@ The rule of thumb:
 A two-player turn-based game against a bot fits inside that sentence with room
 to spare. The rules are a pure function, the bot is a pure function, and the
 board is a few numbers.
+
+---
 
 ## What a free tier gives you, and what it takes back
 
@@ -93,6 +99,8 @@ process is a rationed one:
     other; a cold one spends thirty seconds on a splash screen while somebody
     is watching you.
 
+---
+
 ## Where data lives when there is no database
 
 You will want to store *something* — a scoreboard, a set of results, a saved
@@ -114,6 +122,8 @@ see [The scoreboard](../../game/advanced/scoreboard.md).
 Sharing state *between different visitors* is the thing none of these do. If
 two people must see each other's moves in real time, you need a server, and
 that is a much larger project than this one.
+
+---
 
 ## The two routes
 
@@ -141,9 +151,8 @@ Both are real answers. Neither is more correct than the other, and the
     detect a win, you have two implementations to keep in sync, and one of them
     will be wrong. See [API](../python-library/api.md).
 
-## Where to go next
+---
 
-- [Streamlit](streamlit/index.md) — the Python-only route.
-- [Static web](static-web/index.md) — the no-server route.
-- [GitHub Pages](../github/pages.md) — the free static host attached to your
-  repository.
+**Next:** [Streamlit](streamlit/index.md) — the Python-only route.
+
+**Also:** [Static web](static-web/index.md) · [GitHub Pages](../github/pages.md)

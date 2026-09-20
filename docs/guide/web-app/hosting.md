@@ -7,6 +7,8 @@ qué cuesta y cuál es la distinción que decide todo lo demás.
 Acierta con esta elección primero. Determina cuál de las dos rutas de esta
 sección tomas, cómo despliegas y qué le está permitido hacer a tu aplicación.
 
+---
+
 ## Estático o dinámico
 
 Un servicio es **estático** si solo entrega archivos que ya tiene, sin
@@ -46,6 +48,8 @@ Todo se deduce de esa línea:
     tu diseño necesita un secreto, necesitas un servicio dinámico — y entonces
     también necesitas mantener ese secreto fuera del repositorio.
 
+---
+
 ## Interactivo no significa dinámico
 
 El error habitual es suponer que una página que *hace cosas* necesita un
@@ -69,6 +73,8 @@ La regla práctica:
 Un juego por turnos de dos jugadores contra un bot cabe en esa frase con
 espacio de sobra. Las reglas son una función pura, el bot es una función pura y
 el tablero son unos cuantos números.
+
+---
 
 ## Qué te da un plan gratuito, y qué te quita
 
@@ -97,6 +103,8 @@ proceso gratuito es un proceso racionado:
     va tan rápido como cualquier otra; una fría se pasa treinta segundos en una
     pantalla de carga mientras alguien te mira.
 
+---
+
 ## Dónde viven los datos cuando no hay base de datos
 
 Vas a querer guardar *algo* — un marcador, unos resultados, una partida. Sin
@@ -119,6 +127,8 @@ este repositorio es exactamente eso — mira
 Compartir estado *entre visitantes distintos* es lo único que ninguna de estas
 opciones hace. Si dos personas tienen que ver los movimientos de la otra en
 tiempo real, necesitas un servidor, y eso es un proyecto mucho mayor que este.
+
+---
 
 ## Las dos rutas
 
@@ -147,9 +157,8 @@ Las dos son respuestas reales. Ninguna es más correcta que la otra, y la págin
     sincronizadas, y una de las dos va a estar mal. Mira
     [API](../python-library/api.md).
 
-## Adónde ir después
+---
 
-- [Streamlit](streamlit/index.md) — la ruta de solo Python.
-- [Web estática](static-web/index.md) — la ruta sin servidor.
-- [GitHub Pages](../github/pages.md) — el servicio estático gratuito que viene
-  con tu repositorio.
+**Siguiente:** [Streamlit](streamlit/index.md) — la ruta de solo Python.
+
+**También:** [Web estática](static-web/index.md) · [GitHub Pages](../github/pages.md)

@@ -8,6 +8,8 @@ dependencias, arranca el proceso y lo mantiene en marcha.
 Es el camino más corto entre "funciona en mi portátil" y "aquí tienes un
 enlace".
 
+---
+
 ## Desplegar
 
 1. Entra en [share.streamlit.io](https://share.streamlit.io) **con tu cuenta de
@@ -29,6 +31,8 @@ enlace".
 
 La aplicación es pública desde el momento en que se despliega. No hay un paso
 de "publicar" aparte.
+
+---
 
 ## Dependencias
 
@@ -55,6 +59,8 @@ desplegada importa el mismo paquete contra el que se ejecutan los tests, y no
 lo que haya quedado junto a `app.py`. Mira
 [Instalación y uso](../../python-library/installation-and-usage.md).
 
+---
+
 ## Cada push vuelve a desplegar
 
 Haz push a la rama que desplegaste y la aplicación se reinicia con el nuevo
@@ -71,6 +77,8 @@ Mira
     marcha. Casi todo despliegue fallido es una de estas tres cosas, y el log
     dice cuál: un paquete que falta en `requirements.txt`, una versión de
     Python que no coincide, o una excepción al importar `app.py`.
+
+---
 
 ## Configuración y secretos
 
@@ -91,6 +99,8 @@ Esta es una ventaja real frente a una [página estática](../static-web/index.md
 donde un secreto es imposible por construcción. Para un proyecto de juego
 seguramente no necesites nada de esto — pero si te descubres queriendo uno, es
 aquí donde va, y `.gitignore` es donde va `.streamlit/secrets.toml`.
+
+---
 
 ## Los límites que te van a morder
 
@@ -114,6 +124,8 @@ archivo: haz commit de los datos al repositorio desde un
 clasificación producida por CI y leída por la aplicación es la forma normal;
 mira [El marcador](../../../game/advanced/scoreboard.md).
 
+---
+
 ## Cuándo dejarlo
 
 Tres señales, de menos a más grave:
@@ -130,10 +142,8 @@ Para un juego por turnos de dos jugadores con un bot como rival, ninguna de
 estas debería llegar. El juego entero cabe cómodamente en un proceso gratuito,
 o en el navegador de quien visita.
 
-## Adónde ir después
+---
 
-- [Construir la aplicación](building.md) — el script que esto despliega.
-- [Web estática](../static-web/index.md) — la ruta sin un servidor que se
-  duerma.
-- [Configuración del repositorio](../../github/repository-configuration.md) —
-  evitar que un commit roto se convierta en una aplicación pública rota.
+**Siguiente:** [Construir la aplicación](building.md) — el script que esto despliega.
+
+**También:** [Web estática](../static-web/index.md) · [Configuración del repositorio](../../github/repository-configuration.md)

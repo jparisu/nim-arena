@@ -8,6 +8,8 @@ private software — lives today.
 
 This page draws the line between the two, and explains what the platform adds.
 
+---
+
 ## Git is not GitHub
 
 This is the single most common source of confusion, so it is worth stating
@@ -40,6 +42,8 @@ flowchart LR
     versions*. Everything on GitHub — a pull request, a review, a green check —
     is ultimately a conversation about commits and branches that Git created.
 
+---
+
 ## What GitHub adds
 
 On top of plain Git hosting, GitHub provides the features that make teamwork
@@ -65,6 +69,8 @@ Each of these gets its own page later in the section. This very repository,
 `nim-arena`, uses all of them, and is referenced throughout as a live
 example.
 
+---
+
 ## Alternatives
 
 GitHub is the most popular platform of its kind, but not the only one. The main
@@ -81,7 +87,8 @@ from the [Git section](../git/index.md) work identically against any of them;
 only the website and its extra features differ. Learn the workflow once, and you
 can move between platforms with little friction.
 
-## Where to go next
+---
 
-- [First steps](first-steps.md) — create an account and your first repository.
-- [Workflow](workflow.md) — the day-to-day branch → pull request → merge cycle.
+**Next:** [First steps](first-steps.md) — create an account and your first repository.
+
+**Also:** [Workflow](workflow.md)

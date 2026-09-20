@@ -9,6 +9,8 @@ It is what turns "the tests pass on my laptop" into "the tests pass, provably, o
 a clean machine, for every version we claim to support" — which is the only claim
 a reviewer can act on.
 
+---
+
 ## The vocabulary
 
 ```mermaid
@@ -40,6 +42,8 @@ early:
 - **`timeout-minutes:`** — a ceiling. Without one, a hung job burns until
   GitHub's own six-hour limit and tells you nothing useful.
 
+---
+
 ## The workflows of this repository
 
 Four files, each with a different trigger and a different job.
@@ -50,6 +54,8 @@ Four files, each with a different trigger and a different job.
 | [`docs.yml`](https://github.com/jparisu/nim-arena/blob/main/.github/workflows/docs.yml) | every push to `main`, every PR | build this site with `--strict` |
 | [`tournament.yml`](https://github.com/jparisu/nim-arena/blob/main/.github/workflows/tournament.yml) | weekly, or on demand | play the tournament, commit the leaderboard |
 | [`pages.yml`](https://github.com/jparisu/nim-arena/blob/main/.github/workflows/pages.yml) | web/source changes, or after a Tournament | build the web app and deploy it to Pages |
+
+---
 
 ## Running the tests
 
@@ -119,7 +125,9 @@ Four decisions in there are worth stealing:
   would leave the working tree dirty on every run.
 - **`--repetitions 1`.** The default is 10, which is over a thousand games on
   every push. A smoke test proves the runner starts and finishes; it is not the
-  graded run.
+  official run.
+
+---
 
 ## Building the documentation
 
@@ -159,8 +167,10 @@ the nav — into a failed build. Catching those in CI is the whole point; see
     permanently in the "Expected" state — and a check that is expected and never
     arrives blocks the merge **forever**. A player submission touches only
     `players/` and `players.yaml`, so a `docs/**` filter would make every single
-    student PR unmergeable. The build takes about 25 seconds; running it always is
+    one of those PRs unmergeable. The build takes about 25 seconds; running it always is
     cheaper than the confusion.
+
+---
 
 ## Running the tournament on a schedule
 
@@ -237,6 +247,8 @@ jobs:
     that push, not just the one you had in mind. The history of this repository
     still contains such commits — that is why the message here is a plain
     `chore(tournament): update leaderboard`.
+
+---
 
 ## Deploying the web app — and the trap in it
 
@@ -319,6 +331,8 @@ Two more details:
 - **`cancel-in-progress: false`**, per GitHub's own Pages guidance: cancelling
   mid-publish can leave a deployment half-applied. Queue instead of cancelling.
 
+---
+
 ## Keeping actions up to date
 
 `.github/dependabot.yml` asks GitHub to open a pull request when an action or a
@@ -339,6 +353,8 @@ updates:
 Grouping the bumps into one PR per month is the difference between a useful
 reminder and a stream of noise you learn to ignore.
 
+---
+
 ## Reading a failed run
 
 1. The PR shows a red ✗. Click **Details**.
@@ -349,9 +365,8 @@ reminder and a stream of noise you learn to ignore.
 5. **Re-run jobs** in the top right is for genuinely flaky infrastructure, not for
    hoping a real failure goes away.
 
-## Where to go next
+---
 
-- [GitHub Pages](pages.md) — where the Pages workflow publishes to.
-- [Repository configuration](repository-configuration.md) — making these checks
-  *required* before a merge.
-- [Testing](../python-library/testing.md) — what `pytest` is actually running.
+**Next:** [GitHub Pages](pages.md) — where the Pages workflow publishes to.
+
+**Also:** [Repository configuration](repository-configuration.md) · [Testing](../python-library/testing.md)

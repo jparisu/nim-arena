@@ -17,6 +17,8 @@ flowchart LR
     H -.->|next task| A
 ```
 
+---
+
 ## Branch or fork
 
 There are two ways to get your own copy to work on, depending on whether you can
@@ -40,17 +42,18 @@ write to the repository:
     A branch name like `add-corner-bot` or `fix-championship-seeding` tells everyone
     what it is for at a glance. Avoid `patch-1` or `test`.
 
+---
+
 ## Commit best practices
 
 The [Git section](../git/organization.md#history) introduced *why* a clean
-history matters; here is *how* to produce one. A good commit is:
+history matters; here is *how* to produce one.
 
-- **Atomic** — one coherent change per commit. "Add the corner bot" and "Fix
-  typo in README" are two commits, not one.
-- **Well-described** — the message says what the commit does, in the imperative:
-  `Add a depth limit to the minimax search`, not `changes` or `wip`.
-- **Self-contained** — the project should still work after each commit, so any
-  commit can be reviewed or reverted on its own.
+| A good commit is… | In practice | ❌ What does not count |
+|---|---|---|
+| **Atomic** | one coherent change per commit | "Add the corner bot **and** fix typo in README" |
+| **Well-described** | the message says what it does, in the imperative | `changes`, `wip`, `.` |
+| **Self-contained** | the project still works after each commit | a commit that only compiles alongside the next one |
 
 A widely used convention is **Conventional Commits**, which prefixes the message
 with a type:
@@ -78,6 +81,8 @@ Adopting a convention is optional, but it makes the history skimmable and can
 even drive automation later. What matters most is **consistency within the
 team**.
 
+---
+
 ## Commit signing
 
 Anyone can set `user.name` and `user.email` to anything, so by default a commit's
@@ -103,6 +108,8 @@ Then add that key a second time on GitHub, as a **Signing Key**, in
     then decide whether to require it (see
     [Repository configuration](repository-configuration.md)).
 
+---
+
 ## Pull request
 
 Once your branch is pushed, open a **pull request** (PR) to propose merging it
@@ -126,6 +133,8 @@ build — all against your branch, all reported back on the PR.
 Pull requests have a page of their own: see
 [**Pull requests**](pull-requests.md) for templates, review mechanics and merge
 strategies.
+
+---
 
 ## Review and merge
 
@@ -154,11 +163,8 @@ Then the cycle starts again with the next task.
     each branch from an up-to-date `main` avoids most merge conflicts before they
     can happen.
 
-## Where to go next
+---
 
-- [Pull requests](pull-requests.md) — the anatomy of a PR, its template, and how
-  to review one.
-- [Repository configuration](repository-configuration.md) — how to *require*
-  reviews and passing checks before a merge.
-- [GitHub Actions](actions.md) — the automated checks that run on every pull
-  request.
+**Next:** [Pull requests](pull-requests.md) — the anatomy of a PR, its template, and how to review one.
+
+**Also:** [Repository configuration](repository-configuration.md) · [GitHub Actions](actions.md)

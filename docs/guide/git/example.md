@@ -19,6 +19,27 @@ del contenido, el autor y la fecha.
     $ git config --global user.email "tu@ejemplo.com"
     ```
 
+---
+
+## Lo que vas a construir
+
+```mermaid
+gitGraph
+    commit id: "init"
+    commit id: "README"
+    branch add-rules
+    checkout add-rules
+    commit id: "reglas"
+    checkout main
+    commit id: "edita README"
+    merge add-rules id: "conflicto → resuelto"
+```
+
+Seis pasos: crear el repositorio, hacer commits, ramificar, provocar un conflicto
+a propósito, resolverlo y subirlo a GitHub.
+
+---
+
 ## 1. Crear el repositorio
 
 Empieza en una carpeta vacía y conviértela en un repositorio Git:
@@ -36,6 +57,8 @@ nunca entren en el historial (véase [Comandos § .gitignore](commands.md#el-arc
 ```console
 $ printf '__pycache__/\n.venv/\nsite/\n' > .gitignore
 ```
+
+---
 
 ## 2. Añadir archivos y hacer el primer commit
 
@@ -83,6 +106,8 @@ $ git commit -m "Add README"
  1 file changed, 2 insertions(+)
 ```
 
+---
+
 ## 3. Inspeccionar el estado
 
 Tres comandos responden a "¿dónde estoy?":
@@ -102,6 +127,8 @@ $ git diff
 `git log` muestra los dos commits, `git status` confirma que no hay nada
 pendiente, y `git diff` no imprime nada porque no hay cambios sin confirmar. Este
 es el punto de partida limpio para trabajo nuevo.
+
+---
 
 ## 4. Crear una rama y trabajar en ella
 
@@ -135,6 +162,8 @@ README.md          # RULES.md no está aquí; vive en la otra rama
 $ git checkout rules-page
 Switched to branch 'rules-page'
 ```
+
+---
 
 ## 5. Fusionar la rama de vuelta y resolver un conflicto
 
@@ -223,6 +252,8 @@ $ git branch -d rules-page
 Deleted branch rules-page (was e4f5a6b).
 ```
 
+---
+
 ## 6. Conectar un remoto y subir (push)
 
 Hasta ahora todo vive en tu máquina. Para compartirlo, crea un repositorio vacío
@@ -241,6 +272,8 @@ branch 'main' set up to track 'origin/main'.
 
 La opción `-u` vincula tu `main` local con `origin/main`, así que a partir de
 ahora bastan un simple `git push` y `git pull`.
+
+---
 
 ## Resumen
 

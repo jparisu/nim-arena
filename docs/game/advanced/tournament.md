@@ -1,197 +1,198 @@
 # El torneo
 
-Una función de la librería —y una GitHub Action a juego— ejecuta un torneo entre
-todos los jugadores registrados y escribe un archivo de resultados legible por
-máquina que el [marcador web](scoreboard.md) renderiza.
+El torneo enfrenta a **todos los jugadores registrados** entre sí y escribe un
+archivo de resultados que la [página web](web.md) renderiza como marcador.
 
-## La plantilla
+```mermaid
+flowchart LR
+    R["👥 Jugadores<br/>registrados"] --> T["⚔️ Enfrentamientos<br/>todos contra todos"]
+    T --> G["🎮 Partidas<br/>con tiempo limitado"]
+    G --> J["📊 leaderboard.json"]
+```
 
-Antes de jugar nada, la plantilla la construye
-[`build_roster`][nimarena.tournament.build_roster]. Un tipo de jugador puede
-inscribirse **más de una vez**, que es lo que permite que un tipo compita contra
-*sí mismo*: un todos contra todos nunca empareja una instancia consigo misma. Cada
-copia recibe su propia semilla (`0, 1, …`), así que un bot que dependa del azar
-juega una partida distinta cada vez y la ejecución sigue repitiéndose exacta. Las
-copias se llaman `random_0`, `random_1`, etcétera; el marcador web renderiza ese
-sufijo como subíndice, con el icono del jugador delante.
+Lo ejecutas tú con `nim-tournament`, y lo ejecuta una GitHub Action de forma
+programada.
 
-Cuántas copias recibe cada tipo lo decide el torneo, en
-[`copies_for`][nimarena.tournament.copies_for], a partir del manifiesto que
-admitió al jugador: `BUILTIN_PLAYER_COPIES` para la escalera de referencia en
-`players/builtin`, y `CUSTOM_PLAYER_COPIES` para una propuesta en
-`players/custom`. Hoy valen **2** y **1**: la escalera de referencia es el patrón
-con el que se lee el marcador y merece las partidas extra, mientras que el lado de
-las propuestas es el que crece con cada pull request fusionado, y cada pareja de
-inscritos juega un enfrentamiento. `--player-repetition` lo sobrescribe para todos
-los tipos a la vez.
+---
 
 ## Un «enfrentamiento» son muchas partidas
 
-En todos los formatos, un **enfrentamiento** entre dos jugadores se juega igual:
-para cada tablero inicial, y para cada jugador saliendo primero una vez, se juegan
-`--repetitions` partidas. Así que un enfrentamiento abarca
-`len(tableros) * 2 * repeticiones` partidas. Alternar quién sale primero importa
-porque en el NIM el primer jugador suele tener una ventaja decisiva.
+Dos jugadores no juegan una partida: juegan una **serie**. Para cada tablero
+inicial, y con cada uno saliendo primero una vez, se juegan `--repetitions`
+partidas.
 
-## Formatos (`--tournament`)
+```text
+partidas de un enfrentamiento = nº de tableros × 2 × repeticiones
+```
+
+Con los valores por defecto (3 tableros, 3 repeticiones) son **18 partidas** por
+pareja.
+
+!!! info "Por qué se alterna quién sale primero"
+    En el NIM el primer jugador suele tener una ventaja decisiva. Si no se
+    alternara, el torneo mediría el sorteo en vez de la habilidad.
+
+---
+
+## Los tres formatos
 
 | Formato | Emparejamientos | Clasificación |
 |---------|-----------------|---------------|
-| `simple` (por defecto) | todos contra todos, cada par una vez | puntos (uno por victoria) |
-| `league` | todos contra todos, cada par una vez | puntuación Elo (por partida) |
-| `championship` | fase de grupos + cuadro eliminatorio | puntos (global) + un campeón |
+| `simple` *(por defecto)* | todos contra todos, cada par una vez | puntos (uno por victoria) |
+| `league` | todos contra todos, cada par una vez | puntuación Elo |
+| `championship` | fase de grupos + cuadro eliminatorio | puntos y un campeón |
 
-- **simple** — el valor por defecto ligero: un todos contra todos ordenado por
-  victorias.
-- **league** — el mismo todos contra todos, pero ordenado por una
-  [puntuación Elo][nimarena.elo] actualizada partida a partida (K=32, inicio 1500).
-  Desactívalo con `--no-elo` para volver a puntos.
-- **championship** — los jugadores se reparten en **grupos de cuatro**
-  equilibrados; cada grupo juega un todos contra todos y sus **dos primeros pasan**
-  a un **cuadro de eliminación directa con cabezas de serie** (con exenciones para
-  los mejores cuando el número no es potencia de dos). Cada eliminatoria es un
-  enfrentamiento completo.
+Se elige con `--tournament`.
 
-## Robustez, no seguridad
+??? info "Detalle de `league` y `championship`"
+    **`league`** usa el mismo todos contra todos que `simple`, pero ordena por
+    una [puntuación Elo][nimarena.elo] actualizada partida a partida (K=32,
+    inicio 1500). `--no-elo` vuelve a puntos.
 
-Incluso los bots bienintencionados pueden colgarse, romperse o devolver una jugada
-ilegal en algún caso límite. El torneo sobrevive a todo ello:
+    **`championship`** reparte a los jugadores en **grupos de cuatro**
+    equilibrados; cada grupo juega un todos contra todos y sus **dos primeros
+    pasan** a un cuadro de eliminación directa con cabezas de serie (con
+    exenciones para los mejores cuando el número no es potencia de dos). Cada
+    eliminatoria es un enfrentamiento completo.
+
+??? info "Por qué un jugador puede aparecer como `hard_0` y `hard_1`"
+    Un tipo de jugador puede inscribirse **más de una vez**, cada copia con su
+    propia semilla, que es lo que permite que un tipo compita contra *sí mismo*
+    — un todos contra todos nunca empareja una instancia consigo misma. Las
+    copias se llaman `<tipo>_<semilla>`, y el marcador renderiza ese sufijo como
+    subíndice.
+
+    Los jugadores de referencia entran **dos** veces y los enviados por PR
+    **una**, porque el lado de las propuestas crece con cada PR fusionado y el
+    trabajo crece con el cuadrado de la plantilla. `--player-repetition` lo
+    sobrescribe.
+
+---
+
+## Robustez: un mal bot nunca rompe la ejecución
+
+Incluso los bots bienintencionados pueden colgarse, romperse o devolver una
+jugada ilegal en algún caso límite. El torneo sobrevive a todo ello:
 
 | Fallo | Resultado |
 |-------|-----------|
 | supera su presupuesto de partida, o se cuelga | derrota (`forfeit_timeout`) |
 | lanza una excepción jugando | derrota (`forfeit_error`) |
 | devuelve una jugada ilegal o malformada | derrota (`forfeit_illegal`) |
-| `create()` supera el presupuesto de construcción | derrota (`forfeit_build_timeout`) |
+| `create()` supera el presupuesto | derrota (`forfeit_build_timeout`) |
 | `create()` lanza una excepción | derrota (`forfeit_build_error`) |
 
-En todos los casos se registra el motivo y la ejecución **continúa**. Un solo mal
-jugador nunca aborta el torneo.
+En todos los casos se registra el motivo y la ejecución **continúa**.
 
-## Por qué los tiempos viven aquí (y no en el jugador)
+---
 
-El contrato que implementa alguien de fuera debe seguir siendo diminuto — véase la
-[API de jugador](../upload-a-bot/player-api.md). El control de tiempo es una propiedad del
-*enfrentamiento*, así que lo posee quien llama. Esto mantiene al jugador como una
-función pura del tablero.
+## Los tiempos
 
-### Cómo funciona el tiempo duro
+Cada jugador recibe **dos presupuestos por partida**, no por jugada:
 
-Cada **partida** se ejecuta en un proceso aparte — una bifurcación por partida, no
-por jugada. Si un bot se cuelga en un bucle infinito, el proceso se **termina** y
-el bot pierde; el torneo sigue. (Los hilos de Python no se pueden matar a la
-fuerza, así que un tiempo basado en hilos no podría cumplir esta garantía.)
+| Presupuesto | Por defecto | Cubre |
+|---|---|---|
+| de partida (`--game-time-limit`) | 2 s | todo tu tiempo de pensar en esa partida, acumulado |
+| de construcción (`--build-time-limit`) | 2 s | `create()` |
 
-Bifurcar por partida y no por jugada es deliberado: la posición del generador
-aleatorio de un jugador, sus cachés y sus tablas de memoización tienen que
-sobrevivir de una jugada a la siguiente *dentro de su propia partida*. Una
-bifurcación por jugada lo reiniciaría todo y castigaría en silencio a cualquier bot
-que recuerde algo.
-
-Existe un modo de «tiempo blando» en un solo proceso (`--no-subprocess`) para
-ejecuciones locales rápidas; sigue midiendo el tiempo transcurrido y descalificando
-a quien se pase, pero no puede interrumpir un bucle infinito real.
-
-### Los presupuestos son relojes de ajedrez
-
-Cada jugador recibe **dos** presupuestos *por partida*, no por jugada:
-
-- un **presupuesto de partida** (`--game-time-limit`, 2 s por defecto) al que se
-  carga su tiempo de pensar, de forma acumulativa entre todas sus jugadas. Un bot
-  puede legítimamente quemar casi todo en una posición difícil y jugar el resto al
-  instante;
-- un **presupuesto de construcción** (`--build-time-limit`, 2 s por defecto) para
-  `create()`, mantenido aparte para que no se pueda colar precálculo gratis en el
-  constructor.
-
-Como ambos jugadores pueden gastar legítimamente todo su presupuesto, el proceso
-solo se mata pasados `2 × (partida + construcción) + margen`. Cuando eso ocurre, el
-ejecutor todavía sabe *a quién* culpar: el proceso hijo registra su fase, el jugador
-activo y sus totales acumulados en memoria compartida **antes** de entrar en nada
-del código del jugador, de modo que el padre puede leerlos tras el mate. Un
-constructor colgado se le imputa a su propio jugador
-(`forfeit_build_timeout`), no al rival.
+Son acumulativos: un bot puede quemar casi todo su presupuesto en una posición
+difícil y jugar el resto al instante. Están separados para que no se pueda colar
+precálculo gratis en el constructor.
 
 !!! warning "El tiempo se mide en CI"
-    El torneo evaluado se ejecuta en los **runners de GitHub**, más lentos y
-    variables que un portátil. Un bot que pasa en una máquina rápida todavía puede
-    agotar el tiempo en la ejecución evaluada. Es una regla declarada, no una
-    sorpresa — elige un presupuesto generoso y escribe código eficiente.
+    El torneo oficial se ejecuta en los **runners de GitHub**, más lentos y
+    variables que un portátil. Un bot que pasa en tu máquina todavía puede
+    agotar el tiempo allí. Es una regla declarada, no una sorpresa.
+
+??? info "Cómo se cumple el límite de verdad"
+    Cada **partida** se ejecuta en un proceso aparte. Si un bot se cuelga en un
+    bucle infinito, el proceso se **termina** y el bot pierde; el torneo sigue.
+    Los hilos de Python no se pueden matar a la fuerza, así que un tiempo basado
+    en hilos no podría garantizar esto.
+
+    Se bifurca por partida y no por jugada a propósito: las cachés y la posición
+    del generador aleatorio de un jugador tienen que sobrevivir de una jugada a
+    la siguiente *dentro de su propia partida*.
+
+    `--no-subprocess` da un modo de «tiempo blando» en un solo proceso para
+    ejecuciones locales rápidas; sigue descalificando a quien se pase, pero no
+    puede interrumpir un bucle infinito real.
+
+---
 
 ## Ejecutarlo
 
 ```bash
-# Por defecto: torneo "simple", 2 s por jugador y partida, 3 partidas por
-# tablero y por quién sale primero.
+# Lo habitual: torneo simple, escribe la clasificación
 nim-tournament --out results/leaderboard.json
 
-# Una liga ordenada por Elo, con un presupuesto generoso de 2 segundos.
-nim-tournament --tournament league --time-limit 2.0
+# Una liga ordenada por Elo
+nim-tournament --tournament league
 
-# Un campeonato con una sola partida rápida por tablero (tiempo blando).
-nim-tournament --tournament championship --repetitions 1 --no-subprocess
+# Rápido, para probar tu bot mientras lo escribes
+nim-tournament --no-subprocess
 ```
+
+Las opciones que usarás casi siempre:
 
 | Opción | Por defecto | Significado |
 |--------|-------------|-------------|
+| `--out` | — | dónde escribir el archivo de resultados |
 | `--tournament` | `simple` | `simple`, `league` o `championship` |
-| `--time-limit` | `2.0` | presupuesto por jugador en **segundos**, para una partida entera *y* para construir |
-| `--game-time-limit` | — | sobreescribe solo el presupuesto de pensar |
-| `--build-time-limit` | — | sobreescribe solo el presupuesto de construcción |
-| `--no-time-limit` | off | no impone nada (nunca con jugadores no confiables) |
-| `--board` | `3,5,7` · `1,2,3,4,5` · `4,5,6,7,8,9` | un tablero inicial, p. ej. `--board 3,5,7`; repetible, y sustituye a los valores por defecto |
-| `--group-size` | `4` | solo campeonato: jugadores por grupo |
-| `--advance-per-group` | `2` | solo campeonato: cuántos pasan |
-| `--player-repetition` | *la de cada tipo* | sobrescribe las copias inscritas para todos los tipos |
-| `--repetitions` | `3` | partidas por (tablero, quién sale primero) en un enfrentamiento |
-| `--elo` / `--no-elo` | on | usar Elo para la clasificación de liga |
+| `--board` | tres tableros | un tablero inicial, p. ej. `--board 3,5,7`; repetible |
 | `--no-subprocess` | off | tiempo blando en un solo proceso (rápido, local) |
 
-## El archivo de resultados
+??? info "Todas las opciones"
+    | Opción | Por defecto | Significado |
+    |--------|-------------|-------------|
+    | `--time-limit` | `2.0` | presupuesto por jugador en segundos, para una partida entera *y* para construir |
+    | `--game-time-limit` | — | sobreescribe solo el presupuesto de pensar |
+    | `--build-time-limit` | — | sobreescribe solo el de construcción |
+    | `--no-time-limit` | off | no impone nada (nunca con jugadores no confiables) |
+    | `--repetitions` | `3` | partidas por (tablero, quién sale primero) |
+    | `--player-repetition` | *la de cada tipo* | sobrescribe las copias inscritas |
+    | `--group-size` | `4` | solo campeonato: jugadores por grupo |
+    | `--advance-per-group` | `2` | solo campeonato: cuántos pasan |
+    | `--elo` / `--no-elo` | on | usar Elo para la clasificación de liga |
 
-El torneo escribe `results/leaderboard.json`. Su estructura —y cómo la página web
-la convierte en un marcador— tiene página propia:
-**[El marcador](scoreboard.md)**.
+---
 
-## Clasificación y el orden esperado
+## Cómo se clasifica
 
 `simple` y `championship` clasifican por **puntos** (uno por victoria); `league`
 clasifica por **Elo**. Los empates se rompen por **menos derrotas por
 descalificación** y luego por **nombre**, de modo que el orden es completamente
 determinista.
 
-!!! note "El tiempo medio por jugada *no* es un criterio de desempate, a propósito"
-    Premiaría lo que no toca. Un jugador que pierde todas las partidas por
-    descalificación no registra ningún tiempo de jugada, así que ganaría cualquier
-    desempate por velocidad. Las descalificaciones van primero exactamente por eso.
+!!! note "El tiempo por jugada *no* desempata, a propósito"
+    Premiaría lo que no toca: un jugador que pierde todas las partidas por
+    descalificación no registra ningún tiempo de jugada, así que ganaría
+    cualquier desempate por velocidad. Por eso las descalificaciones van
+    primero.
 
-Con suficientes partidas, los jugadores de referencia quedan en el orden esperado:
+### El orden esperado
 
+Con suficientes partidas, los jugadores de referencia quedan así:
+
+```text
+⚔️ hard   >   🧠 medium   >   🌱 easy   ≈   🎲 random
 ```
-hard  >  medium  >  easy  ≈  random
-```
 
-`hard` explora 4 niveles con poda alfa-beta y reconoce varios finales de golpe, lo
-que lo hace fuerte — pero no puede calcular el nim-sum, así que sigue siendo
-batible. `medium` ejecuta la misma búsqueda a 2 niveles con una heurística
-deliberadamente débil de palos totales: sólido justo al final de una partida, poco
-fiable antes.
+- **`hard`** explora 4 niveles con poda alfa-beta y reconoce varios finales de
+  golpe. Fuerte, pero no calcula el nim-sum, así que sigue siendo batible.
+- **`medium`** hace la misma búsqueda a 2 niveles con una heurística
+  deliberadamente débil: sólido al final de una partida, poco fiable antes.
+- **`easy` y `random` no están ordenados entre sí**, a propósito. Vaciar la fila
+  más grande es apenas mejor que jugar al azar, y cuál queda por delante depende
+  del sorteo. Si intercambian posiciones entre ejecuciones, no pasa nada.
 
-`easy` y `random` **no** están ordenados entre sí a propósito. Vaciar la fila más
-grande es apenas mejor que jugar al azar en el NIM, y cuál de los dos queda por
-delante depende del sorteo. Si intercambian posiciones entre ejecuciones, no pasa
-nada.
+!!! note "En `league`, los puntos y el puesto pueden discrepar"
+    El puesto viene del Elo mientras la tabla también muestra puntos, así que un
+    jugador con más puntos puede quedar *por debajo* de otro con menos. Eso es
+    el Elo funcionando como debe: pondera *a quién* ganas, no solo cuántas
+    veces.
 
-!!! note "Los puntos y el puesto pueden discrepar"
-    En modo `league` el puesto viene del Elo mientras la tabla también muestra
-    puntos, así que un jugador con más puntos puede quedar *por debajo* de otro con
-    menos. Eso es el Elo funcionando como debe — pondera *a quién* ganas, no solo
-    cuántas veces.
+---
 
-## Adónde ir después
-
-- [El marcador](scoreboard.md) — qué escribe el torneo y cómo se renderiza.
-- [API de jugador](../upload-a-bot/player-api.md) — el contrato al que llama el torneo.
-- [Enviar un jugador](../upload-a-bot/submit-a-player.md) — mete tu bot en la próxima ejecución.
-- [Referencia de la API](api.md) — `run_tournament`, los ayudantes de plantilla y
-  el módulo Elo, generados desde el código fuente.
+**Siguiente:** [El marcador](scoreboard.md) — qué escribe el torneo y cómo se
+convierte en la tabla que ves.

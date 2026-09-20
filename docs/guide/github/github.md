@@ -8,6 +8,8 @@ de código abierto —y una gran parte del software privado—.
 
 Esta página traza la línea entre ambos y explica qué añade la plataforma.
 
+---
+
 ## Git no es GitHub
 
 Esta es la fuente de confusión más común, así que conviene decirlo con claridad:
@@ -39,6 +41,8 @@ flowchart LR
     versiones*. Todo en GitHub —un pull request, una revisión, una marca verde—
     es en el fondo una conversación sobre commits y ramas que creó Git.
 
+---
+
 ## Qué añade GitHub
 
 Además del simple alojamiento de Git, GitHub aporta las funciones que hacen
@@ -65,6 +69,8 @@ Cada una de estas tiene su propia página más adelante en la sección. Este mis
 repositorio, `nim-arena`, las usa todas, y se referencia a lo largo de la
 guía como ejemplo vivo.
 
+---
+
 ## Alternativas
 
 GitHub es la plataforma más popular de su tipo, pero no la única. Las principales
@@ -81,7 +87,8 @@ la [sección de Git](../git/index.md) funcionan igual con cualquiera de ellas;
 solo cambian el sitio web y sus funciones extra. Aprende el flujo de trabajo una
 vez y podrás moverte entre plataformas con poca fricción.
 
-## Adónde ir después
+---
 
-- [Primeros pasos](first-steps.md) — crea una cuenta y tu primer repositorio.
-- [Flujo de trabajo](workflow.md) — el ciclo diario rama → pull request → merge.
+**Siguiente:** [Primeros pasos](first-steps.md) — crea una cuenta y tu primer repositorio.
+
+**También:** [Flujo de trabajo](workflow.md)

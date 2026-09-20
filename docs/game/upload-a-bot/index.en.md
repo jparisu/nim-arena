@@ -1,25 +1,49 @@
 # Upload a new bot
 
-Everything you need to write an AI of your own and get it into the tournament,
-in order. Two pages, no detours.
+Everything you need to write an AI of your own and get it into the tournament.
+Two pages, no detours.
+
+---
+
+## The path
+
+```mermaid
+flowchart LR
+    R["📖 Rules"] --> P["🤖 You write<br/>your class"]
+    P --> T["✅ You test it<br/>locally"]
+    T --> PR["🔀 You open<br/>a PR"]
+    PR --> M["🎉 It is merged"]
+    M --> S["🏆 It competes in<br/>the tournament"]
+```
 
 <div class="grid cards" markdown>
 
-- [**1. Player API**](player-api.md) — the exact interface every AI implements,
-  with a minimal example you can copy.
-- [**2. Submit a player**](submit-a-player.md) — the Pull Request flow that puts
-  it in the next tournament run.
+- :material-code-braces:{ .lg .middle } **[1 · Player API](player-api.md)**
+
+    ---
+
+    The exact interface every AI implements, with a minimal example you can
+    copy and that already works.
+
+- :material-source-pull:{ .lg .middle } **[2 · Submit a player](submit-a-player.md)**
+
+    ---
+
+    The Pull Request flow that puts it in the next tournament run.
 
 </div>
 
+---
+
 ## Before you start
 
-- [Game rules](../rules.md) — what you are actually programming against.
-- [Getting started](../getting-started.md) — install the package and play a game
-  locally.
+| If you do not have… | Go to |
+|---|---|
+| the rules of NIM clear | [Game rules](../rules.md) |
+| the package installed | [Getting started](../getting-started.md) |
+| a grip on Git and pull requests | [Guide](../../guide/index.md) |
 
-If Git, forks and pull requests are new to you, the [Guide](../../guide/index.md)
-teaches them from scratch.
+---
 
 ## Once it is merged
 

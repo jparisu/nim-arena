@@ -1,28 +1,63 @@
 # Documentación avanzada
 
-Cómo está montado NIM Arena por dentro. **No** necesitas nada de esto para
-escribir un bot — para eso ve a [Subir un bot nuevo](../upload-a-bot/index.md).
+Cómo está montado NIM Arena por dentro.
 
-Léelo si quieres entender la maquinaria, arreglar un error o cambiar el proyecto
-en sí.
+!!! info "Esto es opcional"
+    **No** necesitas nada de esta sección para escribir un bot — para eso ve a
+    [Subir un bot nuevo](../upload-a-bot/index.md). Léela si quieres entender la
+    maquinaria, arreglar un error o cambiar el proyecto en sí.
+
+---
+
+## El recorrido completo
+
+```mermaid
+flowchart LR
+    CODE["📦 El código<br/>reglas, jugadores, registro"]
+    TOUR["🏆 El torneo<br/>juega las partidas"]
+    JSON["📊 El marcador<br/>leaderboard.json"]
+    WEB["🌐 La web<br/>lo dibuja"]
+
+    CODE --> TOUR --> JSON --> WEB
+    CODE --> WEB
+```
 
 <div class="grid cards" markdown>
 
-- [**Estructura del código**](code-structure.md) — el árbol del repositorio y cómo
-  dependen unos módulos de otros.
-- [**El marcador**](scoreboard.md) — el archivo de resultados y cómo se renderiza.
-- [**El torneo**](tournament.md) — formatos, presupuestos de tiempo y
-  descalificaciones.
-- [**La página web**](web.md) — la página Pyodide que ejecuta el mismo Python en
-  tu navegador.
-- [**Referencia de la API**](api.md) — todos los nombres públicos de `nimarena`,
-  generados desde el código fuente.
+- :material-file-tree:{ .lg .middle } **[Primeros pasos](advanced/getting-started.md)**
+
+    ---
+
+    Primeros pasos para descargar e instalar el proyecto.
+
+- :material-file-tree:{ .lg .middle } **[Estructura del código](code-structure.md)**
+
+    ---
+
+    El árbol del repositorio y cómo dependen unos módulos de otros.
+
+- :material-trophy:{ .lg .middle } **[El torneo](tournament.md)**
+
+    ---
+
+    Formatos, presupuestos de tiempo y descalificaciones.
+
+- :material-podium:{ .lg .middle } **[El marcador](scoreboard.md)**
+
+    ---
+
+    El archivo de resultados y cómo se renderiza.
+
+- :material-web:{ .lg .middle } **[La página web](web.md)**
+
+    ---
+
+    La página Pyodide que ejecuta el mismo Python en tu navegador.
+
+- :material-api:{ .lg .middle } **[Referencia de la API](api.md)**
+
+    ---
+
+    Todos los nombres públicos de `nimarena`, generados desde el código fuente.
 
 </div>
-
-## La idea central
-
-> Las reglas del juego y todas las IA se escriben **una sola vez, en Python**. Ese
-> mismo código ejecuta tanto el torneo evaluado (en CI) como el juego en vivo en
-> el navegador (vía Pyodide). **Una única fuente de verdad.** Las reglas nunca se
-> reimplementan en JavaScript.

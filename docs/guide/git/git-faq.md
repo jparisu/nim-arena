@@ -3,13 +3,6 @@
 Preguntas y dudas habituales sobre Git. Cada respuesta enlaza a la página donde el
 tema se trata en detalle.
 
-??? question "¿Cuál es la diferencia entre Git y GitHub?"
-    **Git** es la herramienta de control de versiones que se ejecuta en tu
-    ordenador y registra el historial de tus archivos. **GitHub** es un sitio web
-    que aloja repositorios Git en línea para que la gente los comparta y colabore.
-    Puedes usar Git sin GitHub, pero GitHub siempre usa Git por debajo.
-    Véase [Qué es Git](git.md) y la [sección de GitHub](../github/index.md).
-
 ??? question "¿Necesito conexión a internet para usar Git?"
     No. Git es [distribuido](git.md#un-poco-de-historia): tu clon contiene todo el
     historial, así que puedes hacer commits, crear ramas, inspeccionar el log y

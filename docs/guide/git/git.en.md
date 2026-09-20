@@ -8,24 +8,24 @@ developers.
 This page explains where Git comes from, what problem it solves, and the mental
 model you need before learning any command.
 
+---
+
 ## A bit of history
 
 Before version control, keeping the history of a project meant copying folders
-by hand: `project/`, `project-final/`, `project-final-REAL/`. This does not
-scale, it is error-prone, and it makes collaboration painful.
+by hand: `project/`, `project-final/`, `project-final-REAL/`.
 
-Git was created in **2005** by **Linus Torvalds**, the same person who started
-the Linux kernel. The kernel is developed by thousands of contributors, and the
-tool they had been using stopped being available for free. Torvalds needed
-something that was **fast**, **distributed**, and able to handle a huge history
-without slowing down. No existing tool fit, so he wrote his own in a few weeks.
+Git was written by **Linus Torvalds in 2005** for the Linux kernel, which
+thousands of people develop at once. He needed something fast, able to handle a
+huge history, and above all **distributed**.
 
-The key word is **distributed**. In the older generation of tools (such as
-Subversion or CVS), there was a single central server that held *the* history;
-you had to be connected to it to commit. In Git, **every clone of a repository
-is a full copy of the entire history**. You can commit, branch, inspect the log
-and go back in time without a network connection. Sharing with others is a
-separate, explicit step.
+Distributed is the key word, and it is still the difference you notice most:
+
+| | Centralized (CVS, Subversion) | Distributed (Git) |
+|---|---|---|
+| Who holds the history | one central server | **every clone, in full** |
+| To make a commit | you must be connected | you work offline |
+| Sharing | is the same as saving | is a separate, explicit step |
 
 ```mermaid
 flowchart LR
@@ -43,8 +43,7 @@ flowchart LR
     end
 ```
 
-Today Git is, by a wide margin, the most used version control system in the
-world, and knowing it is a basic professional skill.
+---
 
 ## Why version control
 
@@ -59,6 +58,8 @@ without once you have them:
 - **Collaboration without overwriting.** Several people can work on the same
   files at the same time. Git merges their changes together and, when two people
   edit the same lines, tells you exactly where a human decision is needed.
+
+---
 
 ## The three areas
 
@@ -100,9 +101,8 @@ Reading the diagram left to right:
     unrelated changes into separate, meaningful commits instead of one big
     dump.
 
-## Where to go next
+---
 
-- [Organization](organization.md) — how commits, branches and history are
-  actually structured.
-- [Commands](commands.md) — the everyday command set, one by one.
-- [Example](example.md) — the whole workflow applied to this very repository.
+**Next:** [Organization](organization.md) — how commits, branches and history are actually structured.
+
+**Also:** [Commands](commands.md) · [Example](example.md)

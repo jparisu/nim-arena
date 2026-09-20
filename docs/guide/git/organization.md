@@ -5,6 +5,8 @@ explica las tres ideas sobre las que se construye todo lo demás: **commits**,
 **diffs** y **ramas**, y cómo se combinan para formar el **historial** de un
 proyecto.
 
+---
+
 ## Los commits como instantáneas
 
 Un **commit** es un punto guardado en el historial del proyecto. El error más
@@ -45,6 +47,8 @@ En la
 práctica rara vez escribes un hash completo: los primeros 7 caracteres
 (`772a47a`) bastan para identificar un commit.
 
+---
+
 ## Diffs
 
 Mientras que un commit guarda una instantánea, lo que normalmente *quieres ver*
@@ -74,6 +78,8 @@ Un diff se lee así:
 Los diffs están por todas partes en Git: son la forma en que `git diff` muestra
 tu trabajo sin confirmar, `git log -p` muestra lo que cambió cada commit, y un
 pull request en GitHub muestra lo que propone.
+
+---
 
 ## Ramas
 
@@ -146,6 +152,8 @@ detiene y te pide que edites el archivo y elijas. Los conflictos son una parte
 normal de la colaboración, no un error; la página de [Ejemplo](example.md)
 muestra cómo resolver uno.
 
+---
+
 ## Historial
 
 Encadenar commits produce el **historial** del proyecto: la historia de cómo
@@ -167,8 +175,8 @@ Lo que hace que un historial sea fácil de leer:
     la práctica es ahí donde un historial limpio da sus frutos: en los pull
     requests y la revisión de código.
 
-## Adónde ir después
+---
 
-- [Comandos](commands.md) — los comandos que crean commits, ramas y diffs.
-- [Deshacer cambios](undoing-changes.md) — cómo mover punteros y descartar
-  trabajo de forma segura.
+**Siguiente:** [Comandos](commands.md) — los comandos que crean commits, ramas y diffs.
+
+**También:** [Deshacer cambios](undoing-changes.md)

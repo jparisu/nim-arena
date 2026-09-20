@@ -12,6 +12,8 @@ un flujo de trabajo completo.
     Las líneas que empiezan por `$` son comandos que escribes; todo lo demás es
     salida. Las rutas y los hashes provienen de un pequeño proyecto de ejemplo.
 
+---
+
 ## Iniciar un repositorio
 
 ### `git init`
@@ -41,6 +43,8 @@ Receiving objects: 100% (120/120), 45.2 KiB, done.
 
 Clonar también configura un remoto llamado **`origin`** que apunta al origen, de
 modo que puedes hacer `push` y `pull` sin configuración adicional.
+
+---
 
 ## Registrar cambios
 
@@ -96,6 +100,8 @@ $ git commit -m "feat(players): add the greedy bot"
     preparación, y nunca incluye archivos nuevos (sin rastrear). Prefiere un
     `git add` explícito mientras aprendes.
 
+---
+
 ## Inspeccionar
 
 ### `git log`
@@ -134,6 +140,8 @@ index 3b1f2a1..a2c4d9e 100644
 - `git diff --staged` muestra lo que está preparado (es decir, lo que registrará
   el próximo commit).
 - `git diff main feature` compara dos ramas.
+
+---
 
 ## Ramificar y fusionar
 
@@ -184,6 +192,8 @@ Fast-forward
 Si ambas ramas cambiaron las mismas líneas, la fusión se detiene con un
 **conflicto** para que lo resuelvas — véase el [Ejemplo](example.md).
 
+---
+
 ## Sincronizar con un remoto
 
 ### `git push`
@@ -216,6 +226,8 @@ Fast-forward
 Adquiere el hábito de hacer pull **antes** de empezar a trabajar, para construir
 sobre los últimos cambios de tus compañeros y no sobre una copia desactualizada.
 
+---
+
 ## Referencia rápida
 
 | Comando | Para qué sirve |
@@ -233,6 +245,8 @@ sobre los últimos cambios de tus compañeros y no sobre una copia desactualizad
 | `git push` | Enviar commits al remoto. |
 | `git pull` | Traer commits del remoto a la rama actual. |
 
+---
+
 ## Otros comandos útiles
 
 - `git rebase <branch>` — reorganizar commits para hacer el historial más lineal.
@@ -241,6 +255,8 @@ sobre los últimos cambios de tus compañeros y no sobre una copia desactualizad
 
 Otros comandos para deshacer cambios se cubren en [Deshacer cambios](undoing-changes.md):
 `git restore`, `git reset`, `git stash`.
+
+---
 
 ## El archivo `.gitignore`
 
@@ -252,41 +268,40 @@ Un archivo **`.gitignore`**, colocado en la raíz del repositorio, lista patrone
 de archivos que Git debe **ignorar**: nunca aparecen en `git status` y no pueden
 añadirse por accidente. Cada línea es un patrón; `#` inicia un comentario.
 
-Este es el `.gitignore` que usa este mismo proyecto — un buen punto de partida
-para cualquier proyecto Python:
+| Qué se ignora | Por qué |
+|---|---|
+| cachés y `__pycache__/` | se regeneran solas en cada ejecución |
+| el entorno virtual | es de tu máquina, y pesa mucho |
+| artefactos de construcción | salida generada: si se confirma, cada reconstrucción es un diff |
+| configuración del editor | es tuya, no del proyecto |
+
+Un punto de partida válido para cualquier proyecto Python:
 
 ```gitignore
 # Python
 __pycache__/
 *.py[cod]
 *.egg-info/
-.eggs/
 build/
 dist/
 .venv/
-venv/
-env/
 
 # Testing / tooling
 .pytest_cache/
 .ruff_cache/
 .coverage
-htmlcov/
 
 # MkDocs
 site/
-
-# Generated web assets (assembled by scripts/build_web.py or the Pages workflow)
-web/py/
-web/py.zip
-web/leaderboard.json
 
 # OS / editor
 .DS_Store
 .idea/
 .vscode/
-*.swp
 ```
+
+Añade además lo que genere tu propio proyecto. Aquí, por ejemplo, el paquete que
+`scripts/build_web.py` ensambla para la página (`web/py.zip`).
 
 !!! tip
     Añade el `.gitignore` **antes** de tu primer commit, para que el ruido no
@@ -298,8 +313,8 @@ web/leaderboard.json
     Git, pero se deja fuera de esta guía a propósito: para este proyecto, entender
     `main` y las ramas es suficiente.
 
-## Adónde ir después
+---
 
-- [Deshacer cambios](undoing-changes.md) — cuando un comando salió mal, o
-  cambiaste de opinión.
-- [Ejemplo](example.md) — estos comandos, aplicados de principio a fin.
+**Siguiente:** [Deshacer cambios](undoing-changes.md) — cuando un comando salió mal, o cambiaste de opinión.
+
+**También:** [Ejemplo](example.md)

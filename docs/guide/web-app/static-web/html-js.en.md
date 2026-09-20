@@ -12,6 +12,8 @@ what "well built" means:
 Three files, three concerns. Inline `style="…"` attributes and `onclick="…"`
 handlers work, and they are how a page becomes unmaintainable by week three.
 
+---
+
 ## The smallest page that works
 
 ```html
@@ -42,7 +44,20 @@ Three details in there are not decoration:
 - **`<script>` at the end of `<body>`** runs after the elements above it exist.
   A script in `<head>` runs first and finds nothing.
 
+---
+
 ## The DOM, in four calls
+
+The browser turns your HTML into a tree of objects — the **DOM** — that
+JavaScript can read and change. That is the whole cycle of a static page:
+
+```mermaid
+flowchart LR
+    H["📄 HTML<br/>the structure"] --> D["🌳 DOM<br/>the in-memory tree"]
+    D --> J["⚡ JavaScript<br/>reads and changes it"]
+    J --> D
+    C["🎨 CSS"] --> D
+```
 
 The **DOM** is the browser's live object model of the page. Changing it changes
 what is on screen, immediately. You need almost none of its surface:
@@ -77,6 +92,8 @@ const el = (tag, cls, txt) => {
 };
 ```
 
+---
+
 ## Loading data without a backend
 
 A static page cannot query a database, but it can read a file that is sitting
@@ -105,6 +122,8 @@ ago, and you will spend an afternoon debugging a tournament that ran correctly.
     tools open. Never put a token, a password or an answer key in a file the
     browser downloads. If you need a secret, you need a server — see
     [Hosting](../hosting.md).
+
+---
 
 ## Keeping it readable as it grows
 
@@ -142,6 +161,8 @@ boots once instead of once per tab.
 state, {onPick})` in `core.js`, called by both the Play screen and the
 Tournament screen. Two copies of a board renderer diverge; one copy cannot.
 
+---
+
 ## Failing loudly
 
 A static page has no server log. When something throws, the default outcome is a
@@ -167,6 +188,8 @@ The second one is the subtler win. Wiring every handler in one straight line
 means an exception halfway through leaves the *later* buttons with no handler at
 all — and those buttons then fail in a way that points nowhere near the cause.
 
+---
+
 ## Running it locally
 
 Serve the folder. Do not open the file.
@@ -181,10 +204,8 @@ browser blocks `fetch()` for security reasons. Your page will load, look
 correct, and silently fail to read any of its data — a confusing failure with a
 one-line fix.
 
-## Where to go next
+---
 
-- [Python in the browser](pyodide.md) — running your package client-side, so
-  the rules are never written twice.
-- [GitHub Pages](../../github/pages.md) — publishing the folder, for free.
-- [The web app](../../../game/advanced/web.md) — this repository's page,
-  documented end to end.
+**Next:** [Python in the browser](pyodide.md) — running your package client-side, so the rules are never written twice.
+
+**Also:** [GitHub Pages](../../github/pages.md) · [The web app](../../../game/advanced/web.md)
