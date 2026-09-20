@@ -93,33 +93,41 @@ need answered, and reviewers get a checklist instead of a blank page.
 ### The default template
 
 Put it at **`.github/pull_request_template.md`**. Every PR opened against the
-repository starts with its contents. This repository's, in full:
+repository starts with its contents, so it should be the one for the most
+common case: here, a new-player submission. This repository's, in full:
 
 ```markdown
 <!--
-Default PR template. Submitting a NEW PLAYER? Use the dedicated checklist:
-append ?template=new_player.md to the PR URL, or copy it from
-.github/PULL_REQUEST_TEMPLATE/new_player.md
+Default PR template: a NEW PLAYER submission — which is what nearly every pull
+request here is. Not adding a player? Append ?template=other.md to the PR URL,
+or just replace this with a description of your change.
 -->
 
-## What does this PR do?
+## New player: <!-- your bot's name -->
 
-<!-- A short description of the change. -->
+**Author:** <!-- your GitHub handle -->
+**Strategy in one sentence:** <!-- what does your bot do? -->
 
-## Type
+### Submission checklist
 
-- [ ] New AI player (see the new-player template)
-- [ ] Bug fix
-- [ ] Library / engine change
-- [ ] Docs
-- [ ] Web app
-- [ ] CI / tooling
+- [ ] Added a single file `players/custom/<my_bot>.py`.
+- [ ] The class subclasses `nimarena.player.Player`.
+- [ ] `get_name`, `get_authors`, `get_description` and `get_icon` are implemented.
+- [ ] The icon is a **single** emoji, and not already used by another player.
+- [ ] The name is **unique** — no admitted player already uses it.
+- [ ] `choose_move(self, state) -> (row, count)` returns a **legal** move.
+- [ ] Does **not** mutate the `state` it receives.
+- [ ] Added **exactly one** entry to `players/custom/players.yaml` (`file` and `class`).
+- [ ] No external dependencies beyond the standard library and `nimarena`.
+- [ ] No network / filesystem / subprocess / `eval` / `exec`.
+- [ ] Runs locally: `pytest tests/test_custom_players.py` is green and `nim-tournament --no-subprocess` works.
 
-## Checklist
+### Maintainer review (acceptance criteria)
 
-- [ ] `pytest` passes locally.
-- [ ] `ruff check .` is clean.
-- [ ] Docs updated if behavior changed.
+- [ ] **Design** — one file in `players/custom/` + one manifest line, minimal.
+- [ ] **Correctness** — CI green; legal moves; no mutation; no errors/timeouts vs
+      the reference bots.
+- [ ] **No malware** — code read in full; nothing suspicious.
 ```
 
 Two details worth copying:
@@ -136,47 +144,39 @@ One template cannot fit every kind of contribution. Additional templates go in a
 offered in a menu — you select one by adding a query parameter to the PR URL:
 
 ```text
-https://github.com/jparisu/nim-arena/compare/main...you:add-corner-bot?template=new_player.md
+https://github.com/jparisu/nim-arena/compare/main...you:fix-typo?template=other.md
 ```
 
-Because that is easy to miss, the default template's first line tells the author
-the other one exists. This repository ships
-`.github/PULL_REQUEST_TEMPLATE/new_player.md` for player submissions:
+Because that is easy to miss, the majority case belongs in the default template
+and the rest in the directory. This repository ships
+`.github/PULL_REQUEST_TEMPLATE/other.md` for PRs that do not add a player:
 
 ```markdown
-## New player: <!-- your bot's name -->
+## What does this PR do?
 
-**Author:** <!-- your GitHub handle -->
-**Strategy in one sentence:** <!-- what does your bot do? -->
+<!-- A short description of the change. -->
 
-### Submission checklist
+## Type
 
-- [ ] Added a single file `players/<my_bot>.py`.
-- [ ] The class subclasses `nimarena.player.Player`.
-- [ ] `get_name`, `get_authors`, `get_description` and `get_icon` are implemented.
-- [ ] The icon is a **single** emoji, and not already used by another player.
-- [ ] The name is **unique** — no admitted player already uses it.
-- [ ] `choose_move(self, state) -> (row, count)` returns a **legal** move.
-- [ ] Does **not** mutate the `state` it receives.
-- [ ] Added **exactly one** entry to `players.yaml` (`file` and `class`).
-- [ ] No external dependencies beyond the standard library and `nimarena`.
-- [ ] No network / filesystem / subprocess / `eval` / `exec`.
-- [ ] Runs locally: `pytest tests/test_custom_players.py` is green and `nim-tournament --no-subprocess` works.
+- [ ] Bug fix
+- [ ] Library / engine change
+- [ ] Docs
+- [ ] Web app
+- [ ] CI / tooling
 
-### Maintainer review (acceptance criteria)
+## Checklist
 
-- [ ] **Design** — one file + one manifest line, minimal and readable.
-- [ ] **Correctness** — CI green; legal moves; no mutation; no errors/timeouts vs
-      the reference bots.
-- [ ] **No malware** — code read in full; nothing suspicious.
+- [ ] `pytest` passes locally.
+- [ ] `ruff check .` is clean.
+- [ ] Docs updated if behavior changed.
 ```
 
 ### Writing a checklist that is worth having
 
 - **Every item must be checkable by someone.** "Runs locally: `pytest` is green"
   can be verified. "Code is high quality" cannot.
-- **Separate author items from reviewer items.** The template above has two
-  sections for exactly that reason: the submitter certifies facts, the maintainer
+- **Separate author items from reviewer items.** The new-player template has
+  two sections for exactly that reason: the submitter certifies facts, the maintainer
   certifies judgment.
 - **Keep it short enough to be read.** A twenty-item list gets ticked without
   being read, which is worse than no list.

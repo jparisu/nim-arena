@@ -98,33 +98,42 @@ de una página en blanco.
 ### La plantilla por defecto
 
 Va en **`.github/pull_request_template.md`**. Todo PR abierto contra el
-repositorio empieza con su contenido. La de este repositorio, completa:
+repositorio empieza con su contenido, así que debe ser la del caso más
+frecuente: aquí, el envío de un jugador nuevo. La de este repositorio,
+completa:
 
 ```markdown
 <!--
-Default PR template. Submitting a NEW PLAYER? Use the dedicated checklist:
-append ?template=new_player.md to the PR URL, or copy it from
-.github/PULL_REQUEST_TEMPLATE/new_player.md
+Default PR template: a NEW PLAYER submission — which is what nearly every pull
+request here is. Not adding a player? Append ?template=other.md to the PR URL,
+or just replace this with a description of your change.
 -->
 
-## What does this PR do?
+## New player: <!-- your bot's name -->
 
-<!-- A short description of the change. -->
+**Author:** <!-- your GitHub handle -->
+**Strategy in one sentence:** <!-- what does your bot do? -->
 
-## Type
+### Submission checklist
 
-- [ ] New AI player (see the new-player template)
-- [ ] Bug fix
-- [ ] Library / engine change
-- [ ] Docs
-- [ ] Web app
-- [ ] CI / tooling
+- [ ] Added a single file `players/custom/<my_bot>.py`.
+- [ ] The class subclasses `nimarena.player.Player`.
+- [ ] `get_name`, `get_authors`, `get_description` and `get_icon` are implemented.
+- [ ] The icon is a **single** emoji, and not already used by another player.
+- [ ] The name is **unique** — no admitted player already uses it.
+- [ ] `choose_move(self, state) -> (row, count)` returns a **legal** move.
+- [ ] Does **not** mutate the `state` it receives.
+- [ ] Added **exactly one** entry to `players/custom/players.yaml` (`file` and `class`).
+- [ ] No external dependencies beyond the standard library and `nimarena`.
+- [ ] No network / filesystem / subprocess / `eval` / `exec`.
+- [ ] Runs locally: `pytest tests/test_custom_players.py` is green and `nim-tournament --no-subprocess` works.
 
-## Checklist
+### Maintainer review (acceptance criteria)
 
-- [ ] `pytest` passes locally.
-- [ ] `ruff check .` is clean.
-- [ ] Docs updated if behavior changed.
+- [ ] **Design** — one file in `players/custom/` + one manifest line, minimal.
+- [ ] **Correctness** — CI green; legal moves; no mutation; no errors/timeouts vs
+      the reference bots.
+- [ ] **No malware** — code read in full; nothing suspicious.
 ```
 
 Dos detalles que merece la pena copiar:
@@ -143,46 +152,38 @@ archivo por tipo. No aparecen en un menú: se selecciona una añadiendo un
 parámetro a la URL del PR:
 
 ```text
-https://github.com/jparisu/nim-arena/compare/main...tu-usuario:add-corner-bot?template=new_player.md
+https://github.com/jparisu/nim-arena/compare/main...tu-usuario:fix-typo?template=other.md
 ```
 
-Como eso es fácil de pasar por alto, la primera línea de la plantilla por defecto
-avisa de que existe la otra. Este repositorio incluye
-`.github/PULL_REQUEST_TEMPLATE/new_player.md` para el envío de jugadores:
+Como eso es fácil de pasar por alto, el caso mayoritario va en la plantilla por
+defecto y el resto en el directorio. Este repositorio incluye
+`.github/PULL_REQUEST_TEMPLATE/other.md` para los PRs que no añaden un jugador:
 
 ```markdown
-## New player: <!-- your bot's name -->
+## What does this PR do?
 
-**Author:** <!-- your GitHub handle -->
-**Strategy in one sentence:** <!-- what does your bot do? -->
+<!-- A short description of the change. -->
 
-### Submission checklist
+## Type
 
-- [ ] Added a single file `players/<my_bot>.py`.
-- [ ] The class subclasses `nimarena.player.Player`.
-- [ ] `get_name`, `get_authors`, `get_description` and `get_icon` are implemented.
-- [ ] The icon is a **single** emoji, and not already used by another player.
-- [ ] The name is **unique** — no admitted player already uses it.
-- [ ] `choose_move(self, state) -> (row, count)` returns a **legal** move.
-- [ ] Does **not** mutate the `state` it receives.
-- [ ] Added **exactly one** entry to `players.yaml` (`file` and `class`).
-- [ ] No external dependencies beyond the standard library and `nimarena`.
-- [ ] No network / filesystem / subprocess / `eval` / `exec`.
-- [ ] Runs locally: `pytest tests/test_custom_players.py` is green and `nim-tournament --no-subprocess` works.
+- [ ] Bug fix
+- [ ] Library / engine change
+- [ ] Docs
+- [ ] Web app
+- [ ] CI / tooling
 
-### Maintainer review (acceptance criteria)
+## Checklist
 
-- [ ] **Design** — one file + one manifest line, minimal and readable.
-- [ ] **Correctness** — CI green; legal moves; no mutation; no errors/timeouts vs
-      the reference bots.
-- [ ] **No malware** — code read in full; nothing suspicious.
+- [ ] `pytest` passes locally.
+- [ ] `ruff check .` is clean.
+- [ ] Docs updated if behavior changed.
 ```
 
 ### Escribir una lista de comprobación que sirva
 
 - **Cada punto tiene que poder comprobarlo alguien.** "Funciona en local:
   `pytest` está en verde" se puede verificar. "El código es de alta calidad" no.
-- **Separa los puntos del autor de los del revisor.** La plantilla de arriba
+- **Separa los puntos del autor de los del revisor.** La plantilla de jugador
   tiene dos secciones exactamente por eso: quien envía certifica hechos, quien
   mantiene certifica criterio.
 - **Que sea corta como para leerse.** Una lista de veinte puntos se marca sin

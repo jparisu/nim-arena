@@ -76,11 +76,8 @@ nim-tournament --no-subprocess # juega tu bot contra los de referencia
 
 ## Paso 5 — Abre el pull request
 
-Sube tu rama y abre un PR desde tu fork. El repositorio incluye una plantilla
-específica para jugadores nuevos en
-[`.github/PULL_REQUEST_TEMPLATE/new_player.md`](https://github.com/jparisu/nim-arena/blob/main/.github/PULL_REQUEST_TEMPLATE/new_player.md);
-selecciónala añadiendo `?template=new_player.md` a la URL del PR, o pégala tú en
-la descripción.
+Sube tu rama y abre un PR desde tu fork. La descripción viene prerrellena con la
+lista de comprobación del envío: complétala.
 
 CI se ejecuta en cada push al PR:
 
