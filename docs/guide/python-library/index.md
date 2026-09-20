@@ -1,23 +1,24 @@
-# Python library
+# Librería Python
 
-This section explains how to build a Python library: how to organize it, how to
-design its API, how to test it, and how to install and use it.
-We will use `nimarena`, the very package this project ships, as the example.
+Esta sección explica cómo construir una librería de Python: cómo organizarla,
+cómo diseñar su API, cómo probarla y cómo instalarla y usarla.
+Usaremos `nimarena`, el propio paquete que distribuye este proyecto, como
+ejemplo.
 
 <div class="grid cards" markdown>
 
-- [**1. What is a library**](library.md) — packages, modules and distributions.
-- [**2. Organization**](organization.md) — `pyproject.toml`, `src/`, `tests/`.
-- [**3. Installation and usage**](installation-and-usage.md) — from GitHub, in a notebook.
-- [**4. API**](api.md) — designing a clear public interface, including one that
-  other people implement.
-- [**5. Testing**](testing.md) — `pytest` and continuous integration.
-- [**FAQ**](python-faq.md) — quick answers to common doubts.
+- [**1. Qué es una librería**](library.md) — paquetes, módulos y distribuciones.
+- [**2. Organización**](organization.md) — `pyproject.toml`, `src/`, `tests/`.
+- [**3. Instalación y uso**](installation-and-usage.md) — desde GitHub, en un notebook.
+- [**4. API**](api.md) — diseñar una interfaz pública clara, incluida una que
+  implementan otras personas.
+- [**5. Tests**](testing.md) — `pytest` e integración continua.
+- [**Preguntas frecuentes**](python-faq.md) — respuestas rápidas a dudas habituales.
 
 </div>
 
-!!! tip "See the result"
-    Every technique on these pages is applied in this repository. The
-    [NIM Arena](../../arena/index.md) section is the outcome: the reference
-    manual of `nimarena`, with API blocks generated from the very docstrings this
-    section teaches you to write.
+!!! tip "Mira el resultado"
+    Cada técnica de estas páginas se aplica en este repositorio. La sección
+    [El juego](../../game/index.md) es el resultado: el manual de referencia de
+    `nimarena`, con bloques de API generados a partir de los mismos docstrings
+    que esta sección te enseña a escribir.

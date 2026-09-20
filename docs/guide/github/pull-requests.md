@@ -1,93 +1,98 @@
 # Pull requests
 
-A **pull request** (PR) is a proposal: *"here are some commits; please put them
-in your `main`."* It is the unit of collaboration on GitHub. Everything that
-matters — the diff, the discussion, the automated checks, the decision — happens
-in one place and stays in the record afterwards.
+Un **pull request** (PR) es una propuesta: *"aquí tienes unos commits; por favor,
+ponlos en tu `main`"*. Es la unidad de colaboración en GitHub. Todo lo que
+importa —el diff, la discusión, las comprobaciones automáticas, la decisión—
+ocurre en un solo sitio y queda registrado después.
 
-This page covers both halves of the job: **opening** a good pull request, and
-**handling** one that somebody else opened.
+Esta página cubre las dos mitades del trabajo: **abrir** un buen pull request y
+**gestionar** el que ha abierto otra persona.
 
-## Branch PR or fork PR
+## PR de rama o PR de fork
 
-Which one you can open depends on whether you can write to the target repository.
+Cuál puedes abrir depende de si tienes permiso de escritura en el repositorio de
+destino.
 
-| | Branch PR | Fork PR |
+| | PR de rama | PR de fork |
 | --- | --- | --- |
-| You need | write access to the repository | nothing but a GitHub account |
-| Your commits live in | a branch of the same repository | your own copy of the repository |
-| Typical case | your own team's project | contributing to someone else's project |
-| Secrets in CI | available | **not** available |
-| Can deploy Pages | yes | no |
+| Necesitas | permiso de escritura en el repositorio | solo una cuenta de GitHub |
+| Tus commits viven en | una rama del mismo repositorio | tu propia copia del repositorio |
+| Caso típico | el proyecto de tu equipo | contribuir al proyecto de otra persona |
+| Secretos en CI | disponibles | **no** disponibles |
+| Puede desplegar Pages | sí | no |
 
 ```mermaid
 flowchart LR
-    subgraph Fork PR
+    subgraph PR de fork
         direction LR
-        U["your fork<br/>you/nim-arena"] -->|pull request| O["upstream<br/>jparisu/nim-arena"]
+        U["tu fork<br/>tu-usuario/nim-arena"] -->|pull request| O["upstream<br/>jparisu/nim-arena"]
     end
-    subgraph Branch PR
+    subgraph PR de rama
         direction LR
-        B["branch<br/>add-corner-bot"] -->|pull request| M["main"]
+        B["rama<br/>add-corner-bot"] -->|pull request| M["main"]
     end
 ```
 
-Forking is a one-click operation on the repository page. After forking, clone
-*your* copy and add the original as a second remote so you can keep up with it:
+Hacer un fork es un clic en la página del repositorio. Después clona *tu* copia y
+añade el original como un segundo remoto para poder mantenerte al día:
 
 ```console
-$ git clone https://github.com/<you>/nim-arena
+$ git clone https://github.com/<tu-usuario>/nim-arena
 $ cd nim-arena
 $ git remote add upstream https://github.com/jparisu/nim-arena.git
 $ git fetch upstream
 $ git checkout -b add-corner-bot upstream/main
 ```
 
-!!! warning "A fork PR runs with reduced permissions"
-    GitHub deliberately withholds repository secrets and write tokens from
-    workflows triggered by a fork, because the PR author controls the code that
-    would run. This is why a fork PR can run the tests but cannot publish a site
-    or push a commit. It is a feature, not a misconfiguration.
+!!! warning "Un PR de fork se ejecuta con permisos reducidos"
+    GitHub retiene deliberadamente los secretos del repositorio y los tokens de
+    escritura en los workflows disparados por un fork, porque quien abre el PR
+    controla el código que se ejecutaría. Por eso un PR de fork puede ejecutar
+    las pruebas pero no publicar un sitio ni hacer un commit. Es una
+    característica, no un error de configuración.
 
-## Opening one
+## Abrir uno
 
-1. **Push your branch.** The push output prints a link that opens the PR form;
-   GitHub also shows a "Compare & pull request" button on the repository page.
-2. **Check the base.** The form has two sides: *base* (where it goes) and
-   *compare* (where it comes from). On a fork PR, confirm the base is the
-   original repository's `main` and not your own.
-3. **Write the title and description.** The template (below) tells you what is
-   expected.
-4. **Open it** — as a normal PR when you want review, or as a **draft** when you
-   want the checks to run on work that is not finished.
+1. **Sube tu rama.** La salida del push imprime un enlace que abre el formulario
+   del PR; GitHub también muestra un botón "Compare & pull request" en la página
+   del repositorio.
+2. **Comprueba la base.** El formulario tiene dos lados: *base* (a dónde va) y
+   *compare* (de dónde viene). En un PR de fork, confirma que la base es el `main`
+   del repositorio original y no el tuyo.
+3. **Escribe el título y la descripción.** La plantilla (más abajo) te dice qué
+   se espera.
+4. **Ábrelo** — como PR normal cuando quieres revisión, o como **borrador**
+   (*draft*) cuando solo quieres que se ejecuten las comprobaciones sobre trabajo
+   sin terminar.
 
-A pull request worth reviewing is:
+Un pull request que merece la pena revisar es:
 
-- **Small.** One coherent change. A 40-line PR gets a real review; a 2000-line
-  one gets an approval nobody actually earned.
-- **Explained.** What changed, and *why*. The diff shows the what; only you know
-  the why.
-- **Linked.** `Closes #12` in the description closes issue 12 automatically when
-  the PR merges.
-- **Green.** Push until the checks pass. A red PR is not ready, even if you are
-  sure the failure is unrelated.
+- **Pequeño.** Un cambio coherente. Un PR de 40 líneas recibe una revisión de
+  verdad; uno de 2000 recibe una aprobación que nadie se ha ganado.
+- **Explicado.** Qué cambió, y *por qué*. El diff muestra el qué; el porqué solo
+  lo sabes tú.
+- **Enlazado.** `Closes #12` en la descripción cierra automáticamente el issue 12
+  al fusionar el PR.
+- **Verde.** Sigue subiendo commits hasta que las comprobaciones pasen. Un PR en
+  rojo no está listo, aunque estés seguro de que el fallo no tiene relación.
 
-!!! tip "Keep pushing to the same branch"
-    You do not open a second PR to fix review comments. Commit on the same branch
-    and push; the open PR updates itself, and the conversation stays in one
-    place.
+!!! tip "Sigue subiendo a la misma rama"
+    No se abre un segundo PR para corregir los comentarios de revisión. Haz
+    commit en la misma rama y súbelo; el PR abierto se actualiza solo y la
+    conversación se queda en un único sitio.
 
-## Pull request templates
+## Plantillas de pull request
 
-A **PR template** is a Markdown file in the repository that GitHub pre-fills into
-the description box of every new pull request. It costs one file and it changes
-the quality of what you receive: contributors answer the questions you actually
-need answered, and reviewers get a checklist instead of a blank page.
+Una **plantilla de PR** es un archivo Markdown del repositorio que GitHub
+prerrellena en la descripción de cada pull request nuevo. Cuesta un archivo y
+cambia la calidad de lo que recibes: quien contribuye responde a las preguntas
+que de verdad necesitas y quien revisa recibe una lista de comprobación en lugar
+de una página en blanco.
 
-### The default template
+### La plantilla por defecto
 
-Put it at **`.github/pull_request_template.md`**. Every PR opened against the
-repository starts with its contents. This repository's, in full:
+Va en **`.github/pull_request_template.md`**. Todo PR abierto contra el
+repositorio empieza con su contenido. La de este repositorio, completa:
 
 ```markdown
 <!--
@@ -116,26 +121,28 @@ append ?template=new_player.md to the PR URL, or copy it from
 - [ ] Docs updated if behavior changed.
 ```
 
-Two details worth copying:
+Dos detalles que merece la pena copiar:
 
-- **HTML comments do not render.** Everything between `<!--` and `-->` is
-  instructions to the author and disappears from the posted description.
-- **`- [ ]` renders as a real checkbox** that anyone can tick after the PR is
-  open. This is what makes a checklist useful rather than decorative.
+- **Los comentarios HTML no se renderizan.** Todo lo que está entre `<!--` y
+  `-->` son instrucciones para quien escribe y desaparece de la descripción
+  publicada.
+- **`- [ ]` se renderiza como una casilla real** que cualquiera puede marcar una
+  vez abierto el PR. Eso es lo que hace que una lista sea útil y no decorativa.
 
-### More than one template
+### Más de una plantilla
 
-One template cannot fit every kind of contribution. Additional templates go in a
-**directory**, `.github/PULL_REQUEST_TEMPLATE/`, one file per kind. They are not
-offered in a menu — you select one by adding a query parameter to the PR URL:
+Una sola plantilla no encaja con todo tipo de contribución. Las plantillas
+adicionales van en un **directorio**, `.github/PULL_REQUEST_TEMPLATE/`, un
+archivo por tipo. No aparecen en un menú: se selecciona una añadiendo un
+parámetro a la URL del PR:
 
 ```text
-https://github.com/jparisu/nim-arena/compare/main...you:add-corner-bot?template=new_player.md
+https://github.com/jparisu/nim-arena/compare/main...tu-usuario:add-corner-bot?template=new_player.md
 ```
 
-Because that is easy to miss, the default template's first line tells the author
-the other one exists. This repository ships
-`.github/PULL_REQUEST_TEMPLATE/new_player.md` for player submissions:
+Como eso es fácil de pasar por alto, la primera línea de la plantilla por defecto
+avisa de que existe la otra. Este repositorio incluye
+`.github/PULL_REQUEST_TEMPLATE/new_player.md` para el envío de jugadores:
 
 ```markdown
 ## New player: <!-- your bot's name -->
@@ -165,59 +172,60 @@ the other one exists. This repository ships
 - [ ] **No malware** — code read in full; nothing suspicious.
 ```
 
-### Writing a checklist that is worth having
+### Escribir una lista de comprobación que sirva
 
-- **Every item must be checkable by someone.** "Runs locally: `pytest` is green"
-  can be verified. "Code is high quality" cannot.
-- **Separate author items from reviewer items.** The template above has two
-  sections for exactly that reason: the submitter certifies facts, the maintainer
-  certifies judgment.
-- **Keep it short enough to be read.** A twenty-item list gets ticked without
-  being read, which is worse than no list.
-- **Say what makes a PR *rejected*, not just what makes it complete.** The
-  new-player template's last section is the acceptance gate, written down.
+- **Cada punto tiene que poder comprobarlo alguien.** "Funciona en local:
+  `pytest` está en verde" se puede verificar. "El código es de alta calidad" no.
+- **Separa los puntos del autor de los del revisor.** La plantilla de arriba
+  tiene dos secciones exactamente por eso: quien envía certifica hechos, quien
+  mantiene certifica criterio.
+- **Que sea corta como para leerse.** Una lista de veinte puntos se marca sin
+  leerse, lo cual es peor que no tener lista.
+- **Di qué hace que un PR se *rechace*, no solo qué lo hace completo.** La última
+  sección de la plantilla de jugadores es la puerta de aceptación, por escrito.
 
-!!! info "Issue templates work the same way"
-    `.github/ISSUE_TEMPLATE/*.md` pre-fills new issues, and unlike PR templates
-    GitHub *does* show a chooser when there is more than one. This repository has
-    three: a bug report, a new-player idea and a conduct report.
+!!! info "Las plantillas de issue funcionan igual"
+    `.github/ISSUE_TEMPLATE/*.md` prerrellena los issues nuevos y, a diferencia de
+    las plantillas de PR, GitHub *sí* muestra un selector cuando hay más de una.
+    Este repositorio tiene tres: informe de error, idea de jugador e informe de
+    conducta.
 
-## Reviewing someone else's pull request
+## Revisar el pull request de otra persona
 
-Opening a PR is the easy half. If your project accepts contributions, most of
-your GitHub time goes here.
+Abrir un PR es la mitad fácil. Si tu proyecto acepta contribuciones, la mayor
+parte de tu tiempo en GitHub se va aquí.
 
-### Read the diff
+### Lee el diff
 
-The **Files changed** tab is the review. Read all of it — a PR you have not read
-is a PR you cannot approve. Useful controls on that tab:
+La pestaña **Files changed** *es* la revisión. Léela entera: un PR que no has
+leído es un PR que no puedes aprobar. Controles útiles de esa pestaña:
 
-- **Hide whitespace** — removes reindentation noise.
-- **Viewed** — a per-file checkbox; large PRs become manageable when you can mark
-  files off.
-- **Comment on a line** — click the line number. The comment anchors there and
-  stays attached as the code moves.
+- **Hide whitespace** — elimina el ruido de reindentaciones.
+- **Viewed** — una casilla por archivo; los PR grandes se vuelven manejables
+  cuando puedes ir tachando archivos.
+- **Comentar una línea** — pulsa en el número de línea. El comentario se ancla
+  ahí y sigue al código cuando se mueve.
 
-### Leave a review, not scattered comments
+### Deja una revisión, no comentarios sueltos
 
-Individual comments post immediately and arrive one notification at a time.
-Instead, click **Review changes** and submit them together with one of three
-verdicts:
+Los comentarios individuales se publican al instante y llegan de uno en uno.
+En su lugar, pulsa **Review changes** y envíalos juntos con uno de tres
+veredictos:
 
-| Verdict | Means |
+| Veredicto | Significa |
 | --- | --- |
-| **Comment** | feedback, no judgment — questions, notes, praise |
-| **Approve** | you are happy for this to merge |
-| **Request changes** | this must not merge until something is addressed |
+| **Comment** | opinión, sin juicio — preguntas, notas, elogios |
+| **Approve** | te parece bien que esto se fusione |
+| **Request changes** | esto no debe fusionarse hasta que se atienda algo |
 
-"Request changes" is a **block** when the repository requires reviews. Use it for
-things that are actually wrong, not for preferences — a preference belongs in a
-plain comment so the author can decide.
+"Request changes" **bloquea** cuando el repositorio exige revisiones. Úsalo para
+cosas que están realmente mal, no para preferencias — una preferencia va en un
+comentario normal para que quien escribe decida.
 
-### Suggested changes
+### Cambios sugeridos
 
-For anything small, do not describe the fix — write it. In a line comment, use a
-`suggestion` block:
+Para cualquier cosa pequeña, no describas el arreglo: escríbelo. En un comentario
+de línea, usa un bloque `suggestion`:
 
 ````markdown
 ```suggestion
@@ -225,75 +233,81 @@ For anything small, do not describe the fix — write it. In a line comment, use
 ```
 ````
 
-The author gets a **Commit suggestion** button. A typo round-trip drops from two
-days to one click.
+Quien escribe recibe un botón **Commit suggestion**. Una errata pasa de dos días
+de ida y vuelta a un clic.
 
-### Re-reviewing
+### Volver a revisar
 
-When the author pushes new commits, the PR updates in place. Use the **compare**
-selector at the top of *Files changed* to see only what changed since your last
-review, instead of re-reading everything. Then re-submit the review.
+Cuando el autor sube commits nuevos, el PR se actualiza en el sitio. Usa el
+selector de **comparación** en la parte superior de *Files changed* para ver solo
+lo que ha cambiado desde tu última revisión, en lugar de releerlo todo. Después
+envía la revisión de nuevo.
 
-### Be specific and be kind
+### Sé concreto y sé amable
 
-Review comments are read by a person, often a beginner, often in public.
+Los comentarios de revisión los lee una persona, a menudo principiante, a menudo
+en público.
 
-- Say what is wrong **and why it matters**: "this mutates `state`, and the
-  tournament forfeits a player that does" beats "don't do this".
-- Prefix opinions honestly: "nit:" for something you would not block on.
-- Approve when it is good enough, not when it is what you would have written.
-  A PR is not an audition.
+- Di qué está mal **y por qué importa**: "esto muta `state`, y el torneo declara
+  perdedor a un jugador que lo haga" es mejor que "no hagas esto".
+- Marca las opiniones con honestidad: "nit:" para algo que no bloquearías.
+- Aprueba cuando está suficientemente bien, no cuando es lo que tú habrías
+  escrito. Un PR no es una audición.
 
-### The review is the security gate
+### La revisión es la puerta de seguridad
 
-This point is specific to a project that accepts code from strangers, and it is
-the reason this repository's review checklist has a "No malware" item.
+Este punto es específico de un proyecto que acepta código de desconocidos, y es
+la razón de que la lista de este repositorio tenga un punto "No malware".
 
-A merged player **runs in CI**, in a process with the repository checked out.
-Discovery here is an explicit manifest rather than a folder scan precisely so
-that the trust decision is visible in one diff: the reviewer sees the new file
-*and* the single line that admits it, side by side.
+Un jugador fusionado **se ejecuta en CI**, en un proceso con el repositorio
+descargado. El descubrimiento aquí es un manifiesto explícito y no un escaneo de
+carpeta precisamente para que la decisión de confianza sea visible en un único
+diff: quien revisa ve el archivo nuevo *y* la única línea que lo admite, uno al
+lado del otro.
 
-So when you review a contributed player, read the code for what it *does*, not
-only for whether it works:
+Así que cuando revises un jugador enviado, lee el código por lo que *hace*, no
+solo por si funciona:
 
-- no network, filesystem, subprocess, `eval`/`exec`;
-- no attempt to read environment variables or repository secrets;
-- no obfuscation — encoded strings, dynamic imports, anything you cannot follow.
+- nada de red, sistema de archivos, subprocesos, `eval`/`exec`;
+- ningún intento de leer variables de entorno o secretos del repositorio;
+- nada de ofuscación — cadenas codificadas, importaciones dinámicas, cualquier
+  cosa que no puedas seguir.
 
-Anything suspicious is rejected on sight. There is no obligation to explain
-yourself past that.
+Cualquier cosa sospechosa se rechaza a la vista. No hay obligación de explicarse
+más allá de eso.
 
-## Merging
+## Fusionar
 
-Three buttons, three histories:
+Tres botones, tres historiales:
 
-| Strategy | What lands on `main` | Use when |
+| Estrategia | Qué entra en `main` | Úsalo cuando |
 | --- | --- | --- |
-| **Squash and merge** | one commit containing the whole PR | the default — the branch's intermediate commits are noise |
-| **Merge commit** | every commit, plus a merge commit | the individual commits are meaningful on their own |
-| **Rebase and merge** | every commit, replayed linearly | you want no merge commits at all |
+| **Squash and merge** | un commit con todo el PR | por defecto — los commits intermedios de la rama son ruido |
+| **Merge commit** | todos los commits, más un commit de fusión | los commits tienen sentido por sí solos |
+| **Rebase and merge** | todos los commits, reproducidos en línea | no quieres ningún commit de fusión |
 
-Squash is the safe default for student projects: the PR is the unit of work, and
-`main` reads as one line per change. Whichever you pick, be consistent —
-repository settings can disable the other two.
+*Squash* es el valor por defecto seguro para proyectos de estudiantes: el PR es
+la unidad de trabajo y `main` se lee como una línea por cambio. Elijas la que
+elijas, sé consistente — la configuración del repositorio puede desactivar las
+otras dos.
 
-After merging:
+Después de fusionar:
 
-- **Delete the branch.** GitHub offers a button; the repository can also do it
-  automatically (see [Repository configuration](repository-configuration.md)).
-- **Pull `main` locally** before starting the next task.
+- **Borra la rama.** GitHub ofrece un botón; el repositorio también puede hacerlo
+  automáticamente (véase
+  [Configuración del repositorio](repository-configuration.md)).
+- **Haz `pull` de `main`** en local antes de empezar la siguiente tarea.
 
-### Closing a PR you will not take
+### Cerrar un PR que no vas a aceptar
 
-Not every proposal should be merged. Closing one is a normal outcome, not a
-failure — say why in a comment, thank the author, and close it. Leaving it open
-for months is worse for everyone than a clear "no".
+No toda propuesta debe fusionarse. Cerrar una es un desenlace normal, no un
+fracaso: di por qué en un comentario, agradece el trabajo y ciérralo. Dejarlo
+abierto durante meses es peor para todos que un "no" claro.
 
-## Where to go next
+## Adónde ir después
 
-- [Repository configuration](repository-configuration.md) — requiring reviews
-  and green checks before the merge button unlocks.
-- [GitHub Actions](actions.md) — what those checks actually run.
-- [Submit a player](../../arena/submit-a-player.md) — this repository's own
-  contribution flow, end to end.
+- [Configuración del repositorio](repository-configuration.md) — exigir
+  revisiones y comprobaciones en verde antes de desbloquear el botón de fusión.
+- [GitHub Actions](actions.md) — qué ejecutan realmente esas comprobaciones.
+- [Enviar un jugador](../../game/upload-a-bot/submit-a-player.md) — el flujo de contribución
+  de este repositorio, de principio a fin.

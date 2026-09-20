@@ -1,27 +1,28 @@
-# Organization
+# Organización
 
-To use Git with confidence, it helps to know what it stores under the hood. This
-page explains the three ideas everything else is built on: **commits**,
-**diffs** and **branches** — and how they add up to a project **history**.
+Para usar Git con confianza, ayuda saber qué guarda por dentro. Esta página
+explica las tres ideas sobre las que se construye todo lo demás: **commits**,
+**diffs** y **ramas**, y cómo se combinan para formar el **historial** de un
+proyecto.
 
-## Commits as snapshots
+## Los commits como instantáneas
 
-A **commit** is a saved point in the project's history. The most common
-misconception is that a commit stores *the changes* you made. It does not: a
-commit stores a **complete snapshot of every tracked file** at the moment you
-committed.
+Un **commit** es un punto guardado en el historial del proyecto. El error más
+común es pensar que un commit guarda *los cambios* que hiciste. No es así: un
+commit guarda una **instantánea completa de cada archivo rastreado** en el
+momento en que hiciste el commit.
 
-Each commit records:
+Cada commit registra:
 
-- a snapshot of all tracked files,
-- the **author** and the **date**,
-- a **message** describing the change,
-- a reference to its **parent** commit (the one that came before it),
-- a unique identifier: a 40-character **hash** such as
-  `772a47a…`, computed from the content itself.
+- una instantánea de todos los archivos rastreados,
+- el **autor** y la **fecha**,
+- un **mensaje** que describe el cambio,
+- una referencia a su commit **padre** (el que vino antes),
+- un identificador único: un **hash** de 40 caracteres como `772a47a…`,
+  calculado a partir del propio contenido.
 
-Because every commit points to its parent, the history forms a chain. Following
-the parent links backwards takes you all the way to the very first commit.
+Como cada commit apunta a su padre, el historial forma una cadena. Siguiendo los
+enlaces al padre hacia atrás llegas hasta el primerísimo commit.
 
 ```mermaid
 flowchart RL
@@ -30,26 +31,27 @@ flowchart RL
     C1 --> C0["7b0978f<br/>Add README"]
 ```
 
-!!! note "Snapshots, but not wasteful"
-    Storing a full snapshot per commit sounds like it would waste enormous
-    space. It does not: if a file did not change between two commits, Git stores
-    it only once and both snapshots point to the same content. You get the
-    simplicity of snapshots with the efficiency of not duplicating unchanged
-    files.
+!!! note "Instantáneas, pero sin desperdicio"
+    Guardar una instantánea completa por commit suena a que gastaría una cantidad
+    enorme de espacio. No es así: si un archivo no cambió entre dos commits, Git
+    lo guarda una sola vez y ambas instantáneas apuntan al mismo contenido.
+    Obtienes la simplicidad de las instantáneas con la eficiencia de no duplicar
+    los archivos que no cambian.
 
-The hash is worth a second look. It is derived from the commit's content, so it is
-effectively unique and history cannot be altered *unnoticed*: if a single byte
-changed, every hash from that point on would change too. In practice you rarely
-type a full hash — the first 7 characters (`772a47a`) are enough to identify a
-commit.
+El hash merece una segunda mirada. Se deriva del contenido del commit, así que es
+prácticamente único y el historial no puede alterarse *sin que se note*: si
+cambiara un solo byte, cambiarían también todos los hashes a partir de ese punto.
+En la
+práctica rara vez escribes un hash completo: los primeros 7 caracteres
+(`772a47a`) bastan para identificar un commit.
 
 ## Diffs
 
-While a commit stores a snapshot, what you usually *want to see* is the
-**difference** between two snapshots. That difference is called a **diff**, and
-Git computes it on demand.
+Mientras que un commit guarda una instantánea, lo que normalmente *quieres ver*
+es la **diferencia** entre dos instantáneas. Esa diferencia se llama **diff**, y
+Git la calcula a demanda.
 
-A diff is read like this:
+Un diff se lee así:
 
 ```diff
 --- a/README.md
@@ -62,30 +64,31 @@ A diff is read like this:
 +See the documentation for details.
 ```
 
-- The `---` / `+++` lines name the old and new versions of the file.
-- The `@@ … @@` line locates the change (the line numbers involved).
-- Lines starting with `-` were **removed**, lines starting with `+` were
-  **added**. A changed line shows up as one removal and one addition.
-- Unmarked lines are unchanged context, shown to help you locate the change.
+- Las líneas `---` / `+++` nombran la versión antigua y la nueva del archivo.
+- La línea `@@ … @@` localiza el cambio (los números de línea implicados).
+- Las líneas que empiezan por `-` se **eliminaron**; las que empiezan por `+` se
+  **añadieron**. Una línea modificada aparece como una eliminación y una adición.
+- Las líneas sin marca son contexto sin cambios, que se muestra para ayudarte a
+  ubicar el cambio.
 
-Diffs are everywhere in Git: they are how `git diff` shows your uncommitted
-work, how `git log -p` shows what each commit changed, and how a pull request on
-GitHub shows what it proposes.
+Los diffs están por todas partes en Git: son la forma en que `git diff` muestra
+tu trabajo sin confirmar, `git log -p` muestra lo que cambió cada commit, y un
+pull request en GitHub muestra lo que propone.
 
-## Branches
+## Ramas
 
-A **branch** is simply a **movable pointer to a commit**. Creating a branch does
-*not* copy any files; it just writes down "this name points at this commit".
-This is why branches in Git are cheap and fast, and why creating one for every
-piece of work is normal practice.
+Una **rama** es simplemente un **puntero móvil a un commit**. Crear una rama *no*
+copia ningún archivo; solo anota "este nombre apunta a este commit". Por eso las
+ramas en Git son baratas y rápidas, y por eso crear una para cada tarea es la
+práctica normal.
 
-There is a special pointer called **`HEAD`** that indicates *which branch you are
-currently on*. When you commit, the current branch pointer moves forward to the
-new commit, and `HEAD` follows it.
+Existe un puntero especial llamado **`HEAD`** que indica *en qué rama estás
+ahora mismo*. Cuando haces un commit, el puntero de la rama actual avanza hasta
+el nuevo commit, y `HEAD` lo sigue.
 
-The default branch is conventionally called **`main`**. When you start a new
-piece of work, you create a branch off `main`, commit on it, and later bring it
-back. While two branches exist in parallel, the history **diverges**:
+La rama por defecto se llama por convención **`main`**. Cuando empiezas una
+tarea nueva, creas una rama a partir de `main`, haces commits en ella y más tarde
+la reincorporas. Mientras dos ramas existen en paralelo, el historial **diverge**:
 
 ```mermaid
 gitGraph
@@ -99,11 +102,11 @@ gitGraph
     merge feature
 ```
 
-Bringing a branch back into `main` is a **merge**. There are two shapes:
+Reincorporar una rama a `main` es una **fusión** (*merge*). Hay dos formas:
 
-- **Fast-forward.** If `main` has not moved since the branch was created, Git
-  can simply slide the `main` pointer forward to the branch's latest commit. No
-  new commit is created; the history stays linear.
+- **Fast-forward.** Si `main` no se ha movido desde que se creó la rama, Git
+  puede simplemente deslizar el puntero de `main` hasta el último commit de la
+  rama. No se crea ningún commit nuevo; el historial se mantiene lineal.
 
 ```mermaid
 gitGraph
@@ -118,9 +121,9 @@ gitGraph
     commit id: "New commits in main"
 ```
 
-- **Merge commit.** If *both* branches gained commits (as in the diagram above),
-  Git creates a new **merge commit** with **two parents**, tying the two lines
-  of history back together.
+- **Commit de fusión.** Si *ambas* ramas ganaron commits (como en el diagrama de
+  arriba), Git crea un nuevo **commit de fusión** con **dos padres**, que vuelve
+  a unir las dos líneas de historial.
 
 ```mermaid
 gitGraph
@@ -137,34 +140,35 @@ gitGraph
     commit id: "New commits in main"
 ```
 
-When the two branches changed **the same lines** of the same file, Git cannot
-decide which version wins. This is a **merge conflict**: Git pauses and asks you
-to edit the file and choose. Conflicts are a normal part of collaboration, not
-an error — the [Example](example.md) page walks through resolving one.
+Cuando las dos ramas cambiaron **las mismas líneas** del mismo archivo, Git no
+puede decidir qué versión gana. Esto es un **conflicto de fusión**: Git se
+detiene y te pide que edites el archivo y elijas. Los conflictos son una parte
+normal de la colaboración, no un error; la página de [Ejemplo](example.md)
+muestra cómo resolver uno.
 
-## History
+## Historial
 
-Chaining commits produces the project's **history** — the story of how it
-reached its current state. A good history is an asset: it lets a teammate (or
-you, in six months) understand *why* the code looks the way it does.
+Encadenar commits produce el **historial** del proyecto: la historia de cómo
+llegó a su estado actual. Un buen historial es un activo: permite que un
+compañero (o tú, dentro de seis meses) entienda *por qué* el código es como es.
 
-What makes a history easy to read:
+Lo que hace que un historial sea fácil de leer:
 
-- **Atomic commits.** Each commit does one coherent thing, so it can be
-  understood, reviewed or reverted on its own.
-- **Meaningful messages.** A message like `feat(players): add the greedy bot` says what
-  changed and why; `stuff` or `fix2` does not.
-- **A tidy shape.** Short-lived branches that merge back cleanly are easier to
-  follow than a tangle of long-running branches.
+- **Commits atómicos.** Cada commit hace una cosa coherente, de modo que puede
+  entenderse, revisarse o revertirse por sí solo.
+- **Mensajes con sentido.** Un mensaje como `feat(players): add the greedy bot` dice qué cambió
+  y por qué; `stuff` o `fix2` no.
+- **Una forma ordenada.** Las ramas de vida corta que se fusionan limpiamente
+  son más fáciles de seguir que una maraña de ramas de larga duración.
 
 !!! tip
-    Commit messages and history hygiene are covered as a workflow topic in the
-    [GitHub section](../github/workflow.md), because in practice that is where a
-    clean history pays off: in pull requests and code review.
+    Los mensajes de commit y la higiene del historial se tratan como tema de
+    flujo de trabajo en la [sección de GitHub](../github/workflow.md), porque en
+    la práctica es ahí donde un historial limpio da sus frutos: en los pull
+    requests y la revisión de código.
 
-## Where to go next
+## Adónde ir después
 
-- [Commands](commands.md) — the commands that create commits, branches and
-  diffs.
-- [Undoing changes](undoing-changes.md) — how to move pointers and discard work
-  safely.
+- [Comandos](commands.md) — los comandos que crean commits, ramas y diffs.
+- [Deshacer cambios](undoing-changes.md) — cómo mover punteros y descartar
+  trabajo de forma segura.

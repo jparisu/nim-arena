@@ -1,59 +1,60 @@
-# Workflow
+# Flujo de trabajo
 
-This is the page to internalize. Almost all day-to-day work on a shared project
-follows the same cycle: **start from a branch, commit your work, push it, open a
-pull request, get it reviewed, and merge it.** Everything else in this section
-supports this loop.
+Esta es la página que hay que interiorizar. Casi todo el trabajo diario en un
+proyecto compartido sigue el mismo ciclo: **parte de una rama, confirma tu
+trabajo, súbelo, abre un pull request, consigue que lo revisen y fusiónalo.**
+Todo lo demás en esta sección da soporte a este bucle.
 
 ```mermaid
 flowchart LR
-    A[Branch or fork] --> B[Edit files]
+    A[Rama o fork] --> B[Editar archivos]
     B --> C[add + commit]
     C --> D[push]
     D --> E[Pull request]
-    E --> F[Review and comments]
+    E --> F[Revisión y comentarios]
     F --> G[Merge]
-    G --> H[pull on main]
-    H -.->|next task| A
+    G --> H[pull en main]
+    H -.->|siguiente tarea| A
 ```
 
-## Branch or fork
+## Rama o fork
 
-There are two ways to get your own copy to work on, depending on whether you can
-write to the repository:
+Hay dos maneras de conseguir tu propia copia para trabajar, según si puedes
+escribir en el repositorio:
 
-- **You have write access** (your own or your team's repository) → create a
-  **branch**. Everyone works in the same repository, on separate branches off
-  `main`. This is the normal case for a team project.
+- **Tienes acceso de escritura** (tu repositorio o el de tu equipo) → crea una
+  **rama**. Todos trabajan en el mismo repositorio, en ramas separadas a partir de
+  `main`. Es el caso normal en un proyecto de equipo.
 
     ```console
     $ git checkout main
-    $ git pull                       # start from the latest main
-    $ git checkout -b add-corner-bot  # your branch for this task
+    $ git pull                       # parte del main más reciente
+    $ git checkout -b add-corner-bot  # tu rama para esta tarea
     ```
 
-- **You do not have write access** (someone else's public repository) → **fork**
-  it. A fork is your personal copy of the whole repository under your account.
-  You branch and commit there, then open a pull request *back to the original*.
+- **No tienes acceso de escritura** (el repositorio público de otra persona) →
+  haz un **fork**. Un fork es tu copia personal de todo el repositorio bajo tu
+  cuenta. Ramificas y confirmas ahí, y luego abres un pull request *de vuelta al
+  original*.
 
-!!! tip "Name your branch for its task"
-    A branch name like `add-corner-bot` or `fix-championship-seeding` tells everyone
-    what it is for at a glance. Avoid `patch-1` or `test`.
+!!! tip "Nombra la rama por su tarea"
+    Un nombre de rama como `add-corner-bot` o `fix-championship-seeding` le dice a
+    todo el mundo para qué es de un vistazo. Evita `patch-1` o `test`.
 
-## Commit best practices
+## Buenas prácticas de commit
 
-The [Git section](../git/organization.md#history) introduced *why* a clean
-history matters; here is *how* to produce one. A good commit is:
+La [sección de Git](../git/organization.md#historial) presentó *por qué* importa
+un historial limpio; aquí está *cómo* producirlo. Un buen commit es:
 
-- **Atomic** — one coherent change per commit. "Add the corner bot" and "Fix
-  typo in README" are two commits, not one.
-- **Well-described** — the message says what the commit does, in the imperative:
-  `Add a depth limit to the minimax search`, not `changes` or `wip`.
-- **Self-contained** — the project should still work after each commit, so any
-  commit can be reviewed or reverted on its own.
+- **Atómico** — un cambio coherente por commit. "Add the corner bot" y "Fix typo
+  in README" son dos commits, no uno.
+- **Bien descrito** — el mensaje dice qué hace el commit, en imperativo:
+  `Add a depth limit to the minimax search`, no `changes` ni `wip`.
+- **Autocontenido** — el proyecto debería seguir funcionando tras cada commit, de
+  modo que cualquier commit pueda revisarse o revertirse por sí solo.
 
-A widely used convention is **Conventional Commits**, which prefixes the message
-with a type:
+Una convención muy usada es **Conventional Commits**, que antepone al mensaje un
+tipo:
 
 ```text
 feat(players): add a nim-sum player
@@ -62,7 +63,8 @@ docs: write the Git section of the guide
 test: cover the build-time budget
 ```
 
-The four most recent commits of this repository follow exactly that shape:
+Los cuatro commits más recientes de este repositorio siguen exactamente esa
+forma:
 
 ```console
 $ git log --oneline -4
@@ -72,93 +74,94 @@ f72f09e Fixes for first project version (#1)
 10be002 feat(players)!: replace the roster with a random/easy/medium/hard ladder
 ```
 
-The `!` marks a breaking change.
+El `!` marca un cambio incompatible.
 
-Adopting a convention is optional, but it makes the history skimmable and can
-even drive automation later. What matters most is **consistency within the
-team**.
+Adoptar una convención es opcional, pero hace el historial fácil de ojear e
+incluso puede impulsar automatización más adelante. Lo que más importa es la
+**consistencia dentro del equipo**.
 
-## Commit signing
+## Firma de commits
 
-Anyone can set `user.name` and `user.email` to anything, so by default a commit's
-author is just unverified text. **Signing** a commit attaches a cryptographic
-signature proving it really came from you; GitHub then shows a green
-**`Verified`** badge next to it.
+Cualquiera puede poner lo que quiera en `user.name` y `user.email`, así que por
+defecto el autor de un commit es solo texto sin verificar. **Firmar** un commit le
+adjunta una firma criptográfica que demuestra que realmente viene de ti; GitHub
+muestra entonces una insignia verde **`Verified`** junto a él.
 
-You sign with a key GitHub knows about — either **GPG** or, more simply, the
-**SSH key** you may already use for pushing:
+Firmas con una clave que GitHub conoce — o bien **GPG** o, más sencillo, la
+**clave SSH** que quizá ya usas para hacer push:
 
 ```console
 $ git config --global gpg.format ssh
 $ git config --global user.signingkey ~/.ssh/id_ed25519.pub
-$ git config --global commit.gpgsign true   # sign every commit automatically
+$ git config --global commit.gpgsign true   # firma cada commit automáticamente
 ```
 
-Then add that key a second time on GitHub, as a **Signing Key**, in
+Luego añade esa clave una segunda vez en GitHub, como **Signing Key**, en
 **Settings → SSH and GPG keys**.
 
-!!! note "Is signing required?"
-    For this project, signing is a good practice, not a hard requirement.
-    Understand what the `Verified` badge means and how to enable it; a team can
-    then decide whether to require it (see
-    [Repository configuration](repository-configuration.md)).
+!!! note "¿Es obligatorio firmar?"
+    Para este proyecto, firmar es una buena práctica, no un requisito estricto.
+    Entiende qué significa la insignia `Verified` y cómo activarla; un equipo puede
+    luego decidir si exigirla (véase
+    [Configuración del repositorio](repository-configuration.md)).
 
 ## Pull request
 
-Once your branch is pushed, open a **pull request** (PR) to propose merging it
-into `main`. On GitHub, pushing a new branch shows a **"Compare & pull request"**
-button; from the command line the push output prints a link that opens the same
-form.
+Una vez subida tu rama, abre un **pull request** (PR) para proponer fusionarla en
+`main`. En GitHub, subir una rama nueva muestra un botón **"Compare & pull
+request"**; desde la línea de comandos, la salida del push imprime un enlace que
+abre el mismo formulario.
 
-A good pull request:
+Un buen pull request:
 
-- has a **clear title** and a **description** of what changed and why;
-- **links the issue** it resolves with `Closes #12`, so the issue closes
-  automatically on merge (see [First steps](first-steps.md#issues-and-pull-requests));
-- is **small enough to review** — a focused PR gets better review than a huge
-  one.
+- tiene un **título claro** y una **descripción** de qué cambió y por qué;
+- **enlaza el issue** que resuelve con `Closes #12`, para que el issue se cierre
+  automáticamente al fusionar (véase [Primeros pasos](first-steps.md#issues-y-pull-requests));
+- es **lo bastante pequeño para revisarlo** — un PR enfocado se revisa mejor que
+  uno enorme.
 
-Opening the PR is what triggers the automated checks
-([GitHub Actions](actions.md)): in this repository that means `ruff`, `mypy` and
-`pytest` on three Python versions, a smoke tournament, and a strict documentation
-build — all against your branch, all reported back on the PR.
+Abrir el PR es lo que dispara las comprobaciones automatizadas
+([GitHub Actions](actions.md)): en este repositorio eso significa `ruff`, `mypy`
+y `pytest` en tres versiones de Python, un torneo de humo y una construcción
+estricta de la documentación — todo sobre tu rama, todo informado en el PR.
 
-Pull requests have a page of their own: see
-[**Pull requests**](pull-requests.md) for templates, review mechanics and merge
-strategies.
+Los pull requests tienen su propia página: consulta
+[**Pull requests**](pull-requests.md) para plantillas, mecánica de revisión y
+estrategias de fusión.
 
-## Review and merge
+## Revisión y merge
 
-A pull request is a **conversation**, not a formality:
+Un pull request es una **conversación**, no una formalidad:
 
-1. A teammate **reviews** the diff, leaving comments on specific lines and either
-   **approving** or **requesting changes**.
-2. You respond by pushing more commits to the same branch — the PR updates
-   automatically — until the reviewer is satisfied and the checks are green.
-3. The PR is **merged** into `main`, usually with the **"Squash and merge"** or
-   **"Merge"** button.
+1. Un compañero **revisa** el diff, dejando comentarios en líneas concretas y o
+   bien **aprobando** o bien **pidiendo cambios**.
+2. Tú respondes subiendo más commits a la misma rama —el PR se actualiza
+   automáticamente— hasta que quien revisa queda satisfecho y las comprobaciones
+   están en verde.
+3. El PR se **fusiona** en `main`, normalmente con el botón **"Squash and merge"**
+   o **"Merge"**.
 
-After the merge, bring the change back to your local `main` and delete the
-finished branch:
+Tras la fusión, trae el cambio de vuelta a tu `main` local y borra la rama
+terminada:
 
 ```console
 $ git checkout main
-$ git pull                       # main now includes the merged work
-$ git branch -d add-corner-bot   # tidy up
+$ git pull                       # main ya incluye el trabajo fusionado
+$ git branch -d add-corner-bot   # a limpiar
 ```
 
-Then the cycle starts again with the next task.
+Y el ciclo vuelve a empezar con la siguiente tarea.
 
-!!! tip "Always pull before branching"
-    The first command of every task is `git checkout main && git pull`. Starting
-    each branch from an up-to-date `main` avoids most merge conflicts before they
-    can happen.
+!!! tip "Haz siempre pull antes de ramificar"
+    El primer comando de cada tarea es `git checkout main && git pull`. Empezar
+    cada rama desde un `main` actualizado evita la mayoría de los conflictos de
+    fusión antes de que puedan ocurrir.
 
-## Where to go next
+## Adónde ir después
 
-- [Pull requests](pull-requests.md) — the anatomy of a PR, its template, and how
-  to review one.
-- [Repository configuration](repository-configuration.md) — how to *require*
-  reviews and passing checks before a merge.
-- [GitHub Actions](actions.md) — the automated checks that run on every pull
-  request.
+- [Pull requests](pull-requests.md) — la anatomía de un PR, su plantilla y cómo
+  revisar uno.
+- [Configuración del repositorio](repository-configuration.md) — cómo *exigir*
+  revisiones y comprobaciones que pasen antes de una fusión.
+- [GitHub Actions](actions.md) — las comprobaciones automatizadas que se ejecutan
+  en cada pull request.

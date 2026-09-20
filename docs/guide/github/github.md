@@ -1,87 +1,87 @@
-# What is GitHub
+# Qué es GitHub
 
-[Git](../git/index.md) records the history of your project on your own machine.
-**GitHub** is a website that hosts Git repositories online and adds a layer of
-collaboration tools on top of them: code review, issue tracking, automation and
-web hosting. It is where most open-source software — and a large share of
-private software — lives today.
+[Git](../git/index.md) registra el historial de tu proyecto en tu propia máquina.
+**GitHub** es un sitio web que aloja repositorios Git en línea y añade encima una
+capa de herramientas de colaboración: revisión de código, seguimiento de issues,
+automatización y alojamiento web. Es donde vive hoy la mayor parte del software
+de código abierto —y una gran parte del software privado—.
 
-This page draws the line between the two, and explains what the platform adds.
+Esta página traza la línea entre ambos y explica qué añade la plataforma.
 
-## Git is not GitHub
+## Git no es GitHub
 
-This is the single most common source of confusion, so it is worth stating
-plainly:
+Esta es la fuente de confusión más común, así que conviene decirlo con claridad:
 
-- **Git** is a *tool*. It runs on your computer, it is not owned by anyone, and
-  it works with no internet connection.
-- **GitHub** is a *service*. It is a company (owned by Microsoft) that hosts Git
-  repositories and builds features around them.
+- **Git** es una *herramienta*. Se ejecuta en tu ordenador, no es propiedad de
+  nadie y funciona sin conexión a internet.
+- **GitHub** es un *servicio*. Es una empresa (propiedad de Microsoft) que aloja
+  repositorios Git y construye funciones a su alrededor.
 
-You can use Git without ever touching GitHub. You cannot use GitHub without Git
-underneath. When you `git push`, GitHub is simply one possible **remote** — a
-shared copy of the repository that your teammates can also reach.
+Puedes usar Git sin tocar nunca GitHub. No puedes usar GitHub sin Git por debajo.
+Cuando haces `git push`, GitHub es simplemente un posible **remoto** — una copia
+compartida del repositorio a la que también pueden llegar tus compañeros.
 
 ```mermaid
 flowchart LR
-    subgraph Your machine
-        L[(Local repository)]
+    subgraph Tu máquina
+        L[(Repositorio local)]
     end
     subgraph GitHub
-        R[(Remote repository)]
+        R[(Repositorio remoto)]
         UI["Pull requests,<br/>issues, Actions,<br/>Pages…"]
         R --- UI
     end
     L <-->|push / pull| R
 ```
 
-!!! tip "The mental shortcut"
-    Git manages *versions*; GitHub manages *collaboration around those
-    versions*. Everything on GitHub — a pull request, a review, a green check —
-    is ultimately a conversation about commits and branches that Git created.
+!!! tip "El atajo mental"
+    Git gestiona *versiones*; GitHub gestiona *la colaboración en torno a esas
+    versiones*. Todo en GitHub —un pull request, una revisión, una marca verde—
+    es en el fondo una conversación sobre commits y ramas que creó Git.
 
-## What GitHub adds
+## Qué añade GitHub
 
-On top of plain Git hosting, GitHub provides the features that make teamwork
-practical. The ones this guide uses are:
+Además del simple alojamiento de Git, GitHub aporta las funciones que hacen
+práctico el trabajo en equipo. Las que usa esta guía son:
 
-- **Hosting.** A central, always-available remote everyone can push to and pull
-  from — no server to run yourself.
-- **Pull requests.** A structured way to propose a change: "here is a branch,
-  please review it before it goes into `main`." This is the heart of the
-  [workflow](workflow.md), and has [a page of its own](pull-requests.md).
-- **Code review.** Line-by-line comments, approvals and change requests on a
-  pull request, so changes are checked by another person before they land.
-- **Issues.** A tracker for bugs, tasks and ideas, each with its own discussion,
-  labels and links to the pull requests that resolve them.
-- **GitHub Actions.** Automation that runs on GitHub's servers when something
-  happens — for example, running your tests on every pull request. Covered in
-  [GitHub Actions](actions.md).
-- **GitHub Pages.** Free static-website hosting served straight from a
-  repository — this is how the playable NIM Arena page is published. Covered in
-  [GitHub Pages](pages.md).
+- **Alojamiento.** Un remoto central, siempre disponible, al que todos pueden
+  hacer push y pull — sin servidor que administrar tú mismo.
+- **Pull requests.** Una forma estructurada de proponer un cambio: "aquí hay una
+  rama, por favor revísala antes de que entre en `main`". Es el corazón del
+  [flujo de trabajo](workflow.md), y tiene [una página propia](pull-requests.md).
+- **Revisión de código.** Comentarios línea por línea, aprobaciones y peticiones
+  de cambios sobre un pull request, para que los cambios los revise otra persona
+  antes de entrar.
+- **Issues.** Un rastreador de errores, tareas e ideas, cada uno con su propia
+  discusión, etiquetas y enlaces a los pull requests que los resuelven.
+- **GitHub Actions.** Automatización que se ejecuta en los servidores de GitHub
+  cuando ocurre algo — por ejemplo, ejecutar tus pruebas en cada pull request. Se
+  cubre en [GitHub Actions](actions.md).
+- **GitHub Pages.** Alojamiento gratuito de sitios web estáticos servido
+  directamente desde un repositorio — así es como se publica la página jugable de
+  NIM Arena. Se cubre en [GitHub Pages](pages.md).
 
-Each of these gets its own page later in the section. This very repository,
-`nim-arena`, uses all of them, and is referenced throughout as a live
-example.
+Cada una de estas tiene su propia página más adelante en la sección. Este mismo
+repositorio, `nim-arena`, las usa todas, y se referencia a lo largo de la
+guía como ejemplo vivo.
 
-## Alternatives
+## Alternativas
 
-GitHub is the most popular platform of its kind, but not the only one. The main
-alternatives are:
+GitHub es la plataforma más popular de su tipo, pero no la única. Las principales
+alternativas son:
 
-- **GitLab** — very similar feature set, available both as a hosted service and
-  as software you can run on your own server.
-- **Bitbucket** — Atlassian's offering, often used alongside Jira.
-- **Self-hosted options** (e.g. **Gitea**, **Forgejo**) — lightweight servers
-  you run yourself.
+- **GitLab** — conjunto de funciones muy similar, disponible tanto como servicio
+  alojado como en software que puedes ejecutar en tu propio servidor.
+- **Bitbucket** — la oferta de Atlassian, a menudo usada junto con Jira.
+- **Opciones autoalojadas** (p. ej. **Gitea**, **Forgejo**) — servidores ligeros
+  que ejecutas tú mismo.
 
-What matters is that they all wrap the **same Git underneath**. The commands
-from the [Git section](../git/index.md) work identically against any of them;
-only the website and its extra features differ. Learn the workflow once, and you
-can move between platforms with little friction.
+Lo que importa es que todas envuelven **el mismo Git por debajo**. Los comandos de
+la [sección de Git](../git/index.md) funcionan igual con cualquiera de ellas;
+solo cambian el sitio web y sus funciones extra. Aprende el flujo de trabajo una
+vez y podrás moverte entre plataformas con poca fricción.
 
-## Where to go next
+## Adónde ir después
 
-- [First steps](first-steps.md) — create an account and your first repository.
-- [Workflow](workflow.md) — the day-to-day branch → pull request → merge cycle.
+- [Primeros pasos](first-steps.md) — crea una cuenta y tu primer repositorio.
+- [Flujo de trabajo](workflow.md) — el ciclo diario rama → pull request → merge.

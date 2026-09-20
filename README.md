@@ -5,7 +5,7 @@
 [![Docs](https://readthedocs.org/projects/nim-arena/badge/?version=latest)](https://nim-arena.readthedocs.io)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-### ▶️ &nbsp;[**Play it now**](https://jparisu.github.io/nim-arena) &nbsp;·&nbsp; 📚 &nbsp;[**Read the docs**](https://nim-arena.readthedocs.io) &nbsp;·&nbsp; 🚀 &nbsp;[**Submit your own AI**](https://nim-arena.readthedocs.io/en/latest/arena/submit-a-player/)
+### ▶️ &nbsp;[**Play it now**](https://jparisu.github.io/nim-arena) &nbsp;·&nbsp; 📚 &nbsp;[**Read the docs**](https://nim-arena.readthedocs.io) &nbsp;·&nbsp; 🚀 &nbsp;[**Submit your own AI**](https://nim-arena.readthedocs.io/en/latest/game/upload-a-bot/submit-a-player/)
 
 ---
 
@@ -20,10 +20,11 @@ game of **NIM**:
 - 🏆 an **automatic tournament** (GitHub Actions) that pits the AIs against each
   other and publishes a ranked [scoreboard](results/leaderboard.json);
 - 📚 **documentation** — [**nim-arena.readthedocs.io**](https://nim-arena.readthedocs.io) —
-  in English and Spanish, in two parts: the reference manual of this repository
-  (including how an outsider [submits a new AI player by Pull
-  Request](https://nim-arena.readthedocs.io/en/latest/arena/submit-a-player/)),
-  and a student guide to Git, GitHub, Python packaging and documentation.
+  in English and Spanish, in two parts: **The game**, the reference manual of
+  this repository (including how an outsider [submits a new AI player by Pull
+  Request](https://nim-arena.readthedocs.io/en/latest/game/upload-a-bot/submit-a-player/)),
+  and the **Guide** to Git, GitHub, Python packaging, web apps and
+  documentation.
 
 The elegance: the game rules and AIs are written **once, in Python**, and that
 exact code runs both in the graded tournament (CI) and live in the browser
@@ -37,7 +38,7 @@ On each turn a player removes one or more sticks from a **single** row.
 **The player who removes the last stick wins**.
 
 Full rules and the winning (nim-sum / XOR) strategy: see the
-[docs](https://nim-arena.readthedocs.io/en/latest/arena/rules/).
+[docs](https://nim-arena.readthedocs.io/en/latest/game/rules/).
 
 ## Install & play locally
 
@@ -61,7 +62,7 @@ Each reference bot is entered **twice** (seeded copies) so it competes against
 itself and runs stay reproducible; a submitted bot is entered once, because the
 work grows with the square of the roster. Choose the format with `--tournament`
 (`simple` · `league` · `championship`); see the
-[tournament docs](https://nim-arena.readthedocs.io/en/latest/arena/tournament/).
+[tournament docs](https://nim-arena.readthedocs.io/en/latest/game/advanced/tournament/).
 
 Play a quick game in Python:
 
@@ -119,7 +120,7 @@ perfect (nim-sum) player** — that slot at the top of the ladder is still open.
    existing name is not merged.
 
 Full guide: [CONTRIBUTING.md](CONTRIBUTING.md) ·
-[docs](https://nim-arena.readthedocs.io/en/latest/arena/submit-a-player/).
+[docs](https://nim-arena.readthedocs.io/en/latest/game/upload-a-bot/submit-a-player/).
 
 ## Repository layout
 
@@ -131,8 +132,8 @@ players/custom/   submitted players, and the manifest admitting them
 results/        leaderboard.json, written by the tournament workflow
 web/            GitHub Pages site (Pyodide + thin JS UI)
 docs/           Read the Docs source (MkDocs + Material), in English and Spanish
-docs/arena/     the reference manual of this repository
-docs/guide/     the student guide: Git, GitHub, Python packaging, documentation
+docs/game/     the reference manual of this repository
+docs/guide/     the Guide: Git, GitHub, Python packaging, web apps, documentation
 tests/          pytest suite
 ```
 

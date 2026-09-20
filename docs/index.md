@@ -1,32 +1,48 @@
 # NIM Arena
 
-**NIM Arena** is an educational project built entirely on GitHub, centered on the
-game of NIM. This site has two parts.
+**NIM Arena** es un proyecto educativo construido enteramente sobre GitHub, en
+torno al juego del NIM.
+
+Este sitio son **dos documentaciones separadas** que comparten dirección. Elige
+la que buscas: se enlazan entre sí, pero nunca se mezclan.
 
 <div class="grid cards" markdown>
 
-- :material-controller:{ .lg .middle } **[NIM Arena](arena/index.md)**
+- :material-controller:{ .lg .middle } **[El juego](game/index.md)**
 
     ---
 
-    The reference manual of this repository: the game rules, the Python library,
-    the [player API](arena/player-api.md) an AI implements, how to
-    [submit one](arena/submit-a-player.md), the
-    [scoreboard](arena/scoreboard.md), the tournament and the web app.
+    *Qué es este proyecto.* El manual de referencia de este repositorio: las
+    [reglas del NIM](game/rules.md), el paquete Python `nimarena` y los dos
+    caminos que lo recorren — [subir un bot nuevo](game/upload-a-bot/index.md) si
+    quieres escribir una IA, [documentación avanzada](game/advanced/index.md) si
+    quieres la maquinaria.
 
-- :material-book-open-page-variant:{ .lg .middle } **[Student guide](guide/index.md)**
+    Lee esto para **jugar o escribir tu propia IA**.
+
+- :material-book-open-page-variant:{ .lg .middle } **[Guía](guide/index.md)**
 
     ---
 
-    The tools a project like this is built with:
-    [Git](guide/git/index.md), [GitHub](guide/github/index.md),
-    [Python packaging](guide/python-library/index.md) and
-    [documentation](guide/documentation/index.md) — with this repository as the
-    worked example throughout.
+    *Cómo construir uno tú.* Las herramientas y técnicas detrás de un proyecto
+    así: [Git](guide/git/index.md), [GitHub](guide/github/index.md),
+    [empaquetado en Python](guide/python-library/index.md), una
+    [aplicación web](guide/web-app/index.md) y
+    [documentación](guide/documentation/index.md) — con este repositorio como
+    ejemplo a lo largo de todo el recorrido.
+
+    Lee esto para **construir y publicar un proyecto propio**. Empieza por la
+    [guía paso a paso](guide/step-by-step.md).
 
 </div>
 
-## Try it
+!!! tip "¿Qué mitad estoy leyendo?"
+    Una página que documenta **el comportamiento de este repositorio** está en
+    *El juego*. Una página que **enseña una técnica** está en la *Guía del
+    estudiante*. Si alguna vez tienes que adivinarlo, la página está en la mitad
+    equivocada — dilo en una issue.
+
+## Pruébalo
 
 ```bash
 git clone https://github.com/jparisu/nim-arena
@@ -34,27 +50,25 @@ cd nim-arena
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 
-pytest                                            # run the tests
-nim-tournament --out results/leaderboard.json     # run a tournament
+pytest                                            # ejecuta las pruebas
+nim-tournament --out results/leaderboard.json     # ejecuta un torneo
 ```
 
-Or play against the AIs in your browser, no install at all:
+O juega contra las IA en tu navegador, sin instalar nada:
 [**jparisu.github.io/nim-arena**](https://jparisu.github.io/nim-arena).
 
-## The one big idea
+## La idea central
 
-> The game rules and every AI are written **once, in Python**. That exact same
-> code runs both the graded tournament (in CI) and live play in the browser (via
-> Pyodide). **One source of truth.** The rules are never re-implemented in
-> JavaScript.
+> Las reglas del juego y todas las IA se escriben **una sola vez, en Python**. Ese
+> mismo código ejecuta tanto el torneo evaluado (en CI) como el juego en vivo en
+> el navegador (vía Pyodide). **Una única fuente de verdad.** Las reglas nunca se
+> reimplementan en JavaScript.
 
-## Building this site locally
+## Sobre este sitio
 
-```bash
-pip install -e ".[docs]"
-mkdocs serve
-```
+Está escrito en inglés y español desde un único árbol de fuentes; usa el selector
+de idioma de la cabecera. Cada push a `main` lo reconstruye en Read the Docs.
 
-The site is then available at <http://127.0.0.1:8000>. It is written in English
-and Spanish from a single source tree; use the language switcher in the header.
-Every push to `main` rebuilds it on Read the Docs.
+Cómo está construido — MkDocs, la configuración de `mkdocs.yml` y el despliegue
+en Read the Docs — forma parte del curso:
+[Guía → Documentación](guide/documentation/index.md).

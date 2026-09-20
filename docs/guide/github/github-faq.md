@@ -1,88 +1,98 @@
-# FAQ
+# Preguntas frecuentes
 
-Common questions about GitHub and the collaborative workflow. Each answer links
-to the page where the topic is covered in full.
+Dudas habituales sobre GitHub y el flujo de trabajo colaborativo. Cada respuesta
+enlaza a la página donde el tema se trata por completo.
 
-??? question "What is the difference between Git and GitHub?"
-    **Git** is the version-control tool that runs on your computer; **GitHub** is
-    a website that hosts Git repositories and adds collaboration features (pull
-    requests, issues, Actions, Pages). You can use Git with no GitHub; GitHub
-    always uses Git underneath. See [What is GitHub](github.md#git-is-not-github).
+??? question "¿Cuál es la diferencia entre Git y GitHub?"
+    **Git** es la herramienta de control de versiones que corre en tu ordenador;
+    **GitHub** es un sitio web que aloja repositorios Git y añade funciones de
+    colaboración (pull requests, issues, Actions, Pages). Puedes usar Git sin
+    GitHub; GitHub siempre usa Git por debajo. Véase
+    [Qué es GitHub](github.md#git-no-es-github).
 
-??? question "Do I have to pay to use GitHub?"
-    No. A free account covers everything in this guide: public *and* private
-    repositories, unlimited collaborators, GitHub Actions and GitHub Pages. Paid
-    plans add higher limits and organization features you will not need here.
+??? question "¿Hay que pagar para usar GitHub?"
+    No. Una cuenta gratuita cubre todo lo de esta guía: repositorios públicos *y*
+    privados, colaboradores ilimitados, GitHub Actions y GitHub Pages. Los planes
+    de pago añaden límites mayores y funciones de organización que aquí no
+    necesitarás.
 
-??? question "When do I create a branch and when do I fork?"
-    If you have write access to the repository (your own or your team's), create
-    a **branch**. If you do not (someone else's public repository), **fork** it —
-    make your own copy — then open a pull request back to the original. See
-    [Pull requests § Branch PR or fork PR](pull-requests.md#branch-pr-or-fork-pr).
+??? question "¿Cuándo creo una rama y cuándo un fork?"
+    Si tienes permiso de escritura en el repositorio (el tuyo o el de tu equipo),
+    crea una **rama**. Si no lo tienes (el repositorio público de otra persona),
+    haz un **fork** —tu propia copia— y luego abre un pull request de vuelta al
+    original. Véase
+    [Pull requests § PR de rama o PR de fork](pull-requests.md#pr-de-rama-o-pr-de-fork).
 
-??? question "What is a pull request, exactly?"
-    A proposal to merge one branch into another, with a diff, a description and a
-    discussion attached. It is where review and the automated checks happen
-    before code reaches `main`. See [Pull requests](pull-requests.md).
+??? question "¿Qué es exactamente un pull request?"
+    Una propuesta de fusionar una rama en otra, con un diff, una descripción y una
+    discusión adjuntas. Es donde ocurren la revisión y las comprobaciones
+    automáticas antes de que el código llegue a `main`. Véase
+    [Pull requests](pull-requests.md).
 
-??? question "What is the difference between an issue and a pull request?"
-    An **issue** describes something to do or fix — it is a conversation, no code.
-    A **pull request** proposes an actual change and carries a diff. A PR can say
-    `Closes #12` to auto-close the issue it resolves when merged. See
-    [First steps § Issues and pull requests](first-steps.md#issues-and-pull-requests).
+??? question "¿Cuál es la diferencia entre un issue y un pull request?"
+    Un **issue** describe algo que hacer o arreglar: es una conversación, sin
+    código. Un **pull request** propone un cambio real y lleva un diff. Un PR
+    puede decir `Closes #12` para cerrar automáticamente el issue que resuelve al
+    fusionarse. Véase
+    [Primeros pasos § Issues y pull requests](first-steps.md#issues-y-pull-requests).
 
-??? question "Git asks for a password when I push, but my GitHub password is rejected. Why?"
-    GitHub stopped accepting account passwords for Git operations. Push over
-    HTTPS with a **Personal Access Token** in place of the password, or set up an
-    **SSH key**. See [First steps § Create an account](first-steps.md#create-an-account).
+??? question "Git me pide una contraseña al hacer push y la de GitHub no funciona. ¿Por qué?"
+    GitHub dejó de aceptar contraseñas de cuenta para operaciones de Git. Haz push
+    por HTTPS usando un **Personal Access Token** en lugar de la contraseña, o
+    configura una **clave SSH**. Véase
+    [Primeros pasos § Crear una cuenta](first-steps.md#crear-una-cuenta).
 
-??? question "What does the green `Verified` badge on a commit mean?"
-    That the commit was **cryptographically signed** with a key GitHub associates
-    with the author, so its authorship can be trusted. Configure it with GPG or
-    SSH signing. See [Workflow § Commit signing](workflow.md#commit-signing).
+??? question "¿Qué significa la insignia verde `Verified` en un commit?"
+    Que el commit fue **firmado criptográficamente** con una clave que GitHub
+    asocia a su autor, de modo que su autoría es fiable. Se configura con firma
+    GPG o SSH. Véase
+    [Flujo de trabajo § Firma de commits](workflow.md#firma-de-commits).
 
-??? question "What are GitHub Actions?"
-    Automation that runs on GitHub's servers when an event happens (a push, a pull
-    request, a schedule). This repository uses them to lint, type-check and test
-    on three Python versions, to build the documentation, to run the weekly
-    tournament and to deploy the web app. See [GitHub Actions](actions.md).
+??? question "¿Qué son las GitHub Actions?"
+    Automatización que se ejecuta en los servidores de GitHub cuando ocurre un
+    evento (un push, un pull request, una programación horaria). Este repositorio
+    las usa para pasar el linter, comprobar tipos y ejecutar pruebas en tres
+    versiones de Python, construir la documentación, jugar el torneo semanal y
+    desplegar la web. Véase [GitHub Actions](actions.md).
 
-??? question "A check on my pull request is red. What do I do?"
-    Open the failing check in the **Actions** tab and read its log — it names
-    exactly what failed. Every check is a command you can run locally
-    (`ruff check .`, `mypy`, `pytest -q`, `mkdocs build --strict`); fix the
-    problem, push again, and the check re-runs. See
-    [GitHub Actions § Reading a failed run](actions.md#reading-a-failed-run).
+??? question "Una comprobación de mi pull request está en rojo. ¿Qué hago?"
+    Abre la comprobación fallida en la pestaña **Actions** y lee su registro:
+    indica exactamente qué falló. Cada comprobación es un comando que puedes
+    ejecutar en local (`ruff check .`, `mypy`, `pytest -q`,
+    `mkdocs build --strict`); arregla el problema, vuelve a subir y la
+    comprobación se repite. Véase
+    [GitHub Actions § Leer una ejecución fallida](actions.md#leer-una-ejecucion-fallida).
 
-??? question "Why can't I push directly to `main`?"
-    Because the repository has a **ruleset** protecting it: changes must go
-    through a reviewed pull request. This is deliberate — it keeps `main` from
-    breaking. See [Repository configuration](repository-configuration.md).
+??? question "¿Por qué no puedo hacer push directamente a `main`?"
+    Porque el repositorio tiene un **ruleset** que lo protege: los cambios tienen
+    que pasar por un pull request revisado. Es deliberado — evita que `main` se
+    rompa. Véase
+    [Configuración del repositorio](repository-configuration.md).
 
-??? question "My check says 'Expected' and never runs, so I cannot merge. Why?"
-    A workflow marked as a **required** status check but filtered by `paths:` will
-    not run on a pull request that touches none of those paths — and a required
-    check that never arrives blocks the merge forever. Remove the filter from the
-    `pull_request` trigger. See
-    [GitHub Actions § Building the documentation](actions.md#building-the-documentation).
+??? question "Mi comprobación dice 'Expected' y nunca se ejecuta, así que no puedo fusionar."
+    Un workflow marcado como comprobación **obligatoria** pero filtrado por
+    `paths:` no se ejecuta en un pull request que no toque esas rutas — y una
+    comprobación obligatoria que nunca llega bloquea la fusión para siempre.
+    Quita el filtro del disparador `pull_request`. Véase
+    [GitHub Actions § Construir la documentación](actions.md#construir-la-documentacion).
 
-??? question "How is the playable page published?"
-    A workflow bundles the Python into `web/py.zip`, uploads the whole `web/`
-    folder as a Pages artifact and deploys it, so **GitHub Pages** serves it at
-    `https://jparisu.github.io/nim-arena/`. See [GitHub Pages](pages.md).
+??? question "¿Cómo se publica la página jugable?"
+    Un workflow empaqueta el Python en `web/py.zip`, sube toda la carpeta `web/`
+    como artefacto de Pages y la despliega, de modo que **GitHub Pages** la sirve
+    en `https://jparisu.github.io/nim-arena/`. Véase [GitHub Pages](pages.md).
 
-??? question "And how is this documentation site published?"
-    Not by Pages — by **Read the Docs**, which builds the MkDocs site from
-    `.readthedocs.yaml` on every push. See
+??? question "¿Y cómo se publica este sitio de documentación?"
+    No con Pages, sino con **Read the Docs**, que construye el sitio MkDocs a
+    partir de `.readthedocs.yaml` en cada push. Véase
     [Read the Docs](../documentation/readthedocs.md).
 
-??? question "I opened a pull request but nothing was deployed. Why?"
-    A pull request **from a fork** runs with a read-only token and no secrets, so
-    it cannot publish anything. The tests and the documentation build still run;
-    there is just no deployment. See
-    [GitHub Pages § Pull requests cannot deploy](pages.md#pull-requests-cannot-deploy).
+??? question "Abrí un pull request pero no se desplegó nada. ¿Por qué?"
+    Un pull request **desde un fork** se ejecuta con un token de solo lectura y
+    sin secretos, así que no puede publicar nada. Las pruebas y la construcción de
+    la documentación sí se ejecutan; simplemente no hay despliegue. Véase
+    [GitHub Pages § Los pull requests no pueden desplegar](pages.md#los-pull-requests-no-pueden-desplegar).
 
-??? question "The weekly tournament stopped running by itself. What happened?"
-    GitHub disables `schedule:` triggers in a repository with no activity for 60
-    days. Re-enable the workflow from the Actions tab. See
-    [Repository configuration](repository-configuration.md).
+??? question "El torneo semanal ha dejado de ejecutarse solo. ¿Qué ha pasado?"
+    GitHub desactiva los disparadores `schedule:` en un repositorio sin actividad
+    durante 60 días. Reactiva el workflow desde la pestaña Actions. Véase
+    [Configuración del repositorio](repository-configuration.md).

@@ -1,46 +1,66 @@
-# Student guide
+# Guía
 
-This guide covers the tools a project like this one is built and shipped with:
-version control, the collaborative workflow on GitHub, Python packaging and
-testing, and the documentation site you are reading right now.
+Esta guía cubre las herramientas con las que se construye y se publica un
+proyecto como este: el control de versiones, el flujo de trabajo colaborativo en
+GitHub, el empaquetado y las pruebas en Python, la aplicación web que la gente
+abre de verdad, y el sitio de documentación que estás leyendo ahora mismo.
 
-!!! info "Guide, not reference"
-    These pages teach the *how*. The [NIM Arena](../arena/index.md) section is
-    the other half of this site: the reference manual of this repository — its
-    rules, its [player API](../arena/player-api.md) and its
-    [scoreboard](../arena/scoreboard.md).
+!!! info "Guía, no referencia"
+    Estas páginas enseñan el *cómo*, y nada en ellas es específico del NIM: los
+    mismos pasos valen para el siguiente proyecto que construyas.
 
-## The four sections
+    La otra mitad de este sitio es el manual de referencia de este repositorio —
+    sus [reglas](../game/rules.md), su [API de jugador](../game/upload-a-bot/player-api.md) y
+    su [marcador](../game/advanced/scoreboard.md): [El juego](../game/index.md).
+
+## Empieza aquí
 
 <div class="grid cards" markdown>
 
-- [**1. Git**](git/index.md) — version control: how it works, the commands you
-  need, and how to undo things.
-- [**2. GitHub**](github/index.md) — the collaborative workflow: pull requests,
-  reviews, Actions, repository protection, Pages.
-- [**3. Python library**](python-library/index.md) — packaging, layout, API
-  design, installation and testing.
-- [**4. Documentation**](documentation/index.md) — writing docs that live in the
-  repository, building them with MkDocs, publishing them on Read the Docs.
+- :material-format-list-checks:{ .lg .middle } **[Guía paso a paso](step-by-step.md)**
+
+    ---
+
+    Todo el proyecto como una única lista ordenada de tareas: qué hacer, qué
+    deberías obtener y cómo comprobar que funciona. Cada tarea enlaza con la
+    sección que la explica. Si no sabes por dónde empezar, empieza aquí.
 
 </div>
 
-The sections are mostly independent. Read them in order if you are starting from
-scratch; jump straight to [Python library](python-library/index.md) or
-[Documentation](documentation/index.md) if you already know Git and GitHub.
+## Las cinco secciones
 
-## This repository is the worked example
+<div class="grid cards" markdown>
 
-Wherever the guide shows a file, a workflow or a commit, it is a real one from
-this repository — not an invented snippet. The
-[NIM Arena](../arena/index.md) section documents the result.
+- [**1. Git**](git/index.md) — control de versiones: cómo funciona, los comandos
+  que necesitas y cómo deshacer cambios.
+- [**2. GitHub**](github/index.md) — el flujo colaborativo: pull requests,
+  revisiones, Actions, protección del repositorio, Pages.
+- [**3. Librería Python**](python-library/index.md) — empaquetado, estructura,
+  diseño de la API, instalación y pruebas.
+- [**4. Aplicación web**](web-app/index.md) — ponerle cara al proyecto:
+  [Streamlit](web-app/streamlit/index.md) o una
+  [página estática](web-app/static-web/index.md), y dónde se aloja cada una.
+- [**5. Documentación**](documentation/index.md) — escribir documentación que vive
+  en el repositorio, construirla con MkDocs y publicarla en Read the Docs.
 
-| The guide explains | You can see it running in |
+</div>
+
+Las secciones son en gran medida independientes. Léelas en orden si empiezas de
+cero; salta directamente a [Librería Python](python-library/index.md) o a
+[Documentación](documentation/index.md) si ya conoces Git y GitHub.
+
+## Este repositorio es el ejemplo
+
+Cada vez que la guía muestra un archivo, un workflow o un commit, es uno real de
+este repositorio, no un fragmento inventado. La sección
+[El juego](../game/index.md) documenta el resultado.
+
+| La guía explica | Puedes verlo funcionando en |
 | --- | --- |
-| [`pyproject.toml` and the `src/` layout](python-library/organization.md) | [`pyproject.toml`](https://github.com/jparisu/nim-arena/blob/main/pyproject.toml) |
-| [Designing a public API](python-library/api.md) | [NIM Arena → Player API](../arena/player-api.md) |
-| [Writing tests](python-library/testing.md) | [`tests/test_players.py`](https://github.com/jparisu/nim-arena/blob/main/tests/test_players.py) |
-| [Pull requests and their templates](github/pull-requests.md) | [`.github/PULL_REQUEST_TEMPLATE/`](https://github.com/jparisu/nim-arena/tree/main/.github/PULL_REQUEST_TEMPLATE) |
+| [`pyproject.toml` y la estructura `src/`](python-library/organization.md) | [`pyproject.toml`](https://github.com/jparisu/nim-arena/blob/main/pyproject.toml) |
+| [Diseñar una API pública](python-library/api.md) | [El juego → API de jugador](../game/upload-a-bot/player-api.md) |
+| [Escribir pruebas](python-library/testing.md) | [`tests/test_players.py`](https://github.com/jparisu/nim-arena/blob/main/tests/test_players.py) |
+| [Pull requests y sus plantillas](github/pull-requests.md) | [`.github/PULL_REQUEST_TEMPLATE/`](https://github.com/jparisu/nim-arena/tree/main/.github/PULL_REQUEST_TEMPLATE) |
 | [GitHub Actions](github/actions.md) | [`.github/workflows/`](https://github.com/jparisu/nim-arena/tree/main/.github/workflows) |
-| [GitHub Pages](github/pages.md) | [the live game](https://jparisu.github.io/nim-arena) |
-| [MkDocs](documentation/mkdocs.md) and [Read the Docs](documentation/readthedocs.md) | this site |
+| [GitHub Pages](github/pages.md) y una [web estática](web-app/static-web/index.md) | [el juego en vivo](https://jparisu.github.io/nim-arena) |
+| [MkDocs](documentation/mkdocs.md) y [Read the Docs](documentation/readthedocs.md) | este sitio |

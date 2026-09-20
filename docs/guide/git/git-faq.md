@@ -1,80 +1,82 @@
-# FAQ
+# Preguntas frecuentes
 
-Common questions and doubts about Git. Each answer links to the page where the
-topic is covered in full.
+Preguntas y dudas habituales sobre Git. Cada respuesta enlaza a la página donde el
+tema se trata en detalle.
 
-??? question "What is the difference between Git and GitHub?"
-    **Git** is the version control tool that runs on your computer and records
-    the history of your files. **GitHub** is a website that hosts Git
-    repositories online so people can share and collaborate on them. You can use
-    Git without GitHub, but GitHub always uses Git underneath. See
-    [What is Git](git.md) and the [GitHub section](../github/index.md).
+??? question "¿Cuál es la diferencia entre Git y GitHub?"
+    **Git** es la herramienta de control de versiones que se ejecuta en tu
+    ordenador y registra el historial de tus archivos. **GitHub** es un sitio web
+    que aloja repositorios Git en línea para que la gente los comparta y colabore.
+    Puedes usar Git sin GitHub, pero GitHub siempre usa Git por debajo.
+    Véase [Qué es Git](git.md) y la [sección de GitHub](../github/index.md).
 
-??? question "Do I need an internet connection to use Git?"
-    No. Git is [distributed](git.md#a-bit-of-history): your clone holds the full
-    history, so you can commit, branch, inspect the log and go back in time
-    completely offline. You only need a connection to exchange commits with a remote
-    (`clone`, `fetch`, `push`, `pull`).
+??? question "¿Necesito conexión a internet para usar Git?"
+    No. Git es [distribuido](git.md#un-poco-de-historia): tu clon contiene todo el
+    historial, así que puedes hacer commits, crear ramas, inspeccionar el log y
+    viajar al pasado completamente sin conexión. Solo necesitas conexión para
+    intercambiar commits con un remoto (`clone`, `fetch`, `push`, `pull`).
 
-??? question "What is the difference between `add` and `commit`?"
-    `git add` moves changes into the **staging area** — a draft of your next
-    commit. `git commit` records everything staged as a permanent point in
-    history. Staging first lets you choose exactly what goes into each commit.
-    See [The three areas](git.md#the-three-areas).
+??? question "¿Cuál es la diferencia entre `add` y `commit`?"
+    `git add` mueve cambios al **área de preparación** — un borrador de tu próximo
+    commit. `git commit` registra todo lo preparado como un punto permanente en el
+    historial. Preparar primero te permite elegir exactamente qué entra en cada
+    commit. Véase [Las tres áreas](git.md#las-tres-areas).
 
-??? question "I ran `git commit` and an editor full of text opened. What happened?"
-    You committed without a message (`-m`), so Git opened your default editor to
-    write one. Type a short message on the first line, save and close the editor.
-    If it is **Vim** and you are stuck, press `Esc`, then type `:wq` and press
-    Enter to save and quit. To avoid this, always commit with
-    `git commit -m "your message"`.
+??? question "Ejecuté `git commit` y se abrió un editor lleno de texto. ¿Qué pasó?"
+    Hiciste un commit sin mensaje (`-m`), así que Git abrió tu editor por defecto
+    para escribir uno. Escribe un mensaje corto en la primera línea, guarda y
+    cierra el editor. Si es **Vim** y te has quedado atascado, pulsa `Esc`, luego
+    escribe `:wq` y pulsa Enter para guardar y salir. Para evitar esto, haz
+    siempre el commit con `git commit -m "tu mensaje"`.
 
-??? question "How do I write a good commit message?"
-    Keep it short, in the imperative mood, and describe *what* the commit does:
-    `feat(players): add the greedy bot`, not `stuff` or `fixed things`. One coherent change per
-    commit. Message conventions are covered as a workflow topic in
-    [GitHub § Workflow](../github/workflow.md).
+??? question "¿Cómo escribo un buen mensaje de commit?"
+    Que sea corto, en modo imperativo, y que describa *qué* hace el commit:
+    `feat(players): add the greedy bot`, no `stuff` ni `fixed things`. Un cambio coherente por
+    commit. Las convenciones de mensajes se tratan como tema de flujo de trabajo
+    en [GitHub § Flujo de trabajo](../github/workflow.md).
 
-??? question "I made a mistake in my last commit. Can I undo it?"
-    Yes, if you have **not pushed** it yet. Use `git reset --soft HEAD~1` to undo
-    the commit while keeping its changes staged, fix things, and commit again.
-    If you already pushed and shared it, use `git revert` instead. See
-    [Undoing changes](undoing-changes.md).
+??? question "Me equivoqué en mi último commit. ¿Puedo deshacerlo?"
+    Sí, si **aún no lo has subido** (push). Usa `git reset --soft HEAD~1` para
+    deshacer el commit manteniendo sus cambios preparados, arréglalo y vuelve a
+    confirmar. Si ya lo subiste y compartiste, usa `git revert` en su lugar. Véase
+    [Deshacer cambios](undoing-changes.md).
 
-??? question "I changed a file and want the original back. How?"
-    If the change is not committed, `git restore <file>` discards it and restores
-    the last committed version. Careful: uncommitted changes discarded this way
-    are gone for good. See [Undoing changes](undoing-changes.md#git-restore-discard-changes-in-the-working-directory).
+??? question "Cambié un archivo y quiero recuperar el original. ¿Cómo?"
+    Si el cambio no está confirmado, `git restore <archivo>` lo descarta y
+    restaura la última versión confirmada. Cuidado: los cambios sin confirmar que
+    se descartan así se pierden para siempre. Véase
+    [Deshacer cambios](undoing-changes.md#git-restore-descartar-cambios-en-el-directorio-de-trabajo).
 
-??? question "What is a merge conflict and did I break something?"
-    Nothing is broken. A conflict happens when two branches changed the **same
-    lines** of a file and Git cannot decide which version to keep, so it asks
-    you. Edit the file, remove the `<<<<<<<`, `=======`, `>>>>>>>` markers,
-    leave the text you want, then `git add` and commit. The
-    [Example](example.md#5-merge-the-branch-back-and-resolve-a-conflict) walks
-    through one step by step.
+??? question "¿Qué es un conflicto de fusión y he roto algo?"
+    No has roto nada. Un conflicto ocurre cuando dos ramas cambiaron las **mismas
+    líneas** de un archivo y Git no puede decidir qué versión conservar, así que
+    te pregunta. Edita el archivo, quita los marcadores `<<<<<<<`, `=======`,
+    `>>>>>>>`, deja el texto que quieras, y luego haz `git add` y commit. El
+    [Ejemplo](example.md#5-fusionar-la-rama-de-vuelta-y-resolver-un-conflicto) lo
+    muestra paso a paso.
 
-??? question "What is the difference between `git pull` and `git fetch`?"
-    `git fetch` downloads new commits from the remote but does **not** change
-    your working files. `git pull` does a fetch **and** merges those commits into
-    your current branch in one step. See [Commands § git pull](commands.md#git-pull).
+??? question "¿Cuál es la diferencia entre `git pull` y `git fetch`?"
+    `git fetch` descarga nuevos commits del remoto pero **no** cambia tus archivos
+    de trabajo. `git pull` hace un fetch **y** fusiona esos commits en tu rama
+    actual en un solo paso. Véase [Comandos § git pull](commands.md#git-pull).
 
-??? question "Should I commit my virtual environment or `__pycache__`?"
-    No. Those are generated locally and do not belong in the history. List them
-    in a [`.gitignore`](commands.md#the-gitignore-file) file so Git ignores them.
-    This project's `.gitignore` is a good template.
+??? question "¿Debo confirmar mi entorno virtual o `__pycache__`?"
+    No. Eso se genera en local y no pertenece al historial. Lístalos en un archivo
+    [`.gitignore`](commands.md#el-archivo-gitignore) para que Git los ignore. El
+    `.gitignore` de este proyecto es una buena plantilla.
 
-??? question "I accidentally committed a file that should be ignored. Now what?"
-    Add it to `.gitignore`, then stop tracking it with
-    `git rm --cached <file>` and commit. The file stays on your disk but leaves
-    the repository. See [Commands § .gitignore](commands.md#the-gitignore-file).
+??? question "Confirmé por accidente un archivo que debería estar ignorado. ¿Y ahora?"
+    Añádelo al `.gitignore`, luego deja de rastrearlo con `git rm --cached
+    <archivo>` y haz commit. El archivo se queda en tu disco pero sale del
+    repositorio. Véase [Comandos § .gitignore](commands.md#el-archivo-gitignore).
 
-??? question "What does `HEAD` mean?"
-    `HEAD` is a pointer to *where you currently are* in the history — normally
-    the latest commit of the branch you are on. Notations like `HEAD~1` mean
-    "one commit before `HEAD`". See [Branches](organization.md#branches).
+??? question "¿Qué significa `HEAD`?"
+    `HEAD` es un puntero a *dónde estás ahora mismo* en el historial — normalmente
+    el último commit de la rama en la que estás. Notaciones como `HEAD~1`
+    significan "un commit antes de `HEAD`". Véase [Ramas](organization.md#ramas).
 
-??? question "Is it safe to delete a branch after merging it?"
-    Yes. Once a branch is merged, its commits live on in the target branch, so
-    `git branch -d <branch>` only removes the pointer, not the history. See the
-    [Example](example.md#5-merge-the-branch-back-and-resolve-a-conflict).
+??? question "¿Es seguro borrar una rama después de fusionarla?"
+    Sí. Una vez fusionada una rama, sus commits siguen viviendo en la rama de
+    destino, así que `git branch -d <rama>` solo elimina el puntero, no el
+    historial. Véase el
+    [Ejemplo](example.md#5-fusionar-la-rama-de-vuelta-y-resolver-un-conflicto).

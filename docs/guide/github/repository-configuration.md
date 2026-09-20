@@ -1,118 +1,125 @@
-# Repository configuration
+# Configuración del repositorio
 
-The [workflow](workflow.md) and the [Actions](actions.md) only *help* if the team
-actually follows them. This page is about making them **enforced**: configuring
-the repository so that `main` cannot be broken by accident, and every change goes
-through a reviewed, tested pull request.
+El [flujo de trabajo](workflow.md) y las [Actions](actions.md) solo *ayudan* si el
+equipo de verdad los sigue. Esta página trata de hacer que se **impongan**:
+configurar el repositorio para que `main` no pueda romperse por accidente, y para
+que cada cambio pase por un pull request revisado y probado.
 
-!!! info "Order matters"
-    Protecting `main` only makes sense once branches, pull requests and CI checks
-    exist — which is why this page comes after [Workflow](workflow.md) and
-    [GitHub Actions](actions.md). Set the rules up once those are in place.
+!!! info "El orden importa"
+    Proteger `main` solo tiene sentido una vez que existen ramas, pull requests y
+    comprobaciones de CI — por eso esta página viene después de
+    [Flujo de trabajo](workflow.md) y [GitHub Actions](actions.md). Configura las
+    reglas cuando esas piezas ya estén en su sitio.
 
-## Branch protection and rulesets
+## Protección de ramas y rulesets
 
-By default, anyone with write access can push straight to `main`. A **ruleset**
-(the modern replacement for classic *branch protection rules*) locks that down.
-In **Settings → Rules → Rulesets → New branch ruleset**, target the `main` branch
-and enable, at minimum:
+Por defecto, cualquiera con acceso de escritura puede hacer push directamente a
+`main`. Un **ruleset** (el reemplazo moderno de las clásicas *branch protection
+rules*) lo bloquea. En **Settings → Rules → Rulesets → New branch ruleset**,
+apunta a la rama `main` y activa, como mínimo:
 
-- **Restrict deletions** and **Block force pushes** — `main`'s history cannot be
-  deleted or rewritten.
-- **Require a pull request before merging** — no direct pushes to `main`; every
-  change arrives as a pull request.
+- **Restrict deletions** y **Block force pushes** — el historial de `main` no
+  puede borrarse ni reescribirse.
+- **Require a pull request before merging** — nada de pushes directos a `main`;
+  cada cambio llega como un pull request.
 
-With just these two, `main` is safe from accidental direct commits, and the
-[workflow](workflow.md) becomes the *only* way in.
+Con solo estas dos, `main` queda a salvo de commits directos accidentales, y el
+[flujo de trabajo](workflow.md) se convierte en la *única* vía de entrada.
 
 ```mermaid
 flowchart LR
-    D[Direct push to main] -->|blocked| X((✗))
-    B[Branch] --> PR[Pull request]
-    PR -->|review + checks pass| M[main]
+    D[Push directo a main] -->|bloqueado| X((✗))
+    B[Rama] --> PR[Pull request]
+    PR -->|revisión + comprobaciones OK| M[main]
 ```
 
-## Required reviews
+## Revisiones obligatorias
 
-Inside the "Require a pull request" rule, set **Require approvals** to at least
-**1**. Now a pull request cannot be merged until a teammate has reviewed and
-approved it — the four-eyes principle, enforced.
+Dentro de la regla "Require a pull request", pon **Require approvals** en al menos
+**1**. Ahora un pull request no puede fusionarse hasta que un compañero lo haya
+revisado y aprobado — el principio de los cuatro ojos, impuesto.
 
-Two related options are worth knowing:
+Vale la pena conocer dos opciones relacionadas:
 
-- **Dismiss stale approvals when new commits are pushed.** If the author pushes
-  more changes after an approval, the approval is cleared and the reviewer must
-  look again — so nobody merges code that was never actually reviewed.
-- **Require review from Code Owners.** If you add a `CODEOWNERS` file, changes to
-  certain paths must be approved by their designated owner.
-- **Require signed commits.** Only commits carrying a verified signature may
-  land; see [Workflow § Commit signing](workflow.md#commit-signing).
+- **Dismiss stale approvals when new commits are pushed.** Si el autor sube más
+  cambios después de una aprobación, la aprobación se anula y quien revisa debe
+  mirar de nuevo — así nadie fusiona código que en realidad nunca se revisó.
+- **Require review from Code Owners.** Si añades un archivo `CODEOWNERS`, los
+  cambios en ciertas rutas deben aprobarlos sus propietarios designados.
+- **Require signed commits.** Solo entran los commits con una firma verificada;
+  véase [Flujo de trabajo § Firma de commits](workflow.md#firma-de-commits).
 
-## Required status checks
+## Comprobaciones de estado obligatorias
 
-This is where the [Actions](actions.md) come in. Enable **Require status checks
-to pass before merging**, then select the checks that must be green — for this
-repository, the **Tests** job (once per Python version in the matrix) and the
-**Docs** build.
+Aquí es donde entran las [Actions](actions.md). Activa **Require status checks to
+pass before merging**, y luego selecciona las comprobaciones que deben estar en
+verde — para este repositorio, el job **Tests** (una vez por cada versión de
+Python de la matriz) y la construcción **Docs**.
 
-!!! warning "A required check must be able to run on every PR"
-    If you mark a path-filtered workflow as required, any pull request that does
-    not touch those paths leaves the check in the "Expected" state forever, and
-    the merge button never unlocks. This is why
-    [`docs.yml`](actions.md#building-the-documentation) has no `paths` filter on
-    its `pull_request` trigger.
+!!! warning "Una comprobación obligatoria debe poder ejecutarse en todos los PR"
+    Si marcas como **obligatorio** un workflow filtrado por `paths:`, cualquier
+    pull request que no toque esas rutas deja la comprobación en estado
+    "Expected" para siempre, y el botón de fusión nunca se desbloquea. Por eso
+    [`docs.yml`](actions.md#construir-la-documentacion) no tiene filtro `paths`
+    en su disparador `pull_request`.
 
-A pull request whose checks are red can then no longer be merged, no matter who
-approves it. Automated quality gates and human review reinforce each other:
+Un pull request cuyas comprobaciones están en rojo ya no puede fusionarse, sin
+importar quién lo apruebe. Las puertas de calidad automatizadas y la revisión
+humana se refuerzan mutuamente:
 
-- the machine catches what humans miss (a failing test, a typo, a broken link);
-- the human catches what machines miss (bad design, unclear code, wrong
-  approach).
+- la máquina detecta lo que se le escapa a los humanos (una prueba que falla, una
+  errata, un enlace roto);
+- el humano detecta lo que se le escapa a las máquinas (un mal diseño, código poco
+  claro, un enfoque equivocado).
 
-!!! tip "Also require the branch to be up to date"
-    The option **Require branches to be up to date before merging** forces a pull
-    request to include the latest `main` before it can merge, so the checks ran
-    against what will actually land — not against a stale base.
+!!! tip "Exige también que la rama esté al día"
+    La opción **Require branches to be up to date before merging** obliga a que un
+    pull request incluya el `main` más reciente antes de poder fusionarse, de modo
+    que las comprobaciones se ejecutaron contra lo que realmente va a entrar — no
+    contra una base desactualizada.
 
-## Other useful settings
+## Otros ajustes útiles
 
-A few more settings keep the repository tidy, mostly under **Settings → General**
-and the ruleset:
+Unos cuantos ajustes más mantienen el repositorio ordenado, en su mayoría bajo
+**Settings → General** y el ruleset:
 
-- **Automatically delete head branches.** After a pull request is merged, its
-  branch is removed — no manual cleanup, no clutter of dead branches.
-- **Require linear history.** Forbids merge commits on `main`, keeping the
-  history a straight line (pairs well with *squash* merges).
-- **Require conversation resolution before merging.** Every review comment must
-  be marked resolved before the merge button unlocks, so no feedback is silently
-  dropped.
+- **Automatically delete head branches.** Después de fusionar un pull request, su
+  rama se elimina — sin limpieza manual, sin acumulación de ramas muertas.
+- **Require linear history.** Prohíbe los commits de fusión en `main`, manteniendo
+  el historial en línea recta (combina bien con las fusiones *squash*).
+- **Require conversation resolution before merging.** Cada comentario de revisión
+  debe marcarse como resuelto antes de que se desbloquee el botón de fusión, para
+  que ningún comentario se descarte en silencio.
 
-## Good practices
+## Buenas prácticas
 
-Configuration enforces rules, but a healthy project also depends on habits the
-settings cannot check:
+La configuración impone reglas, pero un proyecto saludable también depende de
+hábitos que los ajustes no pueden comprobar:
 
-- **Pull requests with well-written commits.** Small, atomic commits with clear
-  messages (see [Workflow § Commit best practices](workflow.md#commit-best-practices))
-  make review fast and the history readable.
-- **Green before review.** Get the checks passing before you ask a teammate to
-  review — do not spend their time on something CI would have caught.
-- **Balanced contribution.** On a team assignment, everyone should open pull
-  requests and everyone should review them. The **Insights → Contributors** page
-  makes the balance (or imbalance) visible.
-- **Review kindly and concretely.** Comment on the code, not the person; suggest,
-  do not just reject.
+- **Pull requests con commits bien escritos.** Commits pequeños y atómicos con
+  mensajes claros (véase
+  [Flujo de trabajo § Buenas prácticas de commit](workflow.md#buenas-practicas-de-commit))
+  hacen la revisión rápida y el historial legible.
+- **Verde antes de la revisión.** Consigue que las comprobaciones pasen antes de
+  pedirle a un compañero que revise — no gastes su tiempo en algo que CI habría
+  detectado.
+- **Contribución equilibrada.** En un trabajo en equipo, todos deberían abrir pull
+  requests y todos deberían revisarlos. La página **Insights → Contributors** hace
+  visible el equilibrio (o el desequilibrio).
+- **Revisa con amabilidad y concreción.** Comenta sobre el código, no sobre la
+  persona; sugiere, no te limites a rechazar.
 
-Together, the enforced rules and these habits are what let a team move quickly
-*without* breaking `main` or stepping on each other's work.
+Juntos, las reglas impuestas y estos hábitos son lo que permite a un equipo
+moverse rápido *sin* romper `main` ni pisarse el trabajo unos a otros.
 
-!!! danger "Scheduled workflows are disabled after 60 days of inactivity"
-    GitHub turns off `schedule:` triggers in a repository with no activity for
-    two months, and tells you only by email. A project that runs a weekly
-    tournament and then goes quiet over a holiday comes back to no results at
-    all. Re-enable it from the Actions tab.
+!!! danger "Los workflows programados se desactivan tras 60 días de inactividad"
+    GitHub apaga los disparadores `schedule:` en un repositorio sin actividad
+    durante dos meses, y solo te avisa por correo. Un proyecto que ejecuta un
+    torneo semanal y se queda en silencio durante unas vacaciones vuelve sin
+    ningún resultado. Reactívalo desde la pestaña Actions.
 
-## Where to go next
+## Adónde ir después
 
-- [Pull requests](pull-requests.md) — what the review rules above apply to.
-- [GitHub Pages](pages.md) — publishing a static site from the repository.
+- [Pull requests](pull-requests.md) — aquello a lo que se aplican las reglas de
+  revisión de arriba.
+- [GitHub Pages](pages.md) — publicar un sitio estático desde el repositorio.

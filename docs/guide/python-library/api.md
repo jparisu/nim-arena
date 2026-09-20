@@ -1,39 +1,39 @@
 # API
 
-The **API** (Application Programming Interface) of a library is its *public
-face*: the objects, functions and methods that users are meant to touch.
-Everything else is an implementation detail you are free to change. Designing
-that *face* well is what separates a library people enjoy using from one they
-fight with.
+La **API** (interfaz de programación) de una librería es su *cara pública*: los
+objetos, funciones y métodos que quien la usa debe tocar. Todo lo demás es un
+detalle de implementación que eres libre de cambiar. Diseñar bien esa *cara* es
+lo que separa una librería que da gusto usar de otra con la que se pelea.
 
-!!! tip "The part that already exists"
-    Everything below is illustrated by real, shipped code. The
-    [Player API](../../arena/player-api.md) page is the current public contract of
-    `nimarena`, generated in part from its docstrings. Read this page for *why* an
-    API looks the way it does, and that one for *what* the library offers today.
+!!! tip "La parte que ya existe"
+    Todo lo que viene abajo está ilustrado con código real y en producción. La
+    página de [API de jugador](../../game/upload-a-bot/player-api.md) es el contrato público
+    actual de `nimarena`, generado en parte a partir de sus docstrings. Lee esta
+    página para el *porqué* de una API, y aquella para el *qué* ofrece hoy la
+    librería.
 
-## What an API is here
+## Qué es aquí una API
 
-Think of a library as having two sides:
+Piensa en una librería como algo con dos caras:
 
-- the **public API** — what users import and call, and what you promise to keep
-  stable across versions;
-- the **internals** — helper functions, private modules and data structures that
-  make it work, which you can rewrite at any time.
+- la **API pública** — lo que la gente importa y llama, y lo que prometes
+  mantener estable entre versiones;
+- las **interioridades** — funciones auxiliares, módulos privados y estructuras
+  de datos que la hacen funcionar, y que puedes reescribir cuando quieras.
 
-The value of the distinction is freedom: as long as the public API keeps its
-shape, you can refactor everything behind it without breaking a single user. The
-first job of API design is therefore to **decide what is public** and to make
-that boundary obvious.
+El valor de la distinción es la libertad: mientras la API pública mantenga su
+forma, puedes refactorizar todo lo que hay detrás sin romperle nada a nadie. El
+primer trabajo del diseño de una API es, por tanto, **decidir qué es público** y
+dejar esa frontera a la vista.
 
-In Python, the boundary is drawn by convention and by `__all__`:
+En Python, la frontera se dibuja por convención y con `__all__`:
 
-- Names prefixed with an underscore (`_helper`, `_Cache`) are **private** — a
-  signal that users should not rely on them.
-- The `__all__` list in a module names its **public** objects. It documents the
-  intended surface and controls what `from nimarena import *` brings in.
+- Los nombres con guion bajo delante (`_helper`, `_Cache`) son **privados** — una
+  señal de que nadie debería depender de ellos.
+- La lista `__all__` de un módulo nombra sus objetos **públicos**. Documenta la
+  superficie prevista y controla qué trae `from nimarena import *`.
 
-This is how `nimarena` does it, with its public API stated explicitly in
+Así lo hace `nimarena`, con su API pública declarada explícitamente en
 `__init__.py`:
 
 ```python
@@ -46,27 +46,28 @@ __all__ = ["game", "Player", "Registry", "REGISTRY", "__version__"]
 __version__ = "0.1.0"
 ```
 
-Five names. A user writes `from nimarena import Player` and never has to know
-which module it lives in — nor that the tournament, right next door, is a
-1600-line file full of process forking and shared-memory accounting that they are
-promised nothing about.
+Cinco nombres. Quien la use escribe `from nimarena import Player` y nunca tiene
+que saber en qué módulo vive — ni que el torneo, justo al lado, es un archivo de
+1600 líneas lleno de bifurcación de procesos y contabilidad en memoria compartida
+sobre el que no se le promete nada.
 
-## Designing a good one
+## Diseñar una API buena
 
-A handful of principles make an interface predictable and pleasant:
+Un puñado de principios hacen que una interfaz sea predecible y agradable:
 
-- **Consistency.** Similar things should look similar. In `nimarena.game`, every
-  function takes the state as its first argument and none of them mutate it —
-  once you have called one, you can predict the rest.
-- **Small, predictable signatures.** Few parameters, sensible defaults, and no
-  surprises.
-- **Meaningful names.** `legal_moves`, `is_terminal`, `nim_sum` say what they
-  are. Avoid abbreviations that only the author understands.
-- **Type hints.** Annotate parameters and return types. They document the
-  interface, enable editor autocompletion, and let tools catch mistakes before
-  runtime. Add a `py.typed` file so users get the benefit too.
-- **Docstrings.** Every public object gets a short docstring saying what it does,
-  what it takes and what it returns.
+- **Consistencia.** Las cosas parecidas deben parecerse. En `nimarena.game`,
+  todas las funciones reciben el estado como primer argumento y ninguna lo muta:
+  en cuanto has llamado a una, puedes predecir el resto.
+- **Firmas pequeñas y predecibles.** Pocos parámetros, valores por defecto
+  sensatos y ninguna sorpresa.
+- **Nombres con significado.** `legal_moves`, `is_terminal`, `nim_sum` dicen lo
+  que son. Evita abreviaturas que solo entiende quien las escribió.
+- **Anotaciones de tipo.** Anota parámetros y valores de retorno. Documentan la
+  interfaz, habilitan el autocompletado del editor y permiten que las
+  herramientas cacen errores antes de ejecutar. Añade un archivo `py.typed` para
+  que quien te use también se beneficie.
+- **Docstrings.** Cada objeto público lleva un docstring corto que dice qué hace,
+  qué recibe y qué devuelve.
 
 ```python
 def apply_move(state: State, move: Move) -> State:
@@ -84,17 +85,18 @@ def apply_move(state: State, move: Move) -> State:
     """
 ```
 
-The type hints and the docstring together tell a user everything they need in
-order to call `apply_move` correctly, without reading its body.
+Las anotaciones y el docstring juntos le dicen a quien lo lea todo lo que
+necesita para llamar a `apply_move` correctamente, sin leer su cuerpo.
 
-## Designing a plug-in API
+## Diseñar una API que otros implementan
 
-Some libraries are called *by* users. Others are **implemented by** them: the
-library defines a shape, and users supply the code that fills it. A game arena is
-the second kind — an outsider writes a class, the library runs it. That inverts
-the design problem, and three decisions carry most of the weight.
+Algunas librerías las llaman sus usuarios. Otras las **implementan** ellos: la
+librería define una forma y quien la usa aporta el código que la rellena. Una
+arena de juego es del segundo tipo — alguien de fuera escribe una clase y la
+librería la ejecuta. Eso invierte el problema de diseño, y tres decisiones
+cargan con casi todo el peso.
 
-### An abstract base class is a contract Python enforces
+### Una clase base abstracta es un contrato que Python impone
 
 ```python
 from abc import ABC, abstractmethod
@@ -109,30 +111,31 @@ class Player(ABC):
     def choose_move(self, state: State) -> tuple[int, int]: ...
 ```
 
-Subclassing `ABC` and marking methods `@abstractmethod` means Python itself
-refuses to build an incomplete implementation:
+Heredar de `ABC` y marcar métodos con `@abstractmethod` hace que el propio Python
+se niegue a construir una implementación incompleta:
 
 ```text
 TypeError: Can't instantiate abstract class MyBot without an
            implementation for abstract method 'get_name'
 ```
 
-That error arrives at the moment of the mistake, with the name of the missing
-method in it. A `NotImplementedError` raised from a base method would arrive
-later, from somewhere else, during a tournament.
+Ese error llega en el momento del fallo y con el nombre del método que falta
+dentro. Un `NotImplementedError` lanzado desde un método base llegaría más tarde,
+desde otro sitio, en mitad de un torneo.
 
-### Keep the contract as small as the job allows
+### Mantén el contrato tan pequeño como permita el trabajo
 
-`Player` asks for four identity accessors and **one** playing method. There is
-deliberately no `on_game_start`, no move history, no opponent identity, no timer.
+`Player` pide cuatro accesores de identidad y **un** método de juego. No hay,
+deliberadamente, ni `on_game_start`, ni historial de jugadas, ni identidad del
+rival, ni temporizador.
 
-Every parameter in an interface is one more thing an outsider can misunderstand,
-and one more thing you can never remove. Concerns that belong to the *caller* —
-time control, pairing, reproducibility — stay in the caller. The result is a
-player that is a pure function of the board, which is also the easiest thing to
-test.
+Cada parámetro de una interfaz es una cosa más que alguien de fuera puede
+malinterpretar, y una cosa más que nunca podrás quitar. Las preocupaciones que
+pertenecen a *quien llama* —control de tiempo, emparejamientos,
+reproducibilidad— se quedan en quien llama. El resultado es un jugador que es una
+función pura del tablero, que además es lo más fácil de probar.
 
-### Put identity on classmethods, and construction behind a factory
+### Pon la identidad en métodos de clase y la construcción tras una fábrica
 
 ```python
 @classmethod
@@ -143,20 +146,22 @@ def create(cls, seed: int) -> "Player":
     return cls()
 ```
 
-Both choices exist because of what the *caller* needs:
+Las dos elecciones existen por lo que necesita *quien llama*:
 
-- **Classmethod identity** lets the tournament, the documentation and the web
-  page label a player **without constructing one**. Building an object just to
-  ask its name is a surprising cost and a surprising failure mode.
-- **A `create(seed)` factory** gives the caller one uniform construction path.
-  The alternative — a `seed` parameter on every `__init__` — puts a tournament
-  concern in the signature every author has to write, and forces the caller to
-  inspect signatures to find out which classes accept what. The default
-  implementation ignores the seed, so a deterministic bot writes nothing.
+- **La identidad como método de clase** permite al torneo, a la documentación y a
+  la página web etiquetar a un jugador **sin construir uno**. Crear un objeto solo
+  para preguntarle su nombre es un coste sorprendente y un modo de fallo
+  sorprendente.
+- **Una fábrica `create(seed)`** le da a quien llama una única vía de
+  construcción uniforme. La alternativa —un parámetro `seed` en cada `__init__`—
+  mete una preocupación del torneo en la firma que tiene que escribir cada autor,
+  y obliga a quien llama a inspeccionar firmas para averiguar qué clase acepta
+  qué. La implementación por defecto ignora la semilla, así que un bot
+  determinista no escribe nada.
 
-### Discovery: an explicit list beats a folder scan
+### Descubrimiento: una lista explícita gana a un escaneo de carpeta
 
-`nimarena` finds players through one hand-edited file:
+`nimarena` encuentra jugadores mediante un único archivo editado a mano:
 
 ```yaml
 players:
@@ -164,51 +169,53 @@ players:
     class: Hard
 ```
 
-Scanning `players/*.py` would have been less typing. It would also mean **running
-a stranger's top-level code merely to discover it**, and it would hide what is
-being admitted. With a manifest, a reviewer sees the new file and the single line
-that admits it in one diff — the trust boundary is the review, and the review is
-visible.
+Escanear `players/*.py` habría sido escribir menos. También habría significado
+**ejecutar el código de nivel superior de un desconocido solo para descubrirlo**,
+y habría ocultado qué se está admitiendo. Con un manifiesto, quien revisa ve el
+archivo nuevo y la única línea que lo admite en un mismo diff — la frontera de
+confianza es la revisión, y la revisión es visible.
 
-Note also what the manifest does *not* contain: the player's name, authors and
-description. Those come from the class, because duplicating them here would give
-two sources of truth and one of them would drift.
+Fíjate también en lo que el manifiesto *no* contiene: el nombre, los autores y la
+descripción del jugador. Eso viene de la clase, porque duplicarlo aquí daría dos
+fuentes de verdad y una de las dos acabaría desviándose.
 
-!!! tip "The general rule"
-    When a design choice is not obvious, write down *why* in the module
-    docstring. `nimarena/player.py` opens with thirty lines explaining exactly
-    the four decisions above. The next person to touch it — very possibly you —
-    will not have to re-derive them.
+!!! tip "La regla general"
+    Cuando una decisión de diseño no sea obvia, deja escrito el *porqué* en el
+    docstring del módulo. `nimarena/player.py` empieza con treinta líneas que
+    explican exactamente las cuatro decisiones de arriba. A la siguiente persona
+    que lo toque —muy posiblemente tú— no le hará falta volver a deducirlas.
 
-## Documenting the API automatically
+## Documentar la API automáticamente
 
-An API reference written by hand goes stale quickly: someone renames a parameter
-and the page still shows the old one. The fix is to generate the page **from the
-docstrings**, so there is only ever one copy of the truth.
+Una referencia de API escrita a mano se queda desfasada enseguida: alguien
+renombra un parámetro y la página sigue mostrando el antiguo. La solución es
+generar la página **a partir de los docstrings**, para que solo haya una copia de
+la verdad.
 
-[mkdocstrings](https://mkdocstrings.github.io/) does that for MkDocs. A directive
-in a page:
+[mkdocstrings](https://mkdocstrings.github.io/) hace eso en MkDocs. Una directiva
+dentro de una página:
 
 ```markdown
 ::: nimarena.game
 ```
 
-renders the signature, the type hints, the argument table and the examples of
-every listed object, each with a link to the source lines it came from. That is
-how the bottom half of
-[Code structure](../../arena/code-structure.md) and
-[Player API](../../arena/player-api.md) are built.
+renderiza la firma, las anotaciones de tipo, la tabla de argumentos y los
+ejemplos de cada objeto listado, con un enlace a las líneas de código de las que
+salió. Así se construye la mitad inferior de
+[Estructura del código](../../game/advanced/code-structure.md) y de
+[API de jugador](../../game/upload-a-bot/player-api.md).
 
-Two habits make the generated page worth reading:
+Dos hábitos hacen que la página generada merezca leerse:
 
-- **Write docstrings in a consistent style.** This project uses the Google style
-  shown above (`Args:`, `Returns:`, `Raises:`), declared once in `mkdocs.yml`.
-- **Document the *why*, not the signature.** The signature is already on the
-  page. What the reader cannot see is why the parameter exists.
+- **Escribe los docstrings con un estilo consistente.** Este proyecto usa el
+  estilo Google mostrado arriba (`Args:`, `Returns:`, `Raises:`), declarado una
+  sola vez en `mkdocs.yml`.
+- **Documenta el *porqué*, no la firma.** La firma ya está en la página. Lo que
+  quien lee no puede ver es por qué existe el parámetro.
 
-## Where to go next
+## Adónde ir después
 
-- [Player API](../../arena/player-api.md) — the same ideas, applied: the real
-  public contract of `nimarena`.
-- [Testing](testing.md) — how to verify the API behaves as designed.
-- [MkDocs](../documentation/mkdocs.md) — configuring mkdocstrings.
+- [API de jugador](../../game/upload-a-bot/player-api.md) — las mismas ideas, aplicadas: el
+  contrato público real de `nimarena`.
+- [Tests](testing.md) — cómo verificar que la API se comporta como se diseñó.
+- [MkDocs](../documentation/mkdocs.md) — configurar mkdocstrings.

@@ -1,98 +1,108 @@
-# FAQ
+# Preguntas frecuentes
 
-Common questions about building, installing and testing the Python library. Each
-answer links to the page where the topic is covered in full.
+Preguntas habituales sobre construir, instalar y probar la librería de Python.
+Cada respuesta enlaza a la página donde el tema se trata en detalle.
 
-??? question "What is the difference between a module, a package and a library?"
-    A **module** is a single `.py` file; a **package** is a folder of modules
-    imported as one unit, normally marked by an `__init__.py`; a **library** is a
-    package meant to be reused by other code.
-    A **distribution** is the installable bundle `pip` fetches. See
-    [What is a library](library.md#module-package-library-distribution).
+??? question "¿Cuál es la diferencia entre un módulo, un paquete y una librería?"
+    Un **módulo** es un único archivo `.py`; un **paquete** es una carpeta de
+    módulos importada como una unidad, normalmente marcada por un `__init__.py`;
+    una **librería** es un paquete pensado para ser reutilizado por otro código.
+    Una **distribución** es el paquete instalable que
+    `pip` descarga. Véase
+    [Qué es una librería](library.md#modulo-paquete-libreria-distribucion).
 
-??? question "Do I need `setup.py`? What is `pyproject.toml`?"
-    No — `pyproject.toml` is the modern, standardised replacement for `setup.py`.
-    It holds the project metadata, dependencies and build configuration in one
-    file. See [Organization § pyproject.toml](organization.md#pyprojecttoml).
+??? question "¿Necesito `setup.py`? ¿Qué es `pyproject.toml`?"
+    No — `pyproject.toml` es el reemplazo moderno y estandarizado de `setup.py`.
+    Contiene los metadatos del proyecto, las dependencias y la configuración de
+    construcción en un solo archivo. Véase
+    [Organización § pyproject.toml](organization.md#pyprojecttoml).
 
-??? question "Why is the code under `src/` instead of at the repository root?"
-    So the package is not importable *by accident* from the project root. The
-    `src/` layout forces you to install the package before importing it, so your
-    tests run against the installed library exactly as a user would get it. See
-    [Organization § src](organization.md#the-src-layout).
+??? question "¿Por qué el código está bajo `src/` en lugar de en la raíz del repositorio?"
+    Para que el paquete no sea importable *por accidente* desde la raíz del
+    proyecto. La estructura `src/` te obliga a instalar el paquete antes de
+    importarlo, de modo que tus pruebas se ejecutan contra la librería instalada
+    exactamente como la obtendría un usuario. Véase
+    [Organización § src](organization.md#the-src-layout).
 
-??? question "What is the difference between `requirements.txt` and `pyproject.toml`?"
-    `pyproject.toml` declares what the *library* needs as part of its identity —
-    the source of truth when someone installs it. `requirements.txt` is a
-    convenience list for pinning a reproducible *environment*. This project has
-    exactly one runtime dependency (`PyYAML`) declared in `pyproject.toml`, and no
-    `requirements.txt` at all. See
-    [Organization § requirements.txt](organization.md#requirementstxt).
+??? question "¿Cuál es la diferencia entre `requirements.txt` y `pyproject.toml`?"
+    `pyproject.toml` declara lo que la *librería* necesita como parte de su
+    identidad — la fuente de verdad cuando alguien la instala. `requirements.txt`
+    es una lista de conveniencia para fijar un *entorno* reproducible. Esta
+    librería está basada en reglas, así que no tiene dependencias de ejecución y
+    `requirements.txt` está esencialmente vacío. Véase
+    [Organización § requirements.txt](organization.md#requirementstxt).
 
-??? question "What does `__init__.py` do?"
-    It marks a directory as a **regular package** and defines what the package
-    exposes when imported. (Since Python 3.3 a folder without one is still
-    importable, as a *namespace package*, but a library should be explicit.) Here
-    it declares the version and re-exports the five names that make up the public
-    API. See [Organization § __init__.py](organization.md#__init__py).
+??? question "¿Qué hace `__init__.py`?"
+    Marca un directorio como **paquete regular** y define qué expone el paquete al
+    importarse. (Desde Python 3.3 una carpeta sin él sigue siendo importable, como
+    *paquete de espacio de nombres*, pero una librería debe ser explícita.) Aquí
+    declara la versión y, a medida que la librería crezca, es donde se reexportan
+    las clases públicas. Véase
+    [Organización § __init__.py](organization.md#__init__py).
 
-??? question "How do I install the library in a Google Colab notebook?"
-    Install it straight from GitHub in a cell, then import it:
+??? question "¿Cómo instalo la librería en un notebook de Google Colab?"
+    Instálala directamente desde GitHub en una celda, luego impórtala:
 
     ```python
     !pip install git+https://github.com/jparisu/nim-arena.git
-    from nimarena.manifest import load_players
+    import nimarena
     ```
 
-    See [Installation and usage](installation-and-usage.md#use-it-in-a-notebook).
+    Véase [Instalación y uso](installation-and-usage.md#usarlo-en-un-notebook).
 
-??? question "What does `pip install -e \".[dev]\"` mean?"
-    `-e` installs the package in **editable** mode (a link to your source, so
-    edits take effect immediately), and `.[dev]` also installs the `dev` extra
-    (`pytest`, `ruff`, `mypy`). It is the standard setup for *developing* the
-    library. See
-    [Installation and usage § Install locally](installation-and-usage.md#install-locally).
+??? question "¿Qué significa `pip install -e \".[dev]\"`?"
+    `-e` instala el paquete en modo **editable** (un enlace a tu código fuente, de
+    modo que las ediciones surten efecto de inmediato), y `.[dev]` instala además
+    el extra `dev` (`pytest`, `ruff`, `mypy`). Es la configuración estándar para
+    *desarrollar* la
+    librería. Véase
+    [Instalación y uso § Instalar en local](installation-and-usage.md#instalar-en-local).
 
-??? question "I installed a new version in a notebook but nothing changed. Why?"
-    Python caches imported modules for the session. After installing a new
-    version, **restart the runtime** (Runtime → Restart) so the new code is
-    loaded. See [Installation and usage](installation-and-usage.md#use-it-in-a-notebook).
+??? question "Instalé una nueva versión en un notebook pero nada cambió. ¿Por qué?"
+    Python cachea los módulos importados durante la sesión. Tras instalar una nueva
+    versión, **reinicia el entorno de ejecución** (Runtime → Restart) para que se
+    cargue el código nuevo. Véase
+    [Instalación y uso](installation-and-usage.md#usarlo-en-un-notebook).
 
-??? question "What is `__all__` for?"
-    It names a module's **public** objects: it documents the intended API and
-    controls what `from nimarena import *` brings in. Names outside it (and
-    names starting with `_`) are treated as private. See [API § What an API is here](api.md#what-an-api-is-here).
+??? question "¿Para qué sirve `__all__`?"
+    Nombra los objetos **públicos** de un módulo: documenta la API prevista y
+    controla qué trae `from nimarena import *`. Los nombres fuera de ella (y los
+    que empiezan por `_`) se tratan como privados. Véase
+    [API § Qué es aquí una API](api.md#que-es-aqui-una-api).
 
-??? question "Why is the player interface an abstract base class?"
-    Because `@abstractmethod` makes Python refuse to instantiate an incomplete
-    implementation, with the name of the missing method in the error. The mistake
-    is caught at construction rather than in the middle of a tournament. See
-    [API § Designing a plug-in API](api.md#designing-a-plug-in-api).
+??? question "¿Por qué la interfaz de jugador es una clase base abstracta?"
+    Porque `@abstractmethod` hace que Python se niegue a instanciar una
+    implementación incompleta, con el nombre del método que falta en el error. El
+    fallo se caza en la construcción y no en mitad de un torneo. Véase
+    [API § Diseñar una API que otros implementan](api.md#disenar-una-api-que-otros-implementan).
 
-??? question "Why is there a manifest file instead of scanning the players folder?"
-    Because scanning would run a stranger's top-level code merely to discover it,
-    and would hide what is being admitted. A manifest puts the new file and the
-    one line that admits it in the same diff, so the trust decision is visible in
-    review. See [API § Designing a plug-in API](api.md#designing-a-plug-in-api).
+??? question "¿Por qué hay un archivo de manifiesto en vez de escanear la carpeta de jugadores?"
+    Porque escanear ejecutaría el código de nivel superior de un desconocido solo
+    para descubrirlo, y ocultaría qué se está admitiendo. Un manifiesto pone el
+    archivo nuevo y la única línea que lo admite en el mismo diff, de modo que la
+    decisión de confianza es visible en la revisión. Véase
+    [API § Diseñar una API que otros implementan](api.md#disenar-una-api-que-otros-implementan).
 
-??? question "How do I run the tests?"
-    Install the test extra and run pytest:
+??? question "¿Cómo ejecuto las pruebas?"
+    Instala el extra `dev` y ejecuta pytest:
 
     ```bash
     pip install -e ".[dev]"
     pytest
     ```
 
-    pytest discovers files named `test_*.py` and functions named `test_*`
-    automatically. See [Testing](testing.md#writing-and-running-tests-with-pytest).
+    pytest descubre automáticamente los archivos llamados `test_*.py` y las
+    funciones llamadas `test_*`. Véase
+    [Pruebas](testing.md#escribir-y-ejecutar-pruebas-con-pytest).
 
-??? question "Do the tests run automatically?"
-    Yes. The `tests.yml` GitHub Actions workflow runs `ruff`, `mypy` and `pytest`
-    on three Python versions for every push and pull request, and branch
-    protection can make passing tests **required** before a merge. See
-    [Testing § Tests in continuous integration](testing.md#tests-in-continuous-integration).
+??? question "¿Se ejecutan las pruebas automáticamente?"
+    Sí. El workflow `tests.yml` de GitHub Actions ejecuta `ruff`, `mypy` y
+    `pytest` en tres versiones de Python en cada push y
+    pull request, y la protección de ramas puede hacer que pasar las pruebas sea
+    **obligatorio** antes de una fusión. Véase
+    [Pruebas § Pruebas en integración continua](testing.md#pruebas-en-integracion-continua).
 
-??? question "What is `py.typed`?"
-    An empty marker file next to `__init__.py`. Without it, type checkers ignore
-    your annotations when your package is imported by someone else. See
-    [Organization § py.typed](organization.md#pytyped).
+??? question "¿Qué es `py.typed`?"
+    Un archivo marcador vacío junto a `__init__.py`. Sin él, los comprobadores de
+    tipos ignoran tus anotaciones cuando otra persona importa tu paquete. Véase
+    [Organización § py.typed](organization.md#pytyped).

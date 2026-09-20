@@ -1,70 +1,73 @@
 # GitHub Pages
 
-**GitHub Pages** serves static files from a repository as a public website, for
-free, at `https://<user>.github.io/<repository>/`. No server, no database, no
-bill.
+**GitHub Pages** sirve archivos estáticos de un repositorio como un sitio web
+público, gratis, en `https://<usuario>.github.io/<repositorio>/`. Sin servidor,
+sin base de datos, sin factura.
 
-This repository uses it for the playable web app —
-[jparisu.github.io/nim-arena](https://jparisu.github.io/nim-arena) — while the
-documentation you are reading is published separately on
-[Read the Docs](../documentation/readthedocs.md). Two artifacts, two hosts, one
-repository.
+Este repositorio lo usa para la página jugable —
+[jparisu.github.io/nim-arena](https://jparisu.github.io/nim-arena) — mientras que
+la documentación que estás leyendo se publica aparte en
+[Read the Docs](../documentation/readthedocs.md). Dos artefactos, dos servicios,
+un repositorio.
 
-## What "static" means, and why it is enough
+## Qué significa "estático", y por qué basta
 
-Pages will serve HTML, CSS, JavaScript, images and JSON. It will not run code on
-the server. Anything dynamic has to happen in the visitor's browser.
+Pages sirve HTML, CSS, JavaScript, imágenes y JSON. No ejecuta código en el
+servidor. Cualquier cosa dinámica tiene que ocurrir en el navegador de quien
+visita.
 
-That sounds limiting until you notice how much fits inside it. The NIM Arena page
-runs the project's **actual Python** — the game engine and every AI — in the
-browser through [Pyodide](https://pyodide.org), a build of CPython compiled to
-WebAssembly. The scoreboard is a `fetch()` of a JSON file that a
-[scheduled workflow](actions.md) committed to the repository. Nothing is served
-dynamically, and yet nothing is re-implemented either.
+Suena limitante hasta que te fijas en cuánto cabe dentro. La página de NIM Arena
+ejecuta el **Python real** del proyecto —el motor del juego y todas las IA— en el
+navegador a través de [Pyodide](https://pyodide.org), una compilación de CPython
+a WebAssembly. El marcador es un `fetch()` de un archivo JSON del que un
+[workflow programado](actions.md) ha hecho commit en el repositorio. Nada se
+sirve dinámicamente y, aun así, nada se reimplementa.
 
-The rule of thumb: if your site can be a folder of files, Pages is the simplest
-correct answer.
+La regla práctica: si tu sitio puede ser una carpeta de archivos, Pages es la
+respuesta correcta más simple.
 
-## Enabling it
+## Activarlo
 
-**Settings → Pages**. The one decision is **Source**:
+**Settings → Pages**. La única decisión es **Source**:
 
-| Source | Means |
+| Source | Significa |
 | --- | --- |
-| **Deploy from a branch** | Pages serves whatever is in a branch (classically `gh-pages`, or `/docs` on `main`). |
-| **GitHub Actions** | a workflow builds the site and uploads it as an artifact; Pages serves that. |
+| **Deploy from a branch** | Pages sirve lo que haya en una rama (clásicamente `gh-pages`, o `/docs` en `main`). |
+| **GitHub Actions** | un workflow construye el sitio y lo sube como artefacto; Pages lo sirve. |
 
-Choose **GitHub Actions**. It is what the modern deploy actions expect, it keeps
-generated files out of the repository entirely, and it lets the site be built —
-bundled, compiled, assembled — rather than committed by hand.
+Elige **GitHub Actions**. Es lo que esperan las actions modernas de despliegue,
+mantiene los archivos generados completamente fuera del repositorio y permite que
+el sitio se *construya* —empaquetado, compilado, ensamblado— en lugar de
+subirse a mano.
 
-!!! warning "This setting is not in a file"
-    Branch-versus-Actions lives in the repository settings, not in YAML. A
-    correct workflow deploying to a repository still set to "deploy from a
-    branch" fails with a permissions error that does not mention the cause. If a
-    Pages deploy fails for no visible reason, check this first.
+!!! warning "Este ajuste no está en ningún archivo"
+    La elección entre rama y Actions vive en la configuración del repositorio, no
+    en el YAML. Un workflow correcto desplegando en un repositorio que sigue
+    puesto en "deploy from a branch" falla con un error de permisos que no
+    menciona la causa. Si un despliegue de Pages falla sin motivo visible,
+    comprueba esto primero.
 
-## How a Pages deploy works
+## Cómo funciona un despliegue de Pages
 
-Three moving parts, in this order:
+Tres piezas, en este orden:
 
 ```mermaid
 flowchart LR
-    A["a workflow builds<br/>the site into a folder"] --> B["upload-pages-artifact<br/>packs the folder"]
-    B --> C["deploy-pages<br/>publishes it"]
-    C --> D["https://user.github.io/repo"]
+    A["un workflow construye<br/>el sitio en una carpeta"] --> B["upload-pages-artifact<br/>empaqueta la carpeta"]
+    B --> C["deploy-pages<br/>la publica"]
+    C --> D["https://usuario.github.io/repo"]
 ```
 
-The permissions block is what makes it legal:
+El bloque de permisos es lo que lo hace legal:
 
 ```yaml
 permissions:
-  contents: read      # to check the repository out
-  pages: write        # to publish
-  id-token: write     # to prove to Pages that this run is who it says it is
+  contents: read      # para descargar el repositorio
+  pages: write        # para publicar
+  id-token: write     # para demostrarle a Pages que esta ejecución es quien dice
 ```
 
-And the two jobs:
+Y los dos jobs:
 
 ```yaml
 jobs:
@@ -76,10 +79,10 @@ jobs:
         with:
           python-version: "3.12"
       - name: Assemble web assets
-        run: python scripts/build_web.py      # bundles the Python into web/py.zip
+        run: python scripts/build_web.py      # empaqueta el Python en web/py.zip
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: web                            # the folder to publish
+          path: web                            # la carpeta a publicar
 
   deploy:
     needs: build
@@ -92,26 +95,26 @@ jobs:
         uses: actions/deploy-pages@v4
 ```
 
-Splitting build from deploy is not ceremony: the `deploy` job is the only one
-that needs the publishing permission, and `needs: build` guarantees nothing is
-published from a build that failed.
+Separar construcción y despliegue no es ceremonia: el job `deploy` es el único
+que necesita el permiso de publicación, y `needs: build` garantiza que no se
+publique nada de una construcción fallida.
 
-**`concurrency: { group: pages, cancel-in-progress: false }`** belongs on the
-workflow. Cancelling a deploy halfway can leave the site in a half-applied state,
-so runs queue rather than interrupt each other.
+**`concurrency: { group: pages, cancel-in-progress: false }`** va en el workflow.
+Cancelar un despliegue a medias puede dejar el sitio a medio aplicar, así que las
+ejecuciones se encolan en vez de interrumpirse.
 
-## When the site does not redeploy
+## Cuando el sitio no se vuelve a desplegar
 
-Two failure modes account for almost all of them.
+Dos causas explican casi todos los casos.
 
-**A path filter that never matches.** `on: push: paths:` only fires when one of
-those paths changed. Add the workflow file itself to the list, or you cannot fix
-the workflow by editing it.
+**Un filtro de rutas que nunca coincide.** `on: push: paths:` solo se dispara
+cuando cambia alguna de esas rutas. Añade el propio archivo del workflow a la
+lista, o no podrás arreglar el workflow editándolo.
 
-**A commit made by a workflow.** GitHub raises no `push` event for a commit
-pushed with the default `GITHUB_TOKEN`, so a `push:` trigger cannot see it. That
-is why this repository's Pages workflow also listens for the Tournament workflow
-finishing:
+**Un commit hecho por un workflow.** GitHub no genera evento `push` para un commit
+subido con el `GITHUB_TOKEN` por defecto, así que un disparador `push:` no puede
+verlo. Por eso el workflow de Pages de este repositorio también escucha a que
+termine el workflow del torneo:
 
 ```yaml
   workflow_run:
@@ -119,42 +122,45 @@ finishing:
     types: [completed]
 ```
 
-The full story is in [GitHub Actions](actions.md#deploying-the-web-app-and-the-trap-in-it).
+La historia completa está en
+[GitHub Actions](actions.md#desplegar-la-web-y-la-trampa-que-tiene).
 
-## Pull requests cannot deploy
+## Los pull requests no pueden desplegar
 
-A workflow triggered by a pull request **from a fork** runs without secrets and
-without write permissions, because the code it would run is controlled by whoever
-opened the PR. It follows that a fork PR cannot publish to Pages, and should not
-be expected to.
+Un workflow disparado por un pull request **desde un fork** se ejecuta sin
+secretos y sin permisos de escritura, porque el código que ejecutaría lo controla
+quien abrió el PR. De ahí se sigue que un PR de fork no puede publicar en Pages, y
+no hay que esperar que lo haga.
 
-Practical consequences:
+Consecuencias prácticas:
 
-- Review the change by **building locally** (`python -m http.server -d web 8000`,
-  or `mkdocs serve` for a docs change), not by looking for a preview link.
-- Anything that must be verified before merge belongs in a check that *can* run
-  on a fork PR — the tests, the strict docs build — not in the deploy.
+- Revisa el cambio **construyéndolo en local** (`python -m http.server -d web 8000`,
+  o `mkdocs serve` para un cambio de documentación), no buscando un enlace de
+  previsualización.
+- Todo lo que deba verificarse antes de fusionar va en una comprobación que *sí*
+  pueda ejecutarse en un PR de fork —las pruebas, la construcción estricta de la
+  documentación— y no en el despliegue.
 
-## Publishing a site of your own
+## Publicar un sitio propio
 
-The smallest possible version: commit an `index.html`, set Source to a branch,
-done. The version worth learning:
+La versión mínima: sube un `index.html`, pon Source en una rama, listo. La versión
+que merece la pena aprender:
 
-1. Put the site's sources in the repository (`web/`, or `docs/` for MkDocs).
-2. Write a workflow that **builds** it into a folder.
-3. Upload that folder with `upload-pages-artifact` and publish it with
-   `deploy-pages`.
-4. Set **Settings → Pages → Source** to **GitHub Actions**.
-5. Add the resulting URL to the repository's "About" panel so people can find it.
+1. Pon las fuentes del sitio en el repositorio (`web/`, o `docs/` para MkDocs).
+2. Escribe un workflow que lo **construya** en una carpeta.
+3. Sube esa carpeta con `upload-pages-artifact` y publícala con `deploy-pages`.
+4. Pon **Settings → Pages → Source** en **GitHub Actions**.
+5. Añade la URL resultante al panel "About" del repositorio para que se encuentre.
 
-!!! tip "Generated files do not belong in Git"
-    This repository ignores `web/py.zip` and `web/leaderboard.json`: both are
-    assembled by `scripts/build_web.py` during the deploy. Committing build
-    output makes every rebuild a diff, and every merge a conflict.
+!!! tip "Los archivos generados no van en Git"
+    Este repositorio ignora `web/py.zip` y `web/leaderboard.json`: los dos los
+    ensambla `scripts/build_web.py` durante el despliegue. Versionar la salida de
+    una construcción convierte cada reconstrucción en un diff y cada fusión en un
+    conflicto.
 
-## Where to go next
+## Adónde ir después
 
-- [GitHub Actions](actions.md) — the workflow that does the deploying.
-- [Read the Docs](../documentation/readthedocs.md) — the other way to publish a
-  documentation site, and when to prefer it.
-- [The web app](../../arena/web.md) — what this repository actually publishes.
+- [GitHub Actions](actions.md) — el workflow que hace el despliegue.
+- [Read the Docs](../documentation/readthedocs.md) — la otra forma de publicar un
+  sitio de documentación, y cuándo preferirla.
+- [La página web](../../game/advanced/web.md) — qué publica realmente este repositorio.

@@ -1,59 +1,59 @@
 # GitHub Actions
 
-**GitHub Actions** is the automation built into GitHub. You describe jobs in YAML
-files under `.github/workflows/`, and GitHub runs them on its own machines
-whenever something happens in the repository: a push, a pull request, a schedule,
-a button press.
+**GitHub Actions** es la automatización integrada en GitHub. Describes trabajos
+en archivos YAML dentro de `.github/workflows/`, y GitHub los ejecuta en sus
+propias máquinas cuando ocurre algo en el repositorio: un push, un pull request,
+una programación horaria, la pulsación de un botón.
 
-It is what turns "the tests pass on my laptop" into "the tests pass, provably, on
-a clean machine, for every version we claim to support" — which is the only claim
-a reviewer can act on.
+Es lo que convierte "las pruebas pasan en mi portátil" en "las pruebas pasan,
+demostrablemente, en una máquina limpia, para todas las versiones que decimos
+soportar" — que es la única afirmación sobre la que quien revisa puede actuar.
 
-## The vocabulary
+## El vocabulario
 
 ```mermaid
 flowchart LR
-    E["event<br/>push · pull_request · schedule"] --> W["workflow<br/>one .yml file"]
-    W --> J["job<br/>runs on one runner"]
-    J --> S["step<br/>a command, or an action"]
+    E["evento<br/>push · pull_request · schedule"] --> W["workflow<br/>un archivo .yml"]
+    W --> J["job<br/>se ejecuta en un runner"]
+    J --> S["step<br/>un comando, o una action"]
 ```
 
-| Term | What it is |
+| Término | Qué es |
 | --- | --- |
-| **Workflow** | one YAML file in `.github/workflows/`. It has a `name`, an `on:` block and one or more jobs. |
-| **Event** (`on:`) | what starts it: `push`, `pull_request`, `schedule`, `workflow_dispatch`, `workflow_run`. |
-| **Job** | a unit that runs on one fresh virtual machine (`runs-on: ubuntu-latest`). Jobs run in parallel unless one `needs:` another. |
-| **Step** | one thing inside a job: either `run:` (a shell command) or `uses:` (a reusable **action** from the marketplace, e.g. `actions/checkout@v4`). |
-| **Runner** | the machine. GitHub's hosted Linux runners are free for public repositories. |
-| **Matrix** | run the same job several times with different values — three Python versions, say. |
-| **Secret** | an encrypted value (`${{ secrets.NAME }}`) available to workflows, but **not** to workflows triggered by a fork. |
+| **Workflow** | un archivo YAML en `.github/workflows/`. Tiene `name`, un bloque `on:` y uno o más jobs. |
+| **Evento** (`on:`) | lo que lo arranca: `push`, `pull_request`, `schedule`, `workflow_dispatch`, `workflow_run`. |
+| **Job** | una unidad que se ejecuta en una máquina virtual nueva (`runs-on: ubuntu-latest`). Los jobs corren en paralelo salvo que uno declare `needs:`. |
+| **Step** | una cosa dentro de un job: o `run:` (un comando de shell) o `uses:` (una **action** reutilizable, p. ej. `actions/checkout@v4`). |
+| **Runner** | la máquina. Los runners Linux de GitHub son gratis para repositorios públicos. |
+| **Matriz** | ejecutar el mismo job varias veces con valores distintos — tres versiones de Python, por ejemplo. |
+| **Secreto** | un valor cifrado (`${{ secrets.NAME }}`) disponible para los workflows, pero **no** para los disparados desde un fork. |
 
-Three settings appear in every workflow in this repository and are worth learning
-early:
+Tres ajustes aparecen en todos los workflows de este repositorio y conviene
+aprenderlos pronto:
 
-- **`permissions:`** — what the automatic `GITHUB_TOKEN` may do. Start from
-  `contents: read` and grant more only where it is needed. The Tournament needs
-  `contents: write` because it commits a file; nothing else does.
-- **`concurrency:`** — a named queue. `cancel-in-progress: true` kills an older
-  run of the same group when a new one starts, which is what you want for tests
-  on a branch you are still pushing to.
-- **`timeout-minutes:`** — a ceiling. Without one, a hung job burns until
-  GitHub's own six-hour limit and tells you nothing useful.
+- **`permissions:`** — qué puede hacer el `GITHUB_TOKEN` automático. Empieza por
+  `contents: read` y concede más solo donde haga falta. El torneo necesita
+  `contents: write` porque hace commit de un archivo; nada más lo necesita.
+- **`concurrency:`** — una cola con nombre. `cancel-in-progress: true` mata una
+  ejecución anterior del mismo grupo cuando arranca otra, que es lo que quieres
+  para las pruebas de una rama a la que sigues subiendo cambios.
+- **`timeout-minutes:`** — un techo. Sin él, un job colgado consume hasta el
+  límite de seis horas de GitHub y no te dice nada útil.
 
-## The workflows of this repository
+## Los workflows de este repositorio
 
-Four files, each with a different trigger and a different job.
+Cuatro archivos, cada uno con un disparador y un trabajo distintos.
 
-| Workflow | Runs when | Does |
+| Workflow | Se ejecuta cuando | Hace |
 | --- | --- | --- |
-| [`tests.yml`](https://github.com/jparisu/nim-arena/blob/main/.github/workflows/tests.yml) | every push to `main`, every PR | lint, type-check, test on 3 Python versions, smoke-run a tournament |
-| [`docs.yml`](https://github.com/jparisu/nim-arena/blob/main/.github/workflows/docs.yml) | every push to `main`, every PR | build this site with `--strict` |
-| [`tournament.yml`](https://github.com/jparisu/nim-arena/blob/main/.github/workflows/tournament.yml) | weekly, or on demand | play the tournament, commit the leaderboard |
-| [`pages.yml`](https://github.com/jparisu/nim-arena/blob/main/.github/workflows/pages.yml) | web/source changes, or after a Tournament | build the web app and deploy it to Pages |
+| [`tests.yml`](https://github.com/jparisu/nim-arena/blob/main/.github/workflows/tests.yml) | cada push a `main`, cada PR | lint, comprobación de tipos, pruebas en 3 versiones de Python, torneo de humo |
+| [`docs.yml`](https://github.com/jparisu/nim-arena/blob/main/.github/workflows/docs.yml) | cada push a `main`, cada PR | construir este sitio con `--strict` |
+| [`tournament.yml`](https://github.com/jparisu/nim-arena/blob/main/.github/workflows/tournament.yml) | semanalmente, o bajo demanda | jugar el torneo, hacer commit del marcador |
+| [`pages.yml`](https://github.com/jparisu/nim-arena/blob/main/.github/workflows/pages.yml) | cambios en web/fuentes, o tras un torneo | construir la web y desplegarla en Pages |
 
-## Running the tests
+## Ejecutar las pruebas
 
-The everyday workflow. Note the matrix, and note what it is checking.
+El workflow del día a día. Fíjate en la matriz, y en qué está comprobando.
 
 ```yaml
 name: Tests
@@ -106,22 +106,23 @@ jobs:
         run: nim-tournament --no-subprocess --repetitions 1 --out "$RUNNER_TEMP/leaderboard-smoke.json"
 ```
 
-Four decisions in there are worth stealing:
+Cuatro decisiones ahí dentro merecen copiarse:
 
-- **The matrix is the floor, the middle and the ceiling.** `pyproject.toml`
-  promises `requires-python = ">=3.10"`. Testing 3.10 is what makes that promise
-  true; testing 3.14 is what tells you early that it is about to stop being true.
-- **`paths-ignore: results/**`.** The Tournament commits a data file on a
-  schedule. Rerunning the whole suite for it would burn minutes and could not
-  change the outcome.
-- **The smoke run writes to `$RUNNER_TEMP`, not to `results/leaderboard.json`.**
-  The committed leaderboard is a published artifact. A CI step that overwrote it
-  would leave the working tree dirty on every run.
-- **`--repetitions 1`.** The default is 10, which is over a thousand games on
-  every push. A smoke test proves the runner starts and finishes; it is not the
-  graded run.
+- **La matriz es el suelo, el medio y el techo.** `pyproject.toml` promete
+  `requires-python = ">=3.10"`. Probar en 3.10 es lo que hace que esa promesa sea
+  cierta; probar en 3.14 es lo que te avisa pronto de que va a dejar de serlo.
+- **`paths-ignore: results/**`.** El torneo hace commit de un archivo de datos de
+  forma programada. Reejecutar toda la suite por eso gastaría minutos y no podría
+  cambiar el resultado.
+- **El torneo de humo escribe en `$RUNNER_TEMP`, no en
+  `results/leaderboard.json`.** El marcador versionado es un artefacto publicado.
+  Un paso de CI que lo sobrescribiera dejaría el árbol de trabajo sucio en cada
+  ejecución.
+- **`--repetitions 1`.** El valor por defecto es 10, que son más de mil partidas
+  en cada push. Una prueba de humo demuestra que el runner arranca y termina; no
+  es la ejecución evaluada.
 
-## Building the documentation
+## Construir la documentación
 
 ```yaml
 name: Docs
@@ -148,24 +149,26 @@ jobs:
         run: mkdocs build --strict
 ```
 
-`--strict` turns MkDocs warnings — a broken internal link, a page missing from
-the nav — into a failed build. Catching those in CI is the whole point; see
-[MkDocs](../documentation/mkdocs.md).
+`--strict` convierte los avisos de MkDocs —un enlace interno roto, una página
+ausente del `nav`— en una construcción fallida. Cazarlos en CI es justamente el
+objetivo; véase [MkDocs](../documentation/mkdocs.md).
 
-!!! warning "Do not path-filter a required check"
-    The `pull_request` trigger here is deliberately **not** filtered to `docs/**`.
+!!! warning "No filtres por rutas una comprobación obligatoria"
+    El disparador `pull_request` de aquí **no** está filtrado a `docs/**`, y es
+    deliberado.
 
-    A workflow that is a *required status check* but does not run leaves its check
-    permanently in the "Expected" state — and a check that is expected and never
-    arrives blocks the merge **forever**. A player submission touches only
-    `players/` and `players.yaml`, so a `docs/**` filter would make every single
-    student PR unmergeable. The build takes about 25 seconds; running it always is
-    cheaper than the confusion.
+    Un workflow que es una *comprobación de estado obligatoria* pero no se ejecuta
+    deja su check permanentemente en estado "Expected" — y una comprobación
+    esperada que nunca llega bloquea la fusión **para siempre**. Un envío de
+    jugador toca solo `players/` y `players.yaml`, así que un filtro `docs/**`
+    aquí haría imposible fusionar absolutamente todos los PR de estudiantes. La
+    construcción tarda unos 25 segundos; ejecutarla siempre sale más barato que
+    la confusión.
 
-## Running the tournament on a schedule
+## Ejecutar el torneo de forma programada
 
-This one is different: it is triggered by time or by a human, and it **writes**
-to the repository.
+Este es distinto: lo dispara el tiempo o una persona, y **escribe** en el
+repositorio.
 
 ```yaml
 name: Tournament
@@ -182,10 +185,10 @@ on:
         description: "Per-player budget in seconds"
         default: "2.0"
   schedule:
-    - cron: "0 6 * * 1"   # every Monday 06:00 UTC
+    - cron: "0 6 * * 1"   # cada lunes a las 06:00 UTC
 
 permissions:
-  contents: write         # needed to commit the results file back
+  contents: write         # necesario para hacer commit del archivo de resultados
 
 concurrency:
   group: tournament
@@ -196,7 +199,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
-      # ... checkout, set up Python, install ...
+      # ... checkout, preparar Python, instalar ...
       - name: Run the tournament
         run: |
           nim-tournament \
@@ -217,28 +220,28 @@ jobs:
           fi
 ```
 
-- **`workflow_dispatch` with `inputs`** puts a "Run workflow" button in the
-  Actions tab, with a dropdown and a text box. This is how you give someone a
-  manual control without giving them a shell.
-- **`schedule` uses cron in UTC.** GitHub disables scheduled workflows in a
-  repository with **no activity for 60 days** — a real trap for a project that
-  goes quiet over a holiday.
-- **`timeout-minutes: 90` is a deliberate choice, not a guess.** The per-game
-  budget bounds one game; nothing bounds games × matchups, which grows as
-  O(roster²). Past about five player kinds the theoretical worst case exceeds
-  GitHub's six-hour job limit — and a job killed at six hours produces no
-  leaderboard at all. Failing at 90 minutes is a visible, diagnosable failure
-  instead of a silent one.
-- **The commit step checks for a diff first.** Committing nothing is an error;
-  checking is one line.
+- **`workflow_dispatch` con `inputs`** pone un botón "Run workflow" en la pestaña
+  Actions, con un desplegable y una caja de texto. Así se da a alguien un control
+  manual sin darle una terminal.
+- **`schedule` usa cron en UTC.** GitHub desactiva los workflows programados en un
+  repositorio **sin actividad durante 60 días** — una trampa real para un proyecto
+  que se queda en silencio en vacaciones.
+- **`timeout-minutes: 90` es una decisión deliberada, no una suposición.** El
+  presupuesto por partida acota *una* partida; nada acota partidas × emparejamientos,
+  que crece como O(plantilla²). Pasados unos cinco tipos de jugador, el peor caso
+  teórico supera el límite de seis horas de GitHub — y un job matado a las seis
+  horas no produce marcador ninguno. Fallar a los 90 minutos es un fallo visible y
+  diagnosticable en lugar de uno silencioso.
+- **El paso de commit comprueba primero si hay diferencias.** Hacer commit de nada
+  es un error; comprobarlo es una línea.
 
-!!! danger "Never write a CI-skip marker in an automated commit message"
-    Putting `[skip ci]` in a commit message suppresses **every** workflow for
-    that push, not just the one you had in mind. The history of this repository
-    still contains such commits — that is why the message here is a plain
+!!! danger "Nunca escribas un marcador de omisión de CI en un commit automático"
+    Poner `[skip ci]` en un mensaje de commit suprime **todos** los workflows de
+    ese push, no solo el que tenías en mente. El historial de este repositorio
+    todavía contiene commits así — por eso el mensaje de aquí es un simple
     `chore(tournament): update leaderboard`.
 
-## Deploying the web app — and the trap in it
+## Desplegar la web — y la trampa que tiene
 
 ```yaml
 name: Pages
@@ -298,31 +301,32 @@ jobs:
         uses: actions/deploy-pages@v4
 ```
 
-The `push` trigger lists `results/leaderboard.json`, so that a fresh tournament
-result redeploys the scoreboard. **It does not work on its own**, and the reason
-is the single most useful GitHub Actions fact on this page:
+El disparador `push` incluye `results/leaderboard.json` para que un resultado
+nuevo del torneo vuelva a desplegar el marcador. **No funciona por sí solo**, y la
+razón es el dato más útil sobre GitHub Actions de toda esta página:
 
-!!! warning "A commit pushed with `GITHUB_TOKEN` raises no `push` event"
-    GitHub deliberately suppresses workflow events for commits made with the
-    default `GITHUB_TOKEN`. It is how infinite workflow loops are prevented — a
-    workflow that commits would otherwise trigger itself forever.
+!!! warning "Un commit hecho con `GITHUB_TOKEN` no genera evento `push`"
+    GitHub suprime deliberadamente los eventos de workflow para los commits hechos
+    con el `GITHUB_TOKEN` por defecto. Es la forma de evitar bucles infinitos de
+    workflows: uno que hiciera commit se dispararía a sí mismo eternamente.
 
-    So the `push` trigger above is silently dead for exactly the case it was
-    written for. The documented way out is **`workflow_run`**: react to the
-    Tournament *workflow finishing* rather than to its commit.
+    Así que el disparador `push` de arriba está silenciosamente muerto justo para
+    el caso para el que se escribió. La salida documentada es **`workflow_run`**:
+    reaccionar a que el *workflow* del torneo termine, y no a su commit.
 
-Two more details:
+Dos detalles más:
 
-- **The `if:` guard** stops a failed tournament from publishing a broken
-  scoreboard. Non-`workflow_run` triggers carry no conclusion, so they always
-  pass the condition.
-- **`cancel-in-progress: false`**, per GitHub's own Pages guidance: cancelling
-  mid-publish can leave a deployment half-applied. Queue instead of cancelling.
+- **El guardián `if:`** impide que un torneo fallido publique un marcador roto.
+  Los disparadores que no son `workflow_run` no llevan conclusión, así que siempre
+  pasan la condición.
+- **`cancel-in-progress: false`**, siguiendo la propia guía de Pages de GitHub:
+  cancelar a mitad de publicación puede dejar un despliegue a medio aplicar. Mejor
+  encolar que cancelar.
 
-## Keeping actions up to date
+## Mantener las actions al día
 
-`.github/dependabot.yml` asks GitHub to open a pull request when an action or a
-dependency has a new version:
+`.github/dependabot.yml` pide a GitHub que abra un pull request cuando una action
+o una dependencia tiene versión nueva:
 
 ```yaml
 version: 2
@@ -336,22 +340,24 @@ updates:
         patterns: ["*"]
 ```
 
-Grouping the bumps into one PR per month is the difference between a useful
-reminder and a stream of noise you learn to ignore.
+Agrupar las subidas en un PR al mes es la diferencia entre un recordatorio útil y
+un flujo de ruido que aprendes a ignorar.
 
-## Reading a failed run
+## Leer una ejecución fallida
 
-1. The PR shows a red ✗. Click **Details**.
-2. Pick the failed job in the left column; the failed step is expanded already.
-3. Read the **first** error, not the last. Everything after it is usually fallout.
-4. Reproduce it locally with the exact command from the step — `pytest -q`,
-   `ruff check .`, `mkdocs build --strict`. They are the same commands on purpose.
-5. **Re-run jobs** in the top right is for genuinely flaky infrastructure, not for
-   hoping a real failure goes away.
+1. El PR muestra una ✗ roja. Pulsa **Details**.
+2. Elige el job fallido en la columna izquierda; el paso que falló ya viene
+   desplegado.
+3. Lee el **primer** error, no el último. Todo lo posterior suele ser
+   consecuencia.
+4. Reprodúcelo en local con el comando exacto del paso — `pytest -q`,
+   `ruff check .`, `mkdocs build --strict`. Son los mismos comandos a propósito.
+5. **Re-run jobs**, arriba a la derecha, es para infraestructura genuinamente
+   inestable, no para confiar en que un fallo real desaparezca.
 
-## Where to go next
+## Adónde ir después
 
-- [GitHub Pages](pages.md) — where the Pages workflow publishes to.
-- [Repository configuration](repository-configuration.md) — making these checks
-  *required* before a merge.
-- [Testing](../python-library/testing.md) — what `pytest` is actually running.
+- [GitHub Pages](pages.md) — dónde publica el workflow de Pages.
+- [Configuración del repositorio](repository-configuration.md) — hacer que estas
+  comprobaciones sean *obligatorias* antes de fusionar.
+- [Tests](../python-library/testing.md) — qué está ejecutando `pytest` en realidad.

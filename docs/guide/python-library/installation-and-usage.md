@@ -1,45 +1,46 @@
-# Installation and usage
+# Instalación y uso
 
-Once a library is packaged ([Organization](organization.md)), using it is a
-`pip install` away. There are two paths: installing straight from GitHub, which
-is what a notebook wants, and an editable local install, which is what you need
-to develop the library itself.
+Una vez que una librería está empaquetada ([Organización](organization.md)),
+usarla está a un `pip install` de distancia. Como la mayor parte del trabajo de
+este curso ocurre en **notebooks (Google Colab)**, la vía principal es instalar
+directamente desde GitHub — sin configuración local, sin clonar a mano.
 
-## Install from GitHub
+## Instalar desde GitHub
 
 !!! warning
-    When installing a library locally, it is worth using virtual environments, especially with libraries under development.
-    This keeps our library from being installed system-wide, and keeps the dependencies of different libraries from mixing.
-    Read [Install locally](#install-locally) for more information.
+    A la hora de instalar una librería en local, conviene usar entornos virtuales, sobre todo con librerías en desarrollo.
+    Esto evita que nuestra librería pase a estar instalada en el sistema, o que se mezclen dependencias de distintas librerías.
+    Lee [Instalar en local](#instalar-en-local) para más información.
 
-`pip` can install a package directly from a Git repository. This is the quickest
-way to get `nimarena` into a notebook while the library is still moving:
+`pip` puede instalar un paquete directamente desde un repositorio Git. Es la forma
+más rápida de meter `nimarena` en un notebook mientras la librería todavía se
+mueve:
 
 ```bash
 pip install git+https://github.com/jparisu/nim-arena.git
 ```
 
-This clones the repository behind the scenes, builds the package from its
-`pyproject.toml`, and installs it — exactly as if it came from the Python Package
+Esto clona el repositorio entre bastidores, construye el paquete a partir de su
+`pyproject.toml` y lo instala — exactamente como si viniera del Python Package
 Index.
 
-You can pin a specific **branch**, tag or commit by appending `@<ref>`:
+Puedes fijar una **rama**, etiqueta o commit concretos añadiendo `@<ref>`:
 
 ```bash
 pip install git+https://github.com/jparisu/nim-arena.git@main
 pip install git+https://github.com/jparisu/nim-arena.git@a9d292d
 ```
 
-!!! tip "Why install from GitHub?"
-    While a library is under active development and not yet published to PyPI,
-    installing from GitHub means everyone always gets the latest code from a
-    chosen branch, with a single command and no manual steps. It is the natural
-    fit for a notebook-based workflow.
+!!! tip "¿Por qué instalar desde GitHub?"
+    Mientras una librería está en desarrollo activo y aún no se ha publicado en
+    PyPI, instalar desde GitHub significa que todos obtienen siempre el código más
+    reciente de una rama elegida, con un solo comando y sin pasos manuales. Encaja
+    de forma natural con un flujo de trabajo basado en notebooks.
 
-## Use it in a notebook
+## Usarlo en un notebook
 
-In a Colab notebook, install in a cell (the leading `!` runs a shell command),
-then import and use the library:
+En un notebook de Colab, instala en una celda (el `!` inicial ejecuta un comando de
+shell), luego importa y usa la librería:
 
 ```python
 !pip install git+https://github.com/jparisu/nim-arena.git
@@ -49,52 +50,54 @@ then import and use the library:
 from nimarena import game
 from nimarena.manifest import load_players
 
-registry = load_players()            # reads players.yaml
+registry = load_players()            # lee players.yaml
 hard = registry.get("hard")
 
 state = [3, 5, 7]
-print(hard.choose_move(state))       # e.g. (0, 2)
+print(hard.choose_move(state))       # p. ej. (0, 2)
 print(game.nim_sum(state))           # 1
 ```
 
-!!! note "Restart the runtime after installing"
-    If you had already imported `nimarena` in a notebook and then install a
-    new version, restart the runtime (**Runtime → Restart**) so the new code is
-    picked up. Python caches imported modules for the life of the session.
+!!! note "Reinicia el entorno de ejecución tras instalar"
+    Si ya habías importado `nimarena` en un notebook y luego instalas una nueva
+    versión, reinicia el entorno de ejecución (**Runtime → Restart**) para que se
+    cargue el código nuevo. Python cachea los módulos importados durante toda la
+    sesión.
 
-## Install locally
+## Instalar en local
 
-For developing the library itself — rather than just using it — install it
-**locally** in a virtual environment. A virtual environment is an isolated Python
-installation for one project, so its dependencies do not clash with anything
-else on your machine:
+Para desarrollar la librería en sí —en lugar de solo usarla— instálala **en
+local** en un entorno virtual. Un entorno virtual es una instalación de Python
+aislada para un proyecto, de modo que sus dependencias no choquen con nada más de
+tu máquina:
 
 ```bash
-python -m venv .venv          # create the environment
-source .venv/bin/activate     # activate it (Windows: .venv\Scripts\activate)
-pip install -e ".[dev]"       # editable install, with the dev extra
+python -m venv .venv          # crea el entorno
+source .venv/bin/activate     # actívalo (Windows: .venv\Scripts\activate)
+pip install -e ".[dev]"       # instalación editable, con el extra dev
 ```
 
-Two flags make this a *development* install:
+Dos opciones hacen de esto una instalación de *desarrollo*:
 
-- **`-e` (editable).** The package is installed as a link to your source, so your
-  edits take effect immediately — no reinstalling after every change.
-- **`.[dev]`** installs the package *plus* its `dev` extra (`pytest`, `ruff`,
-  `mypy`), so you can run the suite right away (see [Testing](testing.md)). Use
-  `.[docs]` to work on the documentation instead.
+- **`-e` (editable).** El paquete se instala como un enlace a tu código fuente, de
+  modo que tus ediciones surten efecto de inmediato — sin reinstalar tras cada
+  cambio.
+- **`.[dev]`** instala el paquete *más* su extra `test` (`pytest`, `ruff`, `mypy`), para que
+  puedas ejecutar la suite enseguida (véase [Pruebas](testing.md)). Usa `.[docs]`
+  para trabajar en la documentación en su lugar.
 
-This is exactly what the [`tests.yml` workflow](../github/actions.md#running-the-tests)
-does in CI, so a green local run means a green run on GitHub.
+Esto es exactamente lo que hace el [workflow `tests.yml`](../github/actions.md#ejecutar-las-pruebas)
+en CI, así que una ejecución verde en local significa una ejecución verde en
+GitHub.
 
-The install also puts the project's console script on your `PATH`, courtesy of
-`[project.scripts]` in `pyproject.toml`:
+La instalación también deja el script de consola del proyecto en tu `PATH`,
+gracias a `[project.scripts]` en `pyproject.toml`:
 
 ```bash
 nim-tournament --no-subprocess --repetitions 1
 ```
 
-## Where to go next
+## Adónde ir después
 
-- [API](api.md) — what a clean public interface for the library should look
-  like.
-- [Testing](testing.md) — run and write the test suite.
+- [API](api.md) — cómo debería ser una interfaz pública limpia para la librería.
+- [Pruebas](testing.md) — ejecuta y escribe la suite de pruebas.

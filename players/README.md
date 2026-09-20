@@ -48,4 +48,4 @@ at the top of the ladder.
 Your name must be unique across all admitted players; CI rejects a duplicate.
 
 Full walkthrough: **[CONTRIBUTING.md](../CONTRIBUTING.md)** and the
-[online docs](https://nim-arena.readthedocs.io/en/latest/arena/submit-a-player/).
+[online docs](https://nim-arena.readthedocs.io/en/latest/game/upload-a-bot/submit-a-player/).

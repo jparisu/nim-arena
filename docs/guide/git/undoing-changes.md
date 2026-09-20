@@ -1,20 +1,20 @@
-# Undoing changes
+# Deshacer cambios
 
-Sooner or later you will want to **go back**: discard an edit, unstage a file, or
-set your work aside to deal with something urgent. Git has a command for each
-case. This page covers the three you actually need — `restore`, `reset` and
-`stash` — and a decision guide to pick the right one.
+Tarde o temprano querrás **volver atrás**: descartar una edición, quitar un
+archivo de la preparación, o apartar tu trabajo para atender algo urgente. Git
+tiene un comando para cada caso. Esta página cubre los tres que realmente
+necesitas —`restore`, `reset` y `stash`— y una guía para elegir el correcto.
 
-!!! warning "Some of these throw work away"
-    Discarding changes in the working directory (`git restore <file>`,
-    `git reset --hard`) **permanently deletes** those changes: they were never
-    committed, so Git cannot bring them back. When in doubt, prefer `git stash`,
-    which sets work aside without destroying it.
+!!! warning "Algunos de estos tiran trabajo a la basura"
+    Descartar cambios en el directorio de trabajo (`git restore <archivo>`,
+    `git reset --hard`) **borra permanentemente** esos cambios: nunca se
+    confirmaron, así que Git no puede recuperarlos. Ante la duda, prefiere
+    `git stash`, que aparta el trabajo sin destruirlo.
 
-## `git restore` — discard changes in the working directory
+## `git restore` — descartar cambios en el directorio de trabajo
 
-Use `restore` to throw away edits you have **not committed** and go back to the
-last committed version of a file.
+Usa `restore` para tirar ediciones que **no has confirmado** y volver a la última
+versión confirmada de un archivo.
 
 ```console
 $ git status
@@ -27,58 +27,60 @@ On branch main
 nothing to commit, working tree clean
 ```
 
-`restore` also **unstages** a file (take it out of the staging area, but keep
-your edits) with the `--staged` flag:
+`restore` también **quita de la preparación** un archivo (lo saca del área de
+preparación, pero conserva tus ediciones) con la opción `--staged`:
 
 ```console
-$ git restore --staged README.md   # unstage, keep the changes
+$ git restore --staged README.md   # quita de preparación, conserva los cambios
 ```
 
-- `git restore <file>` → discard uncommitted edits to that file.
-- `git restore --staged <file>` → unstage, but keep the edits.
+- `git restore <archivo>` → descarta ediciones sin confirmar de ese archivo.
+- `git restore --staged <archivo>` → quita de preparación, pero conserva las
+  ediciones.
 
-## `git reset` — move the branch pointer
+## `git reset` — mover el puntero de la rama
 
-`reset` operates on **commits and staging**, not individual file edits. Its most
-common everyday use is the opposite direction of `add`: unstaging.
+`reset` opera sobre **commits y preparación**, no sobre ediciones de archivos
+individuales. Su uso más común en el día a día es el sentido inverso de `add`:
+quitar de la preparación.
 
 ```console
 $ git add README.md
-$ git reset README.md      # unstage README.md (equivalent to restore --staged)
+$ git reset README.md      # quita README.md de preparación (equivale a restore --staged)
 ```
 
-Used with a commit, `reset` **moves the current branch pointer** to an earlier
-commit — effectively removing the commits after it from the branch. What happens
-to the changes in those commits depends on the mode:
+Usado con un commit, `reset` **mueve el puntero de la rama actual** a un commit
+anterior — eliminando en la práctica de la rama los commits posteriores. Lo que
+ocurre con los cambios de esos commits depende del modo:
 
-| Mode | Branch pointer | Staging area | Working directory |
+| Modo | Puntero de la rama | Área de preparación | Directorio de trabajo |
 | --- | --- | --- | --- |
-| `--soft` | moved back | kept | kept |
-| `--mixed` *(default)* | moved back | reset | kept |
-| `--hard` | moved back | reset | **discarded** |
+| `--soft` | retrocede | se conserva | se conserva |
+| `--mixed` *(por defecto)* | retrocede | se reinicia | se conserva |
+| `--hard` | retrocede | se reinicia | **se descarta** |
 
-- `git reset --soft HEAD~1` — undo the **last commit** but keep its changes
-  staged, ready to re-commit (great for fixing a commit message or splitting a
-  commit).
-- `git reset --mixed HEAD~1` — undo the last commit and unstage its changes, but
-  keep them in your files.
-- `git reset --hard HEAD~1` — undo the last commit **and throw its changes
-  away**. Fast, and irreversible.
+- `git reset --soft HEAD~1` — deshace el **último commit** pero conserva sus
+  cambios preparados, listos para volver a confirmar (ideal para arreglar un
+  mensaje de commit o dividir un commit).
+- `git reset --mixed HEAD~1` — deshace el último commit y quita sus cambios de la
+  preparación, pero los mantiene en tus archivos.
+- `git reset --hard HEAD~1` — deshace el último commit **y tira sus cambios a la
+  basura**. Rápido, e irreversible.
 
-Here `HEAD~1` means "one commit before the current one".
+Aquí `HEAD~1` significa "un commit antes del actual".
 
-!!! danger "`--hard` and shared history"
-    Never `reset` commits that you have already **pushed and shared** with
-    others: you rewrite history that they already have, and their next `pull`
-    will conflict. On shared branches, undo a commit with `git revert` (which
-    records a *new* commit that undoes an old one) instead.
+!!! danger "`--hard` e historial compartido"
+    Nunca hagas `reset` de commits que ya has **subido y compartido** con otros:
+    reescribes un historial que ellos ya tienen, y su próximo `pull` entrará en
+    conflicto. En ramas compartidas, deshaz un commit con `git revert` (que
+    registra un *nuevo* commit que deshace uno antiguo) en su lugar.
 
-## `git stash` — set changes aside
+## `git stash` — apartar cambios
 
-Sometimes you are in the middle of something when you need a clean working
-directory right now — to pull, to switch branches, or to try a quick fix.
-`stash` tucks your uncommitted changes away safely and gives you back a clean
-tree.
+A veces estás en mitad de algo y necesitas un directorio de trabajo limpio ahora
+mismo — para hacer pull, para cambiar de rama, o para probar un arreglo rápido.
+`stash` guarda tus cambios sin confirmar de forma segura y te devuelve un árbol
+limpio.
 
 ```console
 $ git stash
@@ -89,37 +91,37 @@ On branch main
 nothing to commit, working tree clean
 ```
 
-Your changes are not lost — they are on a stack. Bring them back when you are
-ready:
+Tus cambios no se pierden — están en una pila. Recupéralos cuando estés listo:
 
 ```console
-$ git stash pop      # re-apply the most recent stash and remove it from the stack
+$ git stash pop      # reaplica el stash más reciente y lo quita de la pila
 ```
 
-- `git stash` → save changes and clean the working directory.
-- `git stash list` → see what you have stashed.
-- `git stash pop` → re-apply the latest stash and drop it.
-- `git stash drop` → discard a stash without applying it.
+- `git stash` → guarda los cambios y limpia el directorio de trabajo.
+- `git stash list` → ve qué has guardado en el stash.
+- `git stash pop` → reaplica el último stash y lo elimina.
+- `git stash drop` → descarta un stash sin aplicarlo.
 
-Unlike `reset --hard`, `stash` is **safe**: nothing is destroyed, so it is the
-right first reflex whenever you just need to park your work for a moment.
+A diferencia de `reset --hard`, `stash` es **seguro**: no se destruye nada, así
+que es el primer reflejo correcto siempre que solo necesites aparcar tu trabajo
+un momento.
 
-## Which one do I need?
+## ¿Cuál necesito?
 
-| Your situation | Command |
+| Tu situación | Comando |
 | --- | --- |
-| I edited a file and want to throw the edit away | `git restore <file>` |
-| I staged a file by mistake | `git restore --staged <file>` (or `git reset <file>`) |
-| I want to redo my last commit (message, or add a file) | `git reset --soft HEAD~1` |
-| I need a clean tree *right now* but want my work back later | `git stash` → `git stash pop` |
-| I want to undo a commit I already **pushed** | `git revert <commit>` |
+| Edité un archivo y quiero tirar la edición | `git restore <archivo>` |
+| Preparé un archivo por error | `git restore --staged <archivo>` (o `git reset <archivo>`) |
+| Quiero rehacer mi último commit (mensaje, o añadir un archivo) | `git reset --soft HEAD~1` |
+| Necesito un árbol limpio *ahora mismo* pero quiero recuperar mi trabajo luego | `git stash` → `git stash pop` |
+| Quiero deshacer un commit que ya **subí** | `git revert <commit>` |
 
-!!! tip "The safety-first rule of thumb"
-    If the change is **committed**, you can almost always get it back, so undoing
-    is safe. If it is **uncommitted**, Git has no copy — so `stash` before you do
-    anything destructive.
+!!! tip "La regla general de la seguridad primero"
+    Si el cambio está **confirmado**, casi siempre puedes recuperarlo, así que
+    deshacer es seguro. Si está **sin confirmar**, Git no tiene copia — así que
+    haz `stash` antes de hacer nada destructivo.
 
-## Where to go next
+## Adónde ir después
 
-- [Example](example.md) — a full walkthrough that puts commits, branches and
-  merges together.
+- [Ejemplo](example.md) — un recorrido completo que junta commits, ramas y
+  fusiones.

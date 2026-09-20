@@ -1,100 +1,104 @@
-# What is a library
+# Qué es una librería
 
-A **library** is a piece of code written to be *reused* by other code. Instead of
-copying functions between projects, you package them once, give them a clear
-public interface, and let any project install and import them. `nimarena` —
-the library this repository ships — is one: a NIM game engine, a player
-interface and a tournament runner that a notebook, a test suite, a GitHub Action
-and a web page all install and import the same way.
+Una **librería** es un fragmento de código escrito para ser *reutilizado* por
+otro código. En lugar de copiar funciones entre proyectos, las empaquetas una vez,
+les das una interfaz pública clara, y dejas que cualquier proyecto las instale e
+importe. `nimarena` —la librería que distribuye este repositorio— es una: un
+motor de juego de NIM, una interfaz de jugador y un ejecutor de torneos que un
+notebook, una batería de pruebas, una GitHub Action y una página web instalan e
+importan exactamente igual.
 
-This page sorts out the vocabulary, explains what a library buys you, and shows
-at a well-known example to imitate.
+Esta página ordena el vocabulario, explica qué te aporta una librería y muestra
+un ejemplo conocido a imitar.
 
-## Module, package, library, distribution
+## Módulo, paquete, librería, distribución
 
-These four words are often used loosely. In Python they mean specific things:
+Estas cuatro palabras se usan a menudo de forma imprecisa. En Python significan
+cosas concretas:
 
-| Term | What it is |
+| Término | Qué es |
 | --- | --- |
-| **Module** | A single `.py` file. Importing it runs it once and exposes its names. |
-| **Package** | A *folder* of modules imported as one unit, normally marked by an `__init__.py`. |
-| **Library** | A package (or set of packages) meant to be reused by other code. |
-| **Distribution** | The packaged artifact you install — what `pip install` fetches. |
+| **Módulo** | Un único archivo `.py`. Importarlo lo ejecuta una vez y expone sus nombres. |
+| **Paquete** | Una *carpeta* de módulos importada como una unidad, normalmente marcada por un `__init__.py`. |
+| **Librería** | Un paquete (o conjunto de paquetes) pensado para ser reutilizado por otro código. |
+| **Distribución** | El artefacto empaquetado que instalas — lo que `pip install` descarga. |
 
-The progression is one of scale: a **module** is a file, a **package** groups
-modules into a folder, a **library** is a package designed for reuse, and a
-**distribution** is that library bundled up so it can be installed elsewhere.
+La progresión es de escala: un **módulo** es un archivo, un **paquete** agrupa
+módulos en una carpeta, una **librería** es un paquete diseñado para
+reutilizarse, y una **distribución** es esa librería empaquetada para poder
+instalarse en otro sitio.
 
 ```mermaid
 flowchart LR
-    M["Module<br/>(game.py)"] --> P["Package<br/>(nimarena/)"]
-    P --> L["Library<br/>(reusable API)"]
-    L --> D["Distribution<br/>(pip install nimarena)"]
+    M["Módulo<br/>(game.py)"] --> P["Paquete<br/>(nimarena/)"]
+    P --> L["Librería<br/>(API reutilizable)"]
+    L --> D["Distribución<br/>(pip install nimarena)"]
 ```
 
-In this project, `src/nimarena/` is the **package**, the API it exposes makes
-it a **library**, and `pyproject.toml` is what turns it into an installable
-**distribution** (see [Organization](organization.md)).
+En este proyecto, `src/nimarena/` es el **paquete**, la API que expone lo
+convierte en una **librería**, y `pyproject.toml` es lo que lo convierte en una
+**distribución** instalable (véase [Organización](organization.md)).
 
-## What a library gives you
+## Qué te aporta una librería
 
-Why package code instead of just keeping a `utils.py` around? A library gives
-you four things:
+¿Por qué empaquetar código en lugar de tener por ahí un simple `utils.py`? Una
+librería te da cuatro cosas:
 
-- **Reuse.** Write the game rules once; import them from the tournament, the
-  tests and the browser without copy-pasting. In this project that is not a
-  slogan: the rules are never re-implemented in JavaScript, because the web page
-  imports the same Python through Pyodide.
-- **A stable interface.** Users depend on the *public* API, not on the internal
-  details. You can rewrite the internals freely as long as the interface holds
-  (this is what [the API page](api.md) is about).
-- **Versioning.** Releases are numbered (`0.1.0`, `0.2.0`, …), so users can say
-  "I need version 0.1" and get reproducible behavior.
-- **Distribution.** A single `pip install` command delivers the code and its
-  dependencies to anyone, anywhere — including a Google Colab notebook.
+- **Reutilización.** Escribe las reglas del juego una vez; impórtalas desde el
+  torneo, las pruebas y el navegador sin copiar y pegar. En este proyecto eso no
+  es un eslogan: las reglas nunca se reimplementan en JavaScript, porque la
+  página web importa el mismo Python a través de Pyodide.
+- **Una interfaz estable.** Los usuarios dependen de la API *pública*, no de los
+  detalles internos. Puedes reescribir el interior libremente mientras la interfaz
+  se mantenga (de eso trata [la página de la API](api.md)).
+- **Versionado.** Las versiones se numeran (`0.1.0`, `0.2.0`, …), de modo que los
+  usuarios pueden decir "necesito la versión 0.1" y obtener un comportamiento
+  reproducible.
+- **Distribución.** Un solo comando `pip install` entrega el código y sus
+  dependencias a cualquiera, en cualquier lugar — incluido un notebook de Google
+  Colab.
 
-## A concrete example
+## Un ejemplo concreto
 
-The clearest way to see what "a good library" means is to use one. **scikit-learn**
-is a widely used machine-learning library and a model of pleasant design. You
-install it once:
+La forma más clara de ver qué significa "una buena librería" es usar una.
+**scikit-learn** es una librería de machine learning muy usada y un modelo de
+diseño agradable. La instalas una vez:
 
 ```bash
 pip install scikit-learn
 ```
 
-import a small, well-named piece of it:
+importas una pieza pequeña y bien nombrada:
 
 ```python
 from sklearn.linear_model import LogisticRegression
 
 model = LogisticRegression()
-model.fit(X_train, y_train)      # train
-predictions = model.predict(X_test)  # use
+model.fit(X_train, y_train)      # entrenar
+predictions = model.predict(X_test)  # usar
 ```
 
-and you are productive immediately — without reading its source code. That is
-the whole point of a library. What makes it work is worth naming, because these
-are exactly the qualities to aim for in `nimarena`:
+y eres productivo de inmediato — sin leer su código fuente. De eso se trata una
+librería. Vale la pena nombrar qué hace que funcione, porque son exactamente las
+cualidades a las que aspirar en `nimarena`:
 
-- **A consistent interface.** Almost every scikit-learn estimator has the same
-  `.fit()` / `.predict()` methods, so once you learn one, you can guess the
-  others.
-- **Sensible defaults.** `LogisticRegression()` works with no arguments; you
-  only touch parameters when you need to.
-- **Clear names and documentation.** `fit`, `predict`, `LogisticRegression` say
-  what they do, and every public object has documentation.
+- **Una interfaz consistente.** Casi todos los estimadores de scikit-learn tienen
+  los mismos métodos `.fit()` / `.predict()`, así que en cuanto aprendes uno,
+  puedes adivinar los demás.
+- **Valores por defecto sensatos.** `LogisticRegression()` funciona sin
+  argumentos; solo tocas los parámetros cuando lo necesitas.
+- **Nombres y documentación claros.** `fit`, `predict`, `LogisticRegression` dicen
+  lo que hacen, y cada objeto público tiene documentación.
 
-`nimarena` aims at the same three. `nimarena.game` is a handful of pure
-functions that all take the state first and never mutate it; `Player.create`
-works with no arguments; and `legal_moves`, `is_terminal` and `nim_sum` need no
-glossary. Designing that surface deliberately is what
-[the API page](api.md) is about.
+`nimarena` apunta a esas mismas tres cualidades. `nimarena.game` es un puñado de
+funciones puras que reciben todas el estado primero y ninguna lo muta;
+`Player.create` funciona sin argumentos; y `legal_moves`, `is_terminal` y
+`nim_sum` no necesitan glosario. Diseñar esa superficie deliberadamente es de lo
+que trata [la página de API](api.md).
 
-## Where to go next
+## Adónde ir después
 
-- [Organization](organization.md) — the files and folders that turn this code
-  into an installable library.
-- [Installation and usage](installation-and-usage.md) — installing `nimarena`
-  from GitHub and using it in a notebook.
-- [API](api.md) — deciding what the public surface should be.
+- [Organización](organization.md) — los archivos y carpetas que convierten este
+  código en una librería instalable.
+- [Instalación y uso](installation-and-usage.md) — instalar `nimarena` desde
+  GitHub y usarlo en un notebook.

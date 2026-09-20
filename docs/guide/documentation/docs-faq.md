@@ -1,86 +1,102 @@
-# FAQ
+# Preguntas frecuentes
 
-Common questions about writing, building and publishing documentation. Each
-answer links to the page where the topic is covered in full.
+Dudas habituales sobre escribir, construir y publicar documentación. Cada
+respuesta enlaza a la página donde el tema se trata por completo.
 
-??? question "Why keep documentation in the repository instead of a wiki?"
-    So a behavior change and its documentation arrive in the same pull request
-    and are reviewed together. Documentation that lives elsewhere does not go
-    slightly out of date — it goes silently wrong. See
-    [Documenting a project § Docs-as-code](documentation.md#docs-as-code).
+??? question "¿Por qué guardar la documentación en el repositorio y no en una wiki?"
+    Para que un cambio de comportamiento y su documentación lleguen en el mismo
+    pull request y se revisen juntos. La documentación que vive en otro sitio no
+    se queda un poco desfasada — se vuelve silenciosamente falsa. Véase
+    [Documentar un proyecto § Documentación como código](documentation.md#documentacion-como-codigo).
 
-??? question "What goes in the README and what goes in `docs/`?"
-    The README is the trailer: what this is, how to install it, one working
-    example, links out. Everything longer belongs in `docs/`. A README past two
-    screens is a documentation site trying to escape. See
-    [Documenting a project § Where each piece belongs](documentation.md#where-each-piece-belongs).
+??? question "¿Qué va en el README y qué en `docs/`?"
+    El README es el tráiler: qué es esto, cómo se instala, un ejemplo que
+    funcione, enlaces a lo demás. Todo lo más largo va en `docs/`. Un README de
+    más de dos pantallas es un sitio de documentación intentando escaparse. Véase
+    [Documentar un proyecto § Dónde va cada pieza](documentation.md#donde-va-cada-pieza).
 
-??? question "How do I preview the site while writing?"
+??? question "¿Cómo previsualizo el sitio mientras escribo?"
     ```bash
     pip install -e ".[docs]"
     mkdocs serve
     ```
 
-    It rebuilds and refreshes the browser on every save, at
-    <http://127.0.0.1:8000>. See [MkDocs § The two commands](mkdocs.md#the-two-commands).
+    Reconstruye y refresca el navegador cada vez que guardas, en
+    <http://127.0.0.1:8000>. Véase
+    [MkDocs § Los dos comandos](mkdocs.md#los-dos-comandos).
 
-??? question "What does `mkdocs build --strict` do differently?"
-    It turns warnings — a broken internal link, a page missing from `nav` — into
-    a failed build. It is what CI runs, so run it before pushing. See
-    [MkDocs](mkdocs.md#the-two-commands).
+??? question "¿Qué hace `mkdocs build --strict` de distinto?"
+    Convierte los avisos —un enlace interno roto, una página que falta en el
+    `nav`— en una construcción fallida. Es lo que ejecuta CI, así que ejecútalo tú
+    antes de subir. Véase [MkDocs](mkdocs.md#los-dos-comandos).
 
-??? question "My card grid renders as literal HTML and a bullet list. Why?"
-    Material's `grid cards` block needs both the `attr_list` and `md_in_html`
-    markdown extensions. Without them MkDocs emits a raw `<div>` and reports **no
-    warning** — the build stays green while the page is broken. See
-    [MkDocs § Markdown extensions](mkdocs.md#markdown-extensions).
+??? question "Mi cuadrícula de tarjetas sale como HTML literal y una lista. ¿Por qué?"
+    El bloque `grid cards` de Material necesita las extensiones `attr_list` y
+    `md_in_html`. Sin ellas MkDocs emite un `<div>` en bruto y **no informa de
+    ningún aviso** — la construcción sigue en verde mientras la página está rota.
+    Véase [MkDocs § Extensiones de Markdown](mkdocs.md#extensiones-de-markdown).
 
-??? question "My mermaid diagram shows up as a code block."
-    `pymdownx.superfences` needs a `custom_fences` entry for mermaid. Add it to
-    `mkdocs.yml`. See [MkDocs § Markdown extensions](mkdocs.md#markdown-extensions).
+??? question "Mi diagrama mermaid aparece como un bloque de código."
+    `pymdownx.superfences` necesita una entrada `custom_fences` para mermaid.
+    Añádela a `mkdocs.yml`. Véase
+    [MkDocs § Extensiones de Markdown](mkdocs.md#extensiones-de-markdown).
 
-??? question "How do I get an API reference without writing it by hand?"
-    Use mkdocstrings: declare the handler in `mkdocs.yml`, then put `::: module.Object`
-    in a page. It renders the signature, type hints and argument tables from the
-    docstrings. See [MkDocs § API pages from docstrings](mkdocs.md#api-pages-from-docstrings).
+??? question "¿Cómo consigo una referencia de API sin escribirla a mano?"
+    Con mkdocstrings: declara el handler en `mkdocs.yml` y luego pon
+    `::: modulo.Objeto` en una página. Renderiza la firma, las anotaciones de tipo
+    y las tablas de argumentos desde los docstrings. Véase
+    [MkDocs § Páginas de API desde los docstrings](mkdocs.md#paginas-de-api-desde-los-docstrings).
 
-??? question "How does one repository serve two languages?"
-    With `mkdocs-static-i18n` and a filename suffix: `page.md` is English,
-    `page.es.md` is its Spanish twin in the same folder. The `nav` is declared
-    once and falls back to English where a translation is missing. See
-    [MkDocs § Two languages from one tree](mkdocs.md#two-languages-from-one-tree).
+??? question "¿Cómo sirve un repositorio dos idiomas?"
+    Con `mkdocs-static-i18n` y un sufijo en el nombre del archivo. El idioma
+    **por defecto** se queda con el archivo sin sufijo; aquí es el español, así
+    que `page.md` es el español y `page.en.md` su gemelo inglés, en la misma
+    carpeta. El `nav` se declara una vez y recae en el idioma por defecto donde
+    falte una traducción. Véase
+    [MkDocs § Dos idiomas desde un solo árbol](mkdocs.md#dos-idiomas-desde-un-solo-arbol).
 
-??? question "Why are the Spanish pages under `/en/latest/es/` and not `/es/`?"
-    Because Read the Docs' `/es/` prefix belongs to a separate *translation
-    project*, not to a folder inside a build. Keeping both languages in one build
-    is what gives you the in-page language switcher; the nested URL is the price.
-    See [Read the Docs § Versions](readthedocs.md#versions).
+??? question "¿Puedo poner el inglés por defecto sin renombrar todos los archivos?"
+    No. El plugin exige que el idioma por defecto sea el que no lleva sufijo, así
+    que cambiarlo implica intercambiar el sufijo en todas las páginas. Es un
+    renombrado mecánico, pero toca todos los archivos.
 
-??? question "Read the Docs or GitHub Pages?"
-    Pages serves one site and you write the build workflow yourself. Read the
-    Docs builds from a config file and serves several **versions** at once, with a
-    switcher and PR previews. For documentation, prefer Read the Docs; for any
-    other static site, Pages. See
-    [Read the Docs § Why not just GitHub Pages?](readthedocs.md#why-not-just-github-pages).
+??? question "¿Por qué las páginas en inglés están en `/en/latest/en/`?"
+    Son dos segmentos de idioma distintos. El exterior es el idioma del
+    *proyecto* en Read the Docs, que se define en su panel; el interior es el de
+    este plugin, que se define en `mkdocs.yml`. Mantener los dos idiomas en una
+    sola construcción es lo que te da el selector de idioma dentro de la página;
+    la URL anidada es el precio. Véase
+    [Read the Docs § Versiones](readthedocs.md#versiones).
 
-??? question "What is the minimum `.readthedocs.yaml`?"
-    A schema version, a build image and Python version, a pointer to `mkdocs.yml`,
-    and an install step. This project's is fourteen lines and is explained line by
-    line in [Read the Docs § .readthedocs.yaml](readthedocs.md#readthedocsyaml).
+??? question "¿Read the Docs o GitHub Pages?"
+    Pages sirve un solo sitio y el workflow de construcción lo escribes tú. Read
+    the Docs construye desde un archivo de configuración y sirve varias
+    **versiones** a la vez, con selector y previsualizaciones de PR. Para
+    documentación, prefiere Read the Docs; para cualquier otro sitio estático,
+    Pages. Véase
+    [Read the Docs § ¿Por qué no GitHub Pages y ya está?](readthedocs.md#por-que-no-github-pages-y-ya-esta).
 
-??? question "My API pages are empty on Read the Docs but fine locally."
-    mkdocstrings imports your package to read its docstrings, and the build
-    environment is clean. Make sure `python.install` actually installs the project
-    (`method: pip`, `path: .`). See
-    [Read the Docs § When a build fails](readthedocs.md#when-a-build-fails).
+??? question "¿Cuál es el `.readthedocs.yaml` mínimo?"
+    Una versión de esquema, una imagen de construcción y una versión de Python, un
+    puntero a `mkdocs.yml` y un paso de instalación. El de este proyecto son
+    catorce líneas y se explica línea a línea en
+    [Read the Docs § .readthedocs.yaml](readthedocs.md#readthedocsyaml).
 
-??? question "Can a contributor from a fork get a documentation preview?"
-    Yes — Read the Docs builds pull requests from forks and posts a temporary URL
-    as a status check. A GitHub Pages deployment cannot do this, because a fork
-    PR runs without write permissions. See
-    [Read the Docs § Pull request previews](readthedocs.md#pull-request-previews).
+??? question "Mis páginas de API salen vacías en Read the Docs pero bien en local."
+    mkdocstrings importa tu paquete para leer sus docstrings, y el entorno de
+    construcción está limpio. Asegúrate de que `python.install` instala realmente
+    el proyecto (`method: pip`, `path: .`). Véase
+    [Read the Docs § Cuando una construcción falla](readthedocs.md#cuando-una-construccion-falla).
 
-??? question "What is `latest` versus `stable`?"
-    `latest` tracks the default branch — the docs of what is being developed.
-    `stable` tracks the highest version tag — the docs of what people installed.
-    See [Read the Docs § Versions](readthedocs.md#versions).
+??? question "¿Puede quien contribuye desde un fork obtener una previsualización?"
+    Sí — Read the Docs construye los pull requests venidos de forks y publica una
+    URL temporal como comprobación de estado. Un despliegue de GitHub Pages no
+    puede hacerlo, porque un PR de fork se ejecuta sin permisos de escritura.
+    Véase
+    [Read the Docs § Previsualizaciones de pull request](readthedocs.md#previsualizaciones-de-pull-request).
+
+??? question "¿Qué es `latest` frente a `stable`?"
+    `latest` sigue la rama por defecto — la documentación de lo que se está
+    desarrollando. `stable` sigue la etiqueta de versión más alta — la
+    documentación de lo que la gente instaló. Véase
+    [Read the Docs § Versiones](readthedocs.md#versiones).

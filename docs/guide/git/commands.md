@@ -1,36 +1,36 @@
-# Commands
+# Comandos
 
-This page is a practical tour of the commands you will use every day. For each
-one: what it does, the two or three options you will actually reach for, and a
-small example with the output you can expect.
+Esta página es un recorrido práctico por los comandos que usarás cada día. De
+cada uno: qué hace, las dos o tres opciones que realmente vas a usar, y un
+pequeño ejemplo con la salida que puedes esperar.
 
-You do not need to memorize them — keep this page as a reference and the muscle
-memory will come. The [Example](example.md) page then strings them together into
-a full workflow.
+No necesitas memorizarlos: ten esta página a mano como referencia y la memoria
+muscular llegará sola. La página de [Ejemplo](example.md) los encadena luego en
+un flujo de trabajo completo.
 
-!!! info "Conventions used below"
-    Lines starting with `$` are commands you type; everything else is output.
-    Paths and hashes come from a small example project.
+!!! info "Convenciones usadas abajo"
+    Las líneas que empiezan por `$` son comandos que escribes; todo lo demás es
+    salida. Las rutas y los hashes provienen de un pequeño proyecto de ejemplo.
 
-## Starting a repository
+## Iniciar un repositorio
 
 ### `git init`
 
-Turn the current folder into a Git repository. It creates a hidden `.git/`
-directory that holds the entire history; your files are untouched.
+Convierte la carpeta actual en un repositorio Git. Crea un directorio oculto
+`.git/` que contiene todo el historial; tus archivos quedan intactos.
 
 ```console
 $ git init
 Initialized empty Git repository in /home/user/my-project/.git/
 ```
 
-You run this **once**, at the start of a project.
+Esto se ejecuta **una vez**, al principio de un proyecto.
 
 ### `git clone`
 
-Copy an existing repository — including its full history — to your machine.
-This is how you start working on a project that already exists (for example, one
-hosted on GitHub).
+Copia un repositorio existente —incluido todo su historial— a tu máquina. Así es
+como empiezas a trabajar en un proyecto que ya existe (por ejemplo, uno alojado
+en GitHub).
 
 ```console
 $ git clone https://github.com/jparisu/nim-arena.git
@@ -39,16 +39,16 @@ remote: Enumerating objects: 120, done.
 Receiving objects: 100% (120/120), 45.2 KiB, done.
 ```
 
-Cloning also sets up a remote called **`origin`** pointing back at the source,
-so you can `push` and `pull` without extra configuration.
+Clonar también configura un remoto llamado **`origin`** que apunta al origen, de
+modo que puedes hacer `push` y `pull` sin configuración adicional.
 
-## Recording changes
+## Registrar cambios
 
 ### `git status`
 
-Show the current state: which files changed, which are staged for the next
-commit, and which are not tracked yet. This is the command you run most often —
-whenever you are unsure, run `git status`.
+Muestra el estado actual: qué archivos cambiaron, cuáles están preparados para el
+próximo commit y cuáles aún no se rastrean. Es el comando que más ejecutas:
+siempre que dudes, ejecuta `git status`.
 
 ```console
 $ git status
@@ -66,19 +66,19 @@ no changes added to commit (use "git add" and/or "git commit -a")
 
 ### `git add`
 
-Move changes into the staging area, so they will be part of the next commit.
+Mueve cambios al área de preparación, para que formen parte del próximo commit.
 
 ```console
-$ git add README.md        # stage one file
-$ git add .                # stage everything in the current folder
+$ git add README.md        # prepara un archivo
+$ git add .                # prepara todo lo de la carpeta actual
 ```
 
-Staging is what lets you commit *some* of your changes and leave the rest: only
-what you `add` goes into the commit.
+La preparación es lo que te permite hacer commit de *algunos* de tus cambios y
+dejar el resto: solo lo que hagas `add` entra en el commit.
 
 ### `git commit`
 
-Record everything currently staged as a new commit, with a message.
+Registra todo lo que está preparado como un nuevo commit, con un mensaje.
 
 ```console
 $ git commit -m "feat(players): add the greedy bot"
@@ -86,21 +86,21 @@ $ git commit -m "feat(players): add the greedy bot"
  1 file changed, 42 insertions(+)
 ```
 
-- `-m "…"` gives the message inline. Without it, Git opens an editor.
-- Write messages in the **imperative** and keep them meaningful — see
-  [Organization § History](organization.md#history).
+- `-m "…"` da el mensaje en línea. Sin él, Git abre un editor.
+- Escribe los mensajes en **imperativo** y con sentido — véase
+  [Organización § Historial](organization.md#historial).
 
 !!! warning "`git commit -a`"
-    `git commit -a` stages **all tracked files** and commits in one step. It is
-    a handy shortcut, but it skips the review that staging gives you, and it
-    never includes new (untracked) files. Prefer an explicit `git add` while you
-    are learning.
+    `git commit -a` prepara **todos los archivos rastreados** y hace el commit en
+    un solo paso. Es un atajo cómodo, pero se salta la revisión que da la
+    preparación, y nunca incluye archivos nuevos (sin rastrear). Prefiere un
+    `git add` explícito mientras aprendes.
 
-## Inspecting
+## Inspeccionar
 
 ### `git log`
 
-Read the history, newest commit first.
+Lee el historial, el commit más reciente primero.
 
 ```console
 $ git log --oneline
@@ -111,14 +111,14 @@ a1976d8 feat(tournament): add the championship format
 7b0978f Add README
 ```
 
-- `--oneline` condenses each commit to one line — the most useful everyday view.
-- `--graph --oneline --all` draws the branch structure as ASCII art.
-- `-p` shows the full diff of each commit.
+- `--oneline` condensa cada commit a una línea — la vista más útil del día a día.
+- `--graph --oneline --all` dibuja la estructura de ramas como arte ASCII.
+- `-p` muestra el diff completo de cada commit.
 
 ### `git diff`
 
-Show changes as a [diff](organization.md#diffs). With no arguments it shows what
-you have changed but **not yet staged**:
+Muestra los cambios como un [diff](organization.md#diffs). Sin argumentos,
+muestra lo que has cambiado pero **aún no has preparado**:
 
 ```console
 $ git diff
@@ -131,46 +131,46 @@ index 3b1f2a1..a2c4d9e 100644
 +A parametrized NIM engine with a player API.
 ```
 
-- `git diff --staged` shows what is staged (i.e. what the next commit will
-  record).
-- `git diff main feature` compares two branches.
+- `git diff --staged` muestra lo que está preparado (es decir, lo que registrará
+  el próximo commit).
+- `git diff main feature` compara dos ramas.
 
-## Branching and merging
+## Ramificar y fusionar
 
 ### `git branch`
 
-List, create or delete branches.
+Lista, crea o borra ramas.
 
 ```console
-$ git branch                 # list; the current one is marked with *
+$ git branch                 # lista; la rama actual se marca con *
 * main
-$ git branch feature         # create a branch called "feature"
-$ git branch -d feature      # delete a merged branch
+$ git branch feature         # crea una rama llamada "feature"
+$ git branch -d feature      # borra una rama ya fusionada
 ```
 
-Creating a branch does not switch to it — for that, use `checkout`.
+Crear una rama no te cambia a ella — para eso, usa `checkout`.
 
 ### `git checkout`
 
-Switch between branches (and, more generally, move `HEAD`).
+Cambia entre ramas (y, en general, mueve `HEAD`).
 
 ```console
-$ git checkout feature       # switch to an existing branch
+$ git checkout feature       # cámbiate a una rama existente
 Switched to branch 'feature'
-$ git checkout -b feature    # create AND switch in one step
+$ git checkout -b feature    # crea Y cámbiate en un solo paso
 Switched to a new branch 'feature'
 ```
 
-!!! note "`git switch` and `git restore`"
-    Modern Git split `checkout`'s two jobs into clearer commands: `git switch`
-    for changing branches and `git restore` for discarding file changes.
-    `checkout` still works and is what you will see most often, so this guide
-    uses it; `restore` is covered in
-    [Undoing changes](undoing-changes.md).
+!!! note "`git switch` y `git restore`"
+    El Git moderno dividió las dos tareas de `checkout` en comandos más claros:
+    `git switch` para cambiar de rama y `git restore` para descartar cambios en
+    archivos. `checkout` sigue funcionando y es lo que verás más a menudo, así
+    que esta guía lo usa; `restore` se cubre en
+    [Deshacer cambios](undoing-changes.md).
 
 ### `git merge`
 
-Integrate another branch into the current one.
+Integra otra rama en la actual.
 
 ```console
 $ git checkout main
@@ -181,14 +181,14 @@ Fast-forward
  1 file changed, 120 insertions(+)
 ```
 
-If both branches changed the same lines, the merge stops with a **conflict** for
-you to resolve — see the [Example](example.md).
+Si ambas ramas cambiaron las mismas líneas, la fusión se detiene con un
+**conflicto** para que lo resuelvas — véase el [Ejemplo](example.md).
 
-## Synchronizing with a remote
+## Sincronizar con un remoto
 
 ### `git push`
 
-Send your local commits to the remote (e.g. GitHub).
+Envía tus commits locales al remoto (p. ej. GitHub).
 
 ```console
 $ git push origin main
@@ -197,13 +197,13 @@ To https://github.com/jparisu/nim-arena.git
    92c1041..9f3a1c2  main -> main
 ```
 
-The first time you push a new branch, use `git push -u origin <branch>`; the
-`-u` remembers the link so later you can just type `git push`.
+La primera vez que subes una rama nueva, usa `git push -u origin <rama>`; el `-u`
+recuerda el vínculo, así que después basta con escribir `git push`.
 
 ### `git pull`
 
-Bring commits from the remote into your current branch. It is really two steps
-in one: **fetch** the new commits, then **merge** them into your branch.
+Trae commits del remoto a tu rama actual. En realidad son dos pasos en uno:
+**fetch** de los nuevos commits y luego **merge** en tu rama.
 
 ```console
 $ git pull
@@ -213,47 +213,47 @@ Fast-forward
  1 file changed, 1 insertion(+), 1 deletion(-)
 ```
 
-Get into the habit of pulling **before** you start working, so you build on your
-teammates' latest changes rather than on a stale copy.
+Adquiere el hábito de hacer pull **antes** de empezar a trabajar, para construir
+sobre los últimos cambios de tus compañeros y no sobre una copia desactualizada.
 
-## Quick reference
+## Referencia rápida
 
-| Command | Purpose |
+| Comando | Para qué sirve |
 | --- | --- |
-| `git init` | Create a repository in the current folder. |
-| `git clone <url>` | Copy an existing repository, history and all. |
-| `git status` | See what changed and what is staged. |
-| `git add <path>` | Stage changes for the next commit. |
-| `git commit -m "…"` | Record staged changes with a message. |
-| `git log --oneline` | Read the history. |
-| `git diff` | Inspect changes not yet staged. |
-| `git branch` | List, create or delete branches. |
-| `git checkout <branch>` | Switch branches (`-b` to create). |
-| `git merge <branch>` | Integrate a branch into the current one. |
-| `git push` | Send commits to the remote. |
-| `git pull` | Bring remote commits into the current branch. |
+| `git init` | Crear un repositorio en la carpeta actual. |
+| `git clone <url>` | Copiar un repositorio existente, con todo su historial. |
+| `git status` | Ver qué cambió y qué está preparado. |
+| `git add <ruta>` | Preparar cambios para el próximo commit. |
+| `git commit -m "…"` | Registrar los cambios preparados con un mensaje. |
+| `git log --oneline` | Leer el historial. |
+| `git diff` | Inspeccionar cambios aún no preparados. |
+| `git branch` | Listar, crear o borrar ramas. |
+| `git checkout <rama>` | Cambiar de rama (`-b` para crear). |
+| `git merge <rama>` | Integrar una rama en la actual. |
+| `git push` | Enviar commits al remoto. |
+| `git pull` | Traer commits del remoto a la rama actual. |
 
-## Other useful commands
+## Otros comandos útiles
 
-- `git rebase <branch>` — reorganize commits to make the history more linear.
-- `git fetch` — bring remote commits without merging them.
-- `git cherry-pick <hash>` — apply one specific commit from another branch.
+- `git rebase <branch>` — reorganizar commits para hacer el historial más lineal.
+- `git fetch` — traer commits del remoto sin fusionarlos.
+- `git cherry-pick <hash>` — aplicar un commit concreto de otra rama.
 
-Other commands for undoing changes are covered in
-[Undoing changes](undoing-changes.md): `git restore`, `git reset`, `git stash`.
+Otros comandos para deshacer cambios se cubren en [Deshacer cambios](undoing-changes.md):
+`git restore`, `git reset`, `git stash`.
 
-## The `.gitignore` file
+## El archivo `.gitignore`
 
-Not every file belongs in the repository. Compiled artifacts, virtual
-environments, caches and editor settings are generated locally and would only
-clutter the history (and cause conflicts) if committed.
+No todos los archivos deben estar en el repositorio. Los artefactos compilados,
+los entornos virtuales, las cachés y la configuración del editor se generan en
+local y, si se confirman, solo ensuciarían el historial (y causarían conflictos).
 
-A **`.gitignore`** file, placed at the root of the repository, lists patterns
-for files Git should **ignore**: they never show up in `git status` and cannot
-be added by accident. Each line is a pattern; `#` starts a comment.
+Un archivo **`.gitignore`**, colocado en la raíz del repositorio, lista patrones
+de archivos que Git debe **ignorar**: nunca aparecen en `git status` y no pueden
+añadirse por accidente. Cada línea es un patrón; `#` inicia un comentario.
 
-Here is the `.gitignore` this very project uses — a good starting point for any
-Python project:
+Este es el `.gitignore` que usa este mismo proyecto — un buen punto de partida
+para cualquier proyecto Python:
 
 ```gitignore
 # Python
@@ -289,17 +289,17 @@ web/leaderboard.json
 ```
 
 !!! tip
-    Add `.gitignore` **before** your first commit, so the noise never enters the
-    history in the first place. If a file is already tracked, adding it to
-    `.gitignore` does not remove it — you have to `git rm --cached <file>` once.
+    Añade el `.gitignore` **antes** de tu primer commit, para que el ruido no
+    entre nunca en el historial. Si un archivo ya está rastreado, añadirlo al
+    `.gitignore` no lo elimina — hay que hacer `git rm --cached <archivo>` una vez.
 
-!!! note "Tags and releases"
-    Tagging specific commits as versioned releases is a real Git feature, but it
-    is intentionally left out of this guide: for this project, understanding
-    `main` and branches is enough.
+!!! note "Etiquetas y versiones (tags y releases)"
+    Etiquetar commits concretos como versiones publicadas es una función real de
+    Git, pero se deja fuera de esta guía a propósito: para este proyecto, entender
+    `main` y las ramas es suficiente.
 
-## Where to go next
+## Adónde ir después
 
-- [Undoing changes](undoing-changes.md) — when a command went wrong, or you
-  changed your mind.
-- [Example](example.md) — these commands, applied end to end.
+- [Deshacer cambios](undoing-changes.md) — cuando un comando salió mal, o
+  cambiaste de opinión.
+- [Ejemplo](example.md) — estos comandos, aplicados de principio a fin.

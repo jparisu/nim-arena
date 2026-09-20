@@ -1,55 +1,59 @@
 # Read the Docs
 
-[Read the Docs](https://about.readthedocs.com/) is a hosting service built
-specifically for documentation. You connect a repository; it clones it on every
-push, builds the site in a clean container, and serves the result — with
-versioning, search and pull request previews on top.
+[Read the Docs](https://about.readthedocs.com/) es un servicio de alojamiento
+hecho específicamente para documentación. Conectas un repositorio; él lo clona en
+cada push, construye el sitio en un contenedor limpio y sirve el resultado — con
+versionado, buscador y previsualizaciones de pull request encima.
 
-This documentation is published there, at
+Esta documentación se publica allí, en
 [nim-arena.readthedocs.io](https://nim-arena.readthedocs.io).
 
-## Why not just GitHub Pages?
+## ¿Por qué no GitHub Pages y ya está?
 
-Both host static sites for free. They solve different problems.
+Los dos alojan sitios estáticos gratis. Resuelven problemas distintos.
 
 | | GitHub Pages | Read the Docs |
 | --- | --- | --- |
-| Builds your site | no — you write the workflow | yes, from a config file |
-| Serves several versions at once | no | yes, with a version switcher |
-| Preview of a pull request | not from a fork | yes, a URL per PR |
-| Search across the site | whatever your theme ships | server-side, across versions |
-| Good for | any static site | documentation specifically |
+| Construye tu sitio | no — escribes tú el workflow | sí, desde un archivo de configuración |
+| Sirve varias versiones a la vez | no | sí, con un selector de versión |
+| Previsualización de un pull request | no desde un fork | sí, una URL por PR |
+| Búsqueda en todo el sitio | lo que traiga tu tema | en servidor, entre versiones |
+| Bueno para | cualquier sitio estático | documentación en concreto |
 
-The deciding feature is usually **versions**. Pages serves one site: whatever was
-built last. Read the Docs keeps `latest` (your default branch), `stable` (your
-latest tag) and every version you activate, all live at once, with a switcher in
-the corner. A user pinned to `0.1.0` reads the `0.1.0` documentation.
+La característica decisiva suele ser las **versiones**. Pages sirve un sitio: el
+que se construyó el último. Read the Docs mantiene `latest` (tu rama por
+defecto), `stable` (tu última etiqueta) y todas las versiones que actives, todas
+vivas a la vez y con un selector en la esquina. Quien esté fijado a `0.1.0` lee la
+documentación de `0.1.0`.
 
-This project uses both, for different artifacts: the playable web app is a Pages
-deployment ([GitHub Pages](../github/pages.md)), and this manual is on Read the
-Docs. Publishing the docs there also keeps the Pages workflow focused on one job.
+Este proyecto usa los dos, para artefactos distintos: la web jugable es un
+despliegue de Pages ([GitHub Pages](../github/pages.md)) y este manual está en
+Read the Docs. Publicar la documentación allí también mantiene el workflow de
+Pages centrado en una sola tarea.
 
-## Importing a project
+## Importar un proyecto
 
-Once, through the web interface:
+Una vez, desde la interfaz web:
 
-1. Sign in to Read the Docs with your GitHub account.
-2. **Add project** → **Configure manually** or pick the repository from the list.
-   Granting the GitHub integration is what installs the webhook that triggers a
-   build on push.
-3. Confirm the project **slug** — it becomes `https://<slug>.readthedocs.io`.
-4. Build. The first one usually fails; read the log, fix `.readthedocs.yaml`,
-   push.
+1. Entra en Read the Docs con tu cuenta de GitHub.
+2. **Add project** → **Configure manually** o elige el repositorio de la lista.
+   Conceder la integración de GitHub es lo que instala el webhook que dispara una
+   construcción en cada push.
+3. Confirma el **slug** del proyecto — se convierte en
+   `https://<slug>.readthedocs.io`.
+4. Construye. La primera vez suele fallar; lee el registro, arregla
+   `.readthedocs.yaml`, sube.
 
-!!! note "The import is a click, not a file"
-    Like the Pages source setting, connecting the repository is done in a web UI
-    and is not recorded anywhere in the repository. If a fork builds nothing, it
-    is because nobody imported it — not because the configuration is wrong.
+!!! note "La importación es un clic, no un archivo"
+    Igual que el ajuste de origen de Pages, conectar el repositorio se hace en una
+    interfaz web y no queda registrado en ninguna parte del repositorio. Si un
+    fork no construye nada, es porque nadie lo importó — no porque la
+    configuración esté mal.
 
 ## `.readthedocs.yaml`
 
-Everything reproducible lives in one file at the repository root. This
-project's, in full:
+Todo lo reproducible vive en un archivo en la raíz del repositorio. El de este
+proyecto, completo:
 
 ```yaml
 # Read the Docs configuration.
@@ -72,125 +76,150 @@ python:
         - docs
 ```
 
-Line by line:
+Línea a línea:
 
-- **`version: 2`** — the config-file schema. Always 2; version 1 is long gone.
-- **`build.os` / `build.tools.python`** — the image and interpreter. Pinning them
-  is what stops a build that worked last month from breaking when the default
-  moves.
-- **`mkdocs.configuration`** — the path to `mkdocs.yml`. (For a Sphinx project
-  this block would be `sphinx:` instead.)
-- **`python.install`** — how to install the project before building. `path: .`
-  with `extra_requirements: [docs]` is exactly `pip install ".[docs]"`, so the
-  documentation dependencies are declared **once**, in `pyproject.toml`, and
-  never drift from a separate `docs/requirements.txt`.
+- **`version: 2`** — el esquema del archivo de configuración. Siempre 2; la
+  versión 1 desapareció hace mucho.
+- **`build.os` / `build.tools.python`** — la imagen y el intérprete. Fijarlos es
+  lo que evita que una construcción que funcionaba el mes pasado se rompa cuando
+  cambie el valor por defecto.
+- **`mkdocs.configuration`** — la ruta a `mkdocs.yml`. (Para un proyecto Sphinx
+  este bloque sería `sphinx:`.)
+- **`python.install`** — cómo instalar el proyecto antes de construir. `path: .`
+  con `extra_requirements: [docs]` es exactamente `pip install ".[docs]"`, de modo
+  que las dependencias de la documentación se declaran **una sola vez**, en
+  `pyproject.toml`, y nunca se desvían de un `docs/requirements.txt` aparte.
 
-That last point matters more than it looks. `mkdocstrings` imports your package
-to read its docstrings; if the package is not installed in the build
-environment, the API blocks come out empty and the build may still succeed.
+Ese último punto importa más de lo que parece. `mkdocstrings` importa tu paquete
+para leer sus docstrings; si el paquete no está instalado en el entorno de
+construcción, los bloques de API salen vacíos y la construcción puede aun así dar
+éxito.
 
-!!! warning "Read the Docs does not run `--strict`"
-    Its build can succeed on warnings that `mkdocs build --strict` would reject.
-    That is why this repository *also* has a
-    [Docs workflow](../github/actions.md#building-the-documentation) running the
-    strict build on every pull request. Read the Docs publishes; the Action
-    checks.
+!!! warning "Read the Docs no ejecuta `--strict`"
+    Su construcción puede tener éxito con avisos que `mkdocs build --strict`
+    rechazaría. Por eso este repositorio tiene *además* un
+    [workflow Docs](../github/actions.md#construir-la-documentacion) que ejecuta la
+    construcción estricta en cada pull request. Read the Docs publica; la Action
+    comprueba.
 
-## Versions
+## Versiones
 
-A **version** on Read the Docs is a branch or a tag it builds and serves at its
-own URL.
+Una **versión** en Read the Docs es una rama o una etiqueta que construye y sirve
+en su propia URL.
 
-- **`latest`** tracks your default branch — the documentation of what is being
-  developed.
-- **`stable`** tracks the highest semantic-version tag — the documentation of
-  what people actually installed.
-- Any other branch or tag can be **activated** in **Versions**, and marked
-  hidden if you want it built but not offered in the switcher.
+- **`latest`** sigue tu rama por defecto — la documentación de lo que se está
+  desarrollando.
+- **`stable`** sigue la etiqueta de versión semántica más alta — la documentación
+  de lo que la gente instaló de verdad.
+- Cualquier otra rama o etiqueta puede **activarse** en **Versions**, y marcarse
+  como oculta si quieres que se construya pero no aparezca en el selector.
 
-URLs carry the version and the language:
+Las URL llevan la versión y el idioma:
 
 ```text
-https://nim-arena.readthedocs.io/en/latest/arena/player-api/
+https://nim-arena.readthedocs.io/en/latest/game/upload-a-bot/player-api/
                                  ^^  ^^^^^^
-                                 |   version
-                                 language
+                                 |   versión
+                                 idioma
 ```
 
-The language segment is there because Read the Docs understands multilingual
-projects — but it means something different from our own language directory. Read
-the Docs serves a *project*, and this project's language is English, so its whole
-build lives under `/en/`. The Spanish pages that `mkdocs-static-i18n` puts in
-`es/` therefore end up at `…/en/latest/es/…`: the outer segment is Read the Docs',
-the inner one is the plugin's.
+El segmento de idioma está ahí porque Read the Docs entiende los proyectos
+multilingües — pero significa algo distinto de nuestro propio directorio de
+idioma. Read the Docs sirve un *proyecto*, y tiene un único ajuste de idioma para
+todo él. Todo lo que construye vive bajo ese único código. Dentro,
+`mkdocs-static-i18n` coloca sus propios idiomas.
 
-This is the trade-off of building both languages together. You get one build, one
-deploy, and an in-page language switcher; you do not get Read the Docs' own `/es/`
-prefix, which is reserved for a separate *translation project*. For a site this
-size the switcher is worth more than the tidier URL.
+Así que hay **dos** segmentos de idioma, y se definen en sitios distintos:
 
-!!! danger "Set `site_url` from the environment, or the language switcher breaks"
-    Material builds the language switcher's `<link rel="alternate">` hrefs from
-    the **path** of `site_url`. Hardcode it to the site root and the Spanish link
-    becomes `/es/` — which Read the Docs reads as a *language slug*, not as our
-    subdirectory. It looks for a Spanish translation project, finds none, and you
-    land on an unstyled page of giant icons: the HTML rendered, the stylesheet
-    404ed.
+```text
+https://nim-arena.readthedocs.io/en/latest/game/rules/        <- página en español
+https://nim-arena.readthedocs.io/en/latest/en/game/rules/     <- página en inglés
+                                 ^^        ^^
+                                 |         mkdocs-static-i18n (mkdocs.yml)
+                                 idioma del proyecto en Read the Docs (panel)
+```
 
-    Read the Docs exports `READTHEDOCS_CANONICAL_URL` on every build — different
-    for each version and for each pull-request preview. Read it with MkDocs'
-    `!ENV` tag and keep a fallback for local builds:
+Nuestro idioma por defecto es el español, así que la construcción española se
+queda en la raíz del plugin y hereda el código del proyecto sin más. El inglés
+añade su propio `/en/` dentro.
+
+!!! tip "Define también el idioma del proyecto en Read the Docs"
+    El segmento exterior **no** está en este repositorio — es un campo del panel
+    de Read the Docs, en **Admin → Settings → Language**. Ponlo en español y el
+    segmento exterior pasa a ser `/es/`, que es lo que el sitio sirve de verdad.
+    Si lo dejas, las URL siguen funcionando; simplemente se leen raro.
+
+Ese es el precio de construir los dos idiomas juntos. Ganas una sola construcción,
+un solo despliegue y un selector de idioma dentro de la página; no obtienes un
+*proyecto de traducción* aparte por idioma en Read the Docs. Para un sitio de este
+tamaño el selector vale más que la URL más limpia.
+
+!!! danger "Define `site_url` desde el entorno, o el selector de idioma se rompe"
+    Material construye los `<link rel="alternate">` del selector de idioma a
+    partir de la **ruta** de `site_url`. Si la fijas a la raíz del sitio, el enlace
+    al inglés se convierte en `/en/` — que Read the Docs lee como su propio
+    *código de idioma*, no como nuestro subdirectorio. Busca un proyecto de
+    traducción, no lo encuentra, y acabas en una página sin estilos y con iconos
+    gigantes: el HTML se renderizó, la hoja de estilos dio 404.
+
+    Read the Docs exporta `READTHEDOCS_CANONICAL_URL` en cada construcción —
+    distinta para cada versión y para cada previsualización de pull request. Léela
+    con la etiqueta `!ENV` de MkDocs y deja un valor de reserva para las
+    construcciones locales:
 
     ```yaml
     site_url: !ENV [READTHEDOCS_CANONICAL_URL, "https://nim-arena.readthedocs.io/"]
     ```
 
-    The switcher then resolves to `/en/latest/es/` in production and to
-    `/en/<pr-number>/es/` inside a preview, so it never throws you out of the
-    build you are reading. The same variable fixes the `canonical` link, which
-    would otherwise point every preview page at production.
+    El selector resuelve entonces a `/en/latest/en/` en producción y a
+    `/en/<numero-de-pr>/en/` dentro de una previsualización, así que nunca te saca
+    de la construcción que estás leyendo. La misma variable arregla el enlace
+    `canonical`, que si no apuntaría todas las páginas de la previsualización a
+    producción.
 
-## Pull request previews
+## Previsualizaciones de pull request
 
-Enable **Build pull requests for this project** in
-**Settings → Advanced settings**. Read the Docs then builds every PR and posts a
-temporary URL as a status check, so a reviewer reads the rendered page instead of
-the Markdown diff.
+Activa **Build pull requests for this project** en
+**Settings → Advanced settings**. Read the Docs construirá entonces cada PR y
+publicará una URL temporal como comprobación de estado, para que quien revise lea
+la página renderizada en lugar del diff en Markdown.
 
-Unlike a Pages deployment, this **works from forks**, because the build is
-sandboxed and produces a throwaway site with no access to your project. For a
-repository that takes outside contributions, it is the single most useful setting
-on this page.
+A diferencia de un despliegue de Pages, esto **funciona desde forks**, porque la
+construcción está aislada y produce un sitio desechable sin acceso a tu proyecto.
+Para un repositorio que acepta contribuciones externas, es el ajuste más útil de
+toda esta página.
 
-## The badge
+## La insignia
 
-The build status is available as an image, which is why the README carries:
+El estado de la construcción está disponible como imagen, y por eso el README
+lleva:
 
 ```markdown
 [![Docs](https://readthedocs.org/projects/nim-arena/badge/?version=latest)](https://nim-arena.readthedocs.io)
 ```
 
-A broken documentation build is then visible from the front page, rather than in
-an email nobody opens.
+Una construcción de documentación rota se ve entonces desde la portada, en lugar
+de en un correo que nadie abre.
 
-## When a build fails
+## Cuando una construcción falla
 
-The **Builds** tab keeps the full log of every attempt. The usual causes, in
-order of frequency:
+La pestaña **Builds** guarda el registro completo de cada intento. Las causas
+habituales, por frecuencia:
 
-1. **A missing dependency.** The build environment is clean — anything not in
-   `python.install` is not there. `ModuleNotFoundError` from mkdocstrings almost
-   always means the package itself was not installed.
-2. **A pinned tool that moved.** Reproduce locally with the same Python version
-   `build.tools.python` names.
-3. **A file referenced from `nav` that does not exist.** Catch these before
-   pushing with `mkdocs build --strict`.
-4. **The config file in the wrong place.** `.readthedocs.yaml` must be at the
-   repository root, on the branch being built.
+1. **Una dependencia que falta.** El entorno de construcción está limpio:
+   cualquier cosa que no esté en `python.install` no está ahí. Un
+   `ModuleNotFoundError` de mkdocstrings casi siempre significa que el propio
+   paquete no se instaló.
+2. **Una herramienta fijada que cambió.** Reprodúcelo en local con la misma
+   versión de Python que nombra `build.tools.python`.
+3. **Un archivo referenciado desde `nav` que no existe.** Cázalos antes de subir
+   con `mkdocs build --strict`.
+4. **El archivo de configuración en el sitio equivocado.** `.readthedocs.yaml`
+   tiene que estar en la raíz del repositorio, en la rama que se construye.
 
-## Where to go next
+## Adónde ir después
 
-- [MkDocs](mkdocs.md) — the build this service runs.
-- [GitHub Pages](../github/pages.md) — the other publishing target, and what it
-  is better at.
-- [Documenting a project](documentation.md) — what to put in the pages.
+- [MkDocs](mkdocs.md) — la construcción que ejecuta este servicio.
+- [GitHub Pages](../github/pages.md) — el otro destino de publicación, y en qué es
+  mejor.
+- [Documentar un proyecto](documentation.md) — qué poner en las páginas.

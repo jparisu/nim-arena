@@ -1,27 +1,27 @@
-# Example
+# Ejemplo
 
-This page ties the whole section together by **recreating how this very project,
-`nim-arena`, was started** — from an empty folder to a repository pushed
-to GitHub, with a branch and a merge conflict along the way.
+Esta página une toda la sección **recreando cómo se inició este mismo proyecto,
+`nim-arena`** — desde una carpeta vacía hasta un repositorio subido a
+GitHub, con una rama y un conflicto de fusión por el camino.
 
-You can follow along in an empty folder and reproduce every step. Commands are
-the lines starting with `$`; everything else is output. The hashes come from one
-such run — yours will differ, because a hash is computed from the content, the
-author and the timestamp.
+Puedes seguirlo en una carpeta vacía y reproducir cada paso. Los comandos son las
+líneas que empiezan por `$`; todo lo demás es salida. Los hashes provienen de una
+ejecución concreta — los tuyos serán distintos, porque un hash se calcula a partir
+del contenido, el autor y la fecha.
 
-!!! info "What you need"
-    Git installed (`git --version` should print a version) and, for the last
-    step, a GitHub account. Configure your identity once, so your commits are
-    attributed to you:
+!!! info "Qué necesitas"
+    Git instalado (`git --version` debería imprimir una versión) y, para el
+    último paso, una cuenta de GitHub. Configura tu identidad una vez, para que
+    tus commits se te atribuyan a ti:
 
     ```console
-    $ git config --global user.name "Your Name"
-    $ git config --global user.email "you@example.com"
+    $ git config --global user.name "Tu Nombre"
+    $ git config --global user.email "tu@ejemplo.com"
     ```
 
-## 1. Create the repository
+## 1. Crear el repositorio
 
-Start in an empty folder and turn it into a Git repository:
+Empieza en una carpeta vacía y conviértela en un repositorio Git:
 
 ```console
 $ mkdir nim-arena
@@ -30,22 +30,22 @@ $ git init
 Initialized empty Git repository in /home/user/nim-arena/.git/
 ```
 
-Before adding anything, create a **`.gitignore`** so generated files never enter
-the history (see [Commands § .gitignore](commands.md#the-gitignore-file)):
+Antes de añadir nada, crea un **`.gitignore`** para que los archivos generados
+nunca entren en el historial (véase [Comandos § .gitignore](commands.md#el-archivo-gitignore)):
 
 ```console
 $ printf '__pycache__/\n.venv/\nsite/\n' > .gitignore
 ```
 
-## 2. Add files and make the first commit
+## 2. Añadir archivos y hacer el primer commit
 
-Create a first file — the project's README:
+Crea un primer archivo — el README del proyecto:
 
 ```console
 $ printf '# NIM Arena\n' > README.md
 ```
 
-Check the state. Git sees two new files it is not yet tracking:
+Comprueba el estado. Git ve dos archivos nuevos que aún no rastrea:
 
 ```console
 $ git status
@@ -61,7 +61,7 @@ Untracked files:
 nothing added to commit but untracked files present
 ```
 
-Stage both files and record the first commit:
+Prepara ambos archivos y registra el primer commit:
 
 ```console
 $ git add .
@@ -72,7 +72,8 @@ $ git commit -m "Initial commit"
  create mode 100644 README.md
 ```
 
-Add a bit more to the README and make a second commit, so we have some history:
+Añade un poco más al README y haz un segundo commit, para tener algo de
+historial:
 
 ```console
 $ printf '\nA parametrized NIM engine with a player API and a tournament.\n' >> README.md
@@ -82,9 +83,9 @@ $ git commit -m "Add README"
  1 file changed, 2 insertions(+)
 ```
 
-## 3. Inspect the state
+## 3. Inspeccionar el estado
 
-Three commands answer "where am I?":
+Tres comandos responden a "¿dónde estoy?":
 
 ```console
 $ git log --oneline
@@ -98,21 +99,21 @@ nothing to commit, working tree clean
 $ git diff
 ```
 
-`git log` shows the two commits, `git status` confirms there is nothing pending,
-and `git diff` prints nothing because there are no uncommitted changes. This is
-the clean starting point for new work.
+`git log` muestra los dos commits, `git status` confirma que no hay nada
+pendiente, y `git diff` no imprime nada porque no hay cambios sin confirmar. Este
+es el punto de partida limpio para trabajo nuevo.
 
-## 4. Create a branch and work on it
+## 4. Crear una rama y trabajar en ella
 
-New work goes on its own **branch**, not directly on `main`. Create one and
-switch to it:
+El trabajo nuevo va en su propia **rama**, no directamente en `main`. Crea una y
+cámbiate a ella:
 
 ```console
 $ git checkout -b rules-page
 Switched to a new branch 'rules-page'
 ```
 
-Add a page describing the game rules and commit it:
+Añade el documento de diseño de la documentación y confírmalo:
 
 ```console
 $ printf '# Rules\n\nRemove sticks from one row. Taking the last stick wins.\n' > RULES.md
@@ -122,25 +123,25 @@ $ git commit -m "docs: add the game rules"
  1 file changed, 3 insertions(+)
 ```
 
-The `rules-page` branch is now one commit ahead of `main`. Nothing on `main`
-changed — you can switch back and forth to confirm:
+La rama `rules-page` está ahora un commit por delante de `main`. Nada en `main`
+cambió — puedes cambiar de una a otra para comprobarlo:
 
 ```console
 $ git checkout main
 Switched to branch 'main'
 $ ls
-README.md          # RULES.md is not here; it lives on the other branch
+README.md          # RULES.md no está aquí; vive en la otra rama
 
 $ git checkout rules-page
 Switched to branch 'rules-page'
 ```
 
-## 5. Merge the branch back — and resolve a conflict
+## 5. Fusionar la rama de vuelta y resolver un conflicto
 
-To make a conflict happen, let both branches change **the same line** of the
-README.
+Para provocar un conflicto, haremos que ambas ramas cambien **la misma línea**
+del README.
 
-On `main`, tweak the description line:
+En `main`, ajusta la línea de descripción:
 
 ```console
 $ git checkout main
@@ -149,7 +150,7 @@ $ git commit -am "docs: reword the README description"
 [main a1b2c3d] docs: reword the README description
 ```
 
-On `rules-page`, change *the same line* differently:
+En `rules-page`, cambia *la misma línea* de otra forma:
 
 ```console
 $ git checkout rules-page
@@ -158,7 +159,7 @@ $ git commit -am "docs: reword the README description"
 [rules-page e4f5a6b] docs: reword the README description
 ```
 
-Now merge `rules-page` into `main`. Git cannot decide which wording wins:
+Ahora fusiona `rules-page` en `main`. Git no puede decidir qué redacción gana:
 
 ```console
 $ git checkout main
@@ -168,7 +169,7 @@ CONFLICT (content): Merge conflict in README.md
 Automatic merge failed; fix conflicts and then commit the result.
 ```
 
-Open `README.md`. Git has marked the conflicting region:
+Abre `README.md`. Git ha marcado la región en conflicto:
 
 ```text
 # NIM Arena
@@ -180,12 +181,12 @@ A parametrized NIM game and a player API.
 >>>>>>> rules-page
 ```
 
-- Everything between `<<<<<<< HEAD` and `=======` is **your** version (`main`).
-- Everything between `=======` and `>>>>>>> rules-page` is the **incoming**
-  version.
+- Todo lo que está entre `<<<<<<< HEAD` y `=======` es **tu** versión (`main`).
+- Todo lo que está entre `=======` y `>>>>>>> rules-page` es la versión
+  **entrante**.
 
-**Resolve** it by editing the file into the final text you want and deleting all
-three marker lines:
+**Resuélvelo** editando el archivo hasta dejar el texto final que quieres y
+borrando las tres líneas de marcadores:
 
 ```text
 # NIM Arena
@@ -193,7 +194,7 @@ three marker lines:
 A parametrized NIM engine, a player API and a tournament runner.
 ```
 
-Then stage the resolved file and complete the merge:
+Luego prepara el archivo resuelto y completa la fusión:
 
 ```console
 $ git add README.md
@@ -201,7 +202,8 @@ $ git commit -m "Merge rules-page into main"
 [main 4d9b2fe] Merge rules-page into main
 ```
 
-The history now shows both lines of work joined by a **merge commit**:
+El historial muestra ahora ambas líneas de trabajo unidas por un **commit de
+fusión**:
 
 ```console
 $ git log --oneline --graph
@@ -214,18 +216,18 @@ $ git log --oneline --graph
 * 29434cf Initial commit
 ```
 
-The `rules-page` branch has served its purpose and can be deleted:
+La rama `rules-page` ha cumplido su propósito y puede borrarse:
 
 ```console
 $ git branch -d rules-page
 Deleted branch rules-page (was e4f5a6b).
 ```
 
-## 6. Connect a remote and push
+## 6. Conectar un remoto y subir (push)
 
-So far everything lives on your machine. To share it, create an empty repository
-on GitHub (see the [GitHub section](../github/first-steps.md)), then connect it
-as the remote **`origin`** and push:
+Hasta ahora todo vive en tu máquina. Para compartirlo, crea un repositorio vacío
+en GitHub (véase la [sección de GitHub](../github/first-steps.md)), luego
+conéctalo como remoto **`origin`** y haz push:
 
 ```console
 $ git remote add origin https://github.com/jparisu/nim-arena.git
@@ -237,20 +239,20 @@ To https://github.com/jparisu/nim-arena.git
 branch 'main' set up to track 'origin/main'.
 ```
 
-The `-u` flag links your local `main` to `origin/main`, so from now on a plain
-`git push` and `git pull` are enough.
+La opción `-u` vincula tu `main` local con `origin/main`, así que a partir de
+ahora bastan un simple `git push` y `git pull`.
 
-## Recap
+## Resumen
 
-In one short session you have used every core idea of this section:
+En una sesión corta has usado todas las ideas centrales de esta sección:
 
-- **`init`** to create a repository and **`.gitignore`** to keep it clean,
-- **`add`** and **`commit`** to record snapshots,
-- **`status`**, **`log`** and **`diff`** to inspect state,
-- **`branch`** / **`checkout`** to work in isolation,
-- **`merge`** — including **resolving a conflict** — to bring work together,
-- **`remote`** and **`push`** to share it with the world.
+- **`init`** para crear un repositorio y **`.gitignore`** para mantenerlo limpio,
+- **`add`** y **`commit`** para registrar instantáneas,
+- **`status`**, **`log`** y **`diff`** para inspeccionar el estado,
+- **`branch`** / **`checkout`** para trabajar de forma aislada,
+- **`merge`** —incluido **resolver un conflicto**— para juntar el trabajo,
+- **`remote`** y **`push`** para compartirlo con el mundo.
 
-This is exactly the loop you will repeat, over and over, for the rest of the
-project. The next step is doing it *as a team*, which is what the
-[GitHub section](../github/index.md) is about.
+Este es exactamente el ciclo que repetirás, una y otra vez, durante el resto del
+proyecto. El siguiente paso es hacerlo *en equipo*, que es de lo que trata la
+[sección de GitHub](../github/index.md).
