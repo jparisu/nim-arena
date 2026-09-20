@@ -139,6 +139,10 @@ function buildPlayerFilter() {
    triangle needs no more than trigonometry. */
 const RADAR_AXES = [
   { key: "elo", label: "Elo", higherIsBetter: true },
+  // The ranking axis when Elo is off (simple mode). Points live in the
+  // standings, not in the per-player stats, so `radarValue` looks them up
+  // there. Without this axis the triangle would collapse into a line.
+  { key: "points", label: "Points", higherIsBetter: true },
   { key: "win_rate", label: "Win rate", higherIsBetter: true },
   // Faster thinking should read as "better", i.e. further from the centre — so
   // this axis is inverted. Without that, the slowest bot would look strongest.
@@ -148,7 +152,15 @@ const RADAR_AXES = [
 function renderRadar(stats, useElo) {
   const box = $("sb-radar");
   box.innerHTML = "";
-  const axes = RADAR_AXES.filter((a) => a.key !== "elo" || useElo);
+  // Exactly one ranking axis: Elo when the run rated players, points otherwise.
+  const axes = RADAR_AXES.filter((a) =>
+    a.key === "elo" ? useElo : a.key === "points" ? !useElo : true
+  );
+  const points = new Map(
+    ((SB.data || {}).standings || []).map((r) => [r.player, Number(r.points) || 0])
+  );
+  const radarValue = (s, a) =>
+    (a.key === "points" ? points.get(s.player) : Number(s[a.key])) || 0;
   $("sb-radar-sub").textContent = `${stats.length} shown · ${axes.map((a) => a.label).join(" · ")}`;
 
   if (!stats.length) {
@@ -159,7 +171,7 @@ function renderRadar(stats, useElo) {
   // Normalise each axis across the *shown* players, so the chart always uses its
   // full area. A flat axis (everyone equal) sits at mid-radius.
   const ranges = axes.map((a) => {
-    const vals = stats.map((s) => Number(s[a.key]) || 0);
+    const vals = stats.map((s) => radarValue(s, a));
     return { min: Math.min(...vals), max: Math.max(...vals) };
   });
   const norm = (value, i) => {
@@ -194,7 +206,7 @@ function renderRadar(stats, useElo) {
   stats.forEach((s, idx) => {
     const hue = Math.round((360 * idx) / Math.max(1, stats.length));
     const pts = axes
-      .map((a, i) => pt(i, norm(Number(s[a.key]) || 0, i)).map((n) => n.toFixed(1)).join(","))
+      .map((a, i) => pt(i, norm(radarValue(s, a), i)).map((n) => n.toFixed(1)).join(","))
       .join(" ");
     parts.push(
       `<polygon class="radar-shape" points="${pts}" ` +
