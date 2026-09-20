@@ -47,6 +47,12 @@ flowchart LR
 
 ---
 
+## Índice
+
+[TOC]
+
+---
+
 ## Tres reglas, antes de empezar
 
 Estas tres reglas se aplican desde el Paso 1 hasta el final del proyecto. Son la
@@ -919,9 +925,3 @@ explica *por qué* algo es como es sobrevive a todos los comentarios que explica
 **Siguiente:** [Git](git/index.md) · [GitHub](github/index.md) · [Librería Python](python-library/index.md) · [Aplicación web](web-app/index.md) · [Documentación](documentation/index.md) — las cinco secciones, a fondo.
 
 **También:** [El juego](../game/index.md)
-
----
-
-## Índice
-
-<!-- TODO: añadir índice automático de toda la página, incluyendo cada punto intermedio -->
