@@ -248,7 +248,7 @@ run gives the same result twice.
             """Return a legal move chosen uniformly at random."""
             return self._rng.choice(legal_moves(state))
 
-    You can see the source code [here](https://github.com/jparisu/nim-arena/blob/main/players/random.py).
+    You can see the source code [here](https://github.com/jparisu/nim-arena/blob/main/players/builtin/random.py).
 
     ```
 

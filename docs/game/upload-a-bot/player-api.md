@@ -114,8 +114,7 @@ Una jugada es **legal** exactamente cuando:
 0 <= fila < len(state)   Y   1 <= cantidad <= state[fila]
 ```
 
-La única fuente de verdad es `nimarena.game.is_legal`. Devuelve una tupla real
-de dos `int`: booleanos, listas, generadores y aridades incorrectas se rechazan.
+La única fuente de verdad es `nimarena.game.is_legal`. Devuelve una tupla real de dos `int`.
 
 ---
 
@@ -249,7 +248,7 @@ ejecución del torneo da el mismo resultado dos veces.
             """Return a legal move chosen uniformly at random."""
             return self._rng.choice(legal_moves(state))
 
-    Puedes ver el código fuente [aquí](https://github.com/jparisu/nim-arena/blob/main/players/random.py).
+    Puedes ver el código fuente [aquí](https://github.com/jparisu/nim-arena/blob/main/players/builtin/random.py).
 
     ```
 

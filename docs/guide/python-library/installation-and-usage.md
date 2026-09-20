@@ -34,7 +34,6 @@ Puedes fijar una **rama**, etiqueta o commit concretos añadiendo `@<ref>`:
 
 ```bash
 pip install git+https://github.com/jparisu/nim-arena.git@main
-pip install git+https://github.com/jparisu/nim-arena.git@a9d292d
 ```
 
 !!! tip "¿Por qué instalar desde GitHub?"
