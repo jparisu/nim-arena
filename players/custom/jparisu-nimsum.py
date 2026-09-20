@@ -1,8 +1,8 @@
 from functools import reduce
 
-from nimarena.game import State, Move
-from nimarena.game import legal_moves, apply_move
+from nimarena.game import Move, State, apply_move, legal_moves
 from nimarena.player import Player
+
 
 class NimSumBot(Player):
     @classmethod
