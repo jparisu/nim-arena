@@ -1,24 +1,37 @@
 <!--
-Default PR template. Submitting a NEW PLAYER? Use the dedicated checklist:
-append ?template=new_player.md to the PR URL, or copy it from
-.github/PULL_REQUEST_TEMPLATE/new_player.md
+Default PR template: a NEW PLAYER submission — which is what nearly every pull
+request here is. Not adding a player? Append ?template=other.md to the PR URL,
+or just replace this with a description of your change.
 -->
 
-## What does this PR do?
+## New player: <!-- your bot's name -->
 
-<!-- A short description of the change. -->
+**Author:** <!-- your GitHub handle -->
+**Strategy in one sentence:** <!-- what does your bot do? -->
 
-## Type
+### Submission checklist
 
-- [ ] New AI player (see the new-player template)
-- [ ] Bug fix
-- [ ] Library / engine change
-- [ ] Docs
-- [ ] Web app
-- [ ] CI / tooling
+- [ ] Added a single file `players/custom/<my_bot>.py`.
+- [ ] The class subclasses `nimarena.player.Player`.
+- [ ] `get_name`, `get_authors`, `get_description` and `get_icon` are implemented.
+- [ ] The icon is a **single** emoji, and not already used by another player.
+- [ ] The name is **unique** — no admitted player already uses it.
+- [ ] `choose_move(self, state) -> (row, count)` returns a **legal** move.
+- [ ] Does **not** mutate the `state` it receives.
+- [ ] Added **exactly one** entry to `players/custom/players.yaml` (`file` and `class`).
+- [ ] No external dependencies beyond the standard library and `nimarena`.
+- [ ] No network / filesystem / subprocess / `eval` / `exec`.
+- [ ] Runs locally: `pytest tests/test_custom_players.py` is green and `nim-tournament --no-subprocess` works.
 
-## Checklist
+### Maintainer review (acceptance criteria)
 
-- [ ] `pytest` passes locally.
-- [ ] `ruff check .` is clean.
-- [ ] Docs updated if behavior changed.
+- [ ] **Design** — one file in `players/custom/` + one manifest line, minimal.
+- [ ] **Correctness** — CI green; legal moves; no mutation; no errors/timeouts vs
+      the reference bots.
+- [ ] **No malware** — code read in full; nothing suspicious.
+
+<!--
+A player that errors or times out will not be merged — robustness is the
+submitter's responsibility. See CONTRIBUTING.md and
+https://nim-arena.readthedocs.io/en/latest/game/upload-a-bot/submit-a-player/
+-->
