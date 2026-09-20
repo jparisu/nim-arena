@@ -161,7 +161,7 @@ the other one exists. This repository ships
 - [ ] Added **exactly one** entry to `players.yaml` (`file` and `class`).
 - [ ] No external dependencies beyond the standard library and `nimarena`.
 - [ ] No network / filesystem / subprocess / `eval` / `exec`.
-- [ ] Runs locally: `pytest` is green and `nim-tournament --no-subprocess` works.
+- [ ] Runs locally: `pytest tests/test_custom_players.py` is green and `nim-tournament --no-subprocess` works.
 
 ### Maintainer review (acceptance criteria)
 

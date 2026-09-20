@@ -40,7 +40,7 @@ which is exactly why review is the security and correctness gate.
 
    ```bash
    pip install -e ".[dev]"
-   pytest                           # must be green
+   pytest tests/test_custom_players.py   # checks your player
    nim-tournament --no-subprocess   # play your bot against the reference players
    ```
 

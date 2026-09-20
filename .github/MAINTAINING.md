@@ -86,10 +86,11 @@ and correctness gate. Check the acceptance criteria from
    `players/custom/players.yaml`, subclasses `Player`, unique `name`. A
    submission must not touch `players/builtin/`.
 2. **Correctness** — CI green; legal moves; no mutation of `state`; no
-   errors/timeouts against the reference bots. Note that `pytest` asserts nothing
-   about a submitted bot on purpose — a suite that pinned the roster would go red
-   on every submission — so **run `nim-tournament` on the branch yourself**. That
-   is where a bad bot shows up.
+   errors/timeouts against the reference bots. The **Custom players** workflow is
+   the one that judges the submission: it discovers every bot in
+   `players/custom/players.yaml` and checks identity, legal moves and full games
+   against `random`. The **Tests** workflow deliberately skips submitted bots, so
+   a broken one fails only its own check — never an unrelated pull request.
 3. **No malware** — read the code in full. Reject on sight: network, filesystem,
    subprocess, `eval`/`exec`, `os`/`sys` manipulation, obfuscation, or attempts
    to read secrets or escape the sandbox.

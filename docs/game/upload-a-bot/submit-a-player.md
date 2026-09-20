@@ -63,7 +63,7 @@ nada que mantener sincronizado.
 ## Paso 4 — Verifica en local
 
 ```bash
-pytest                         # debe estar verde
+pytest tests/test_custom_players.py   # comprueba tu jugador
 nim-tournament --no-subprocess # juega tu bot contra los de referencia
 ```
 
@@ -89,6 +89,7 @@ CI se ejecuta en cada push al PR:
 | `ruff` | estilo y errores evidentes |
 | `mypy` | tipos |
 | `pytest` | las pruebas, en tres versiones de Python |
+| jugadores enviados | tu jugador: identidad, movimientos legales y partidas contra `random` |
 | torneo de humo | que tu bot juegue partidas legales |
 | documentación | que el sitio construya sin avisos |
 

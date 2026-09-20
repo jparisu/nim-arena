@@ -63,6 +63,10 @@ addopts = "-ra"
 line-length = 100
 target-version = "py310"
 src = ["src", "tests"]
+# Submitted players are linted by the Custom players workflow (`ruff check
+# players/custom`), not by the repo-wide run, so one bad submission cannot fail
+# every unrelated pull request.
+extend-exclude = ["players/custom"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "W"]
@@ -82,6 +86,10 @@ files = ["src", "players", "scripts", "tests", "conftest.py"]
 mypy_path = "src:web:."
 explicit_package_bases = true
 namespace_packages = true
+# Same reason as ruff's extend-exclude above: submitted players are type-checked
+# by the Custom players workflow (`mypy players/custom`). Naming a file on the
+# command line overrides this exclusion, which is what that workflow relies on.
+exclude = "^players/custom/"
 # Everything shipped must be annotated. `strict` is deliberately NOT used: it also
 # demands TypedDicts for the JSON result payloads, which would be a large refactor
 # for little gain — the payload is validated by tests against a documented schema.
