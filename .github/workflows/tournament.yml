@@ -1,8 +1,7 @@
 name: Tournament
 
 # Runs the round-robin and opens (or updates) a pull request with the new
-# results/leaderboard.json. `main` is protected, so the bot cannot push to it;
-# a maintainer merges the PR, and that merge redeploys the Pages scoreboard.
+# results/leaderboard.json. Merging that PR redeploys the Pages scoreboard.
 # Runs on every push to main, weekly, and on demand.
 #
 # Timing is measured HERE, on GitHub's runners (slower and more variable than a
@@ -70,8 +69,6 @@ jobs:
       - name: Open or update the leaderboard pull request
         # Always the same branch, force-pushed from main, so there is at most one
         # open results PR and it always holds only the latest run.
-        # Needs "Allow GitHub Actions to create and approve pull requests"
-        # (Settings > Actions > General > Workflow permissions).
         env:
           GH_TOKEN: ${{ github.token }}
           BRANCH: tournament/leaderboard
