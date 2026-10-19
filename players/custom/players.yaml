@@ -25,3 +25,7 @@ players:
   - file: jparisu-nimsum.py
     class: NimSumBot
 
+  # lucia arguello bot
+  - file: lucia-ar-player.py
+    class: LuciaBot
+
