@@ -3,7 +3,7 @@ name: Tournament
 # Runs the round-robin and opens (or updates) a pull request with the new
 # results/leaderboard.json. `main` is protected, so the bot cannot push to it;
 # a maintainer merges the PR, and that merge redeploys the Pages scoreboard.
-# Runs on a weekly schedule and on demand.
+# Runs on every push to main, weekly, and on demand.
 #
 # Timing is measured HERE, on GitHub's runners (slower and more variable than a
 # laptop) — the budget below is deliberately generous. It is a per-player budget
@@ -23,6 +23,12 @@ on:
         required: false
   schedule:
     - cron: "0 6 * * 1" # every Monday 06:00 UTC
+  push:
+    branches: [main]
+    # Merging the results PR is itself a push to main. Without this filter that
+    # merge would start a new tournament, which opens a new PR, forever.
+    paths-ignore:
+      - "results/**"
 
 permissions:
   contents: write # push the results branch
