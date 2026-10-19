@@ -136,3 +136,7 @@ tests/          pytest suite
 ## License
 
 [MIT](LICENSE).
+
+## Authors
+
+- Manuel Martín

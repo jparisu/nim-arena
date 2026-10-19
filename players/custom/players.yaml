@@ -25,3 +25,7 @@ players:
   - file: jparisu-nimsum.py
     class: NimSumBot
 
+  # manuel bot
+  - file: manuel-ar-player.py
+    class: ManuelPlayer
+
