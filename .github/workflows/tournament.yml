@@ -63,7 +63,11 @@ jobs:
       - name: Run the tournament (one forked process per game, hard timeout)
         run: |
           nim-tournament \
-            --out results/leaderboard.      - name: Open or update the leaderboard pull request
+            --out results/leaderboard.json \
+            --tournament "${{ github.event.inputs.tournament || 'league' }}" \
+            --time-limit "${{ github.event.inputs.time_limit || '2.0' }}"
+
+      - name: Open or update the leaderboard pull request
         # Always the same branch, force-pushed from main, so there is at most one
         # open results PR and it always holds only the latest run.
         # Needs "Allow GitHub Actions to create and approve pull requests"
