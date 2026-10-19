@@ -1,7 +1,9 @@
 name: Tournament
 
-# Runs the round-robin and commits the updated results/leaderboard.json so the
-# Pages scoreboard reflects it. Runs on a weekly schedule and on demand.
+# Runs the round-robin and opens (or updates) a pull request with the new
+# results/leaderboard.json. `main` is protected, so the bot cannot push to it;
+# a maintainer merges the PR, and that merge redeploys the Pages scoreboard.
+# Runs on a weekly schedule and on demand.
 #
 # Timing is measured HERE, on GitHub's runners (slower and more variable than a
 # laptop) — the budget below is deliberately generous. It is a per-player budget
@@ -23,7 +25,8 @@ on:
     - cron: "0 6 * * 1" # every Monday 06:00 UTC
 
 permissions:
-  contents: write # needed to commit the results file back
+  contents: write # push the results branch
+  pull-requests: write # open the results pull request
 
 concurrency:
   group: tournament
@@ -54,24 +57,29 @@ jobs:
       - name: Run the tournament (one forked process per game, hard timeout)
         run: |
           nim-tournament \
-            --out results/leaderboard.json \
-            --tournament "${{ github.event.inputs.tournament || 'league' }}" \
-            --time-limit "${{ github.event.inputs.time_limit || '2.0' }}"
-
-      - name: Commit updated leaderboard
+            --out results/leaderboard.      - name: Open or update the leaderboard pull request
+        # Always the same branch, force-pushed from main, so there is at most one
+        # open results PR and it always holds only the latest run.
+        # Needs "Allow GitHub Actions to create and approve pull requests"
+        # (Settings > Actions > General > Workflow permissions).
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: tournament/leaderboard
         run: |
+          if git diff --quiet -- results/leaderboard.json; then
+            echo "Leaderboard unchanged; nothing to propose."
+            exit 0
+          fi
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          if git diff --quiet -- results/leaderboard.json; then
-            echo "Leaderboard unchanged; nothing to commit."
+          git switch -c "$BRANCH"
+          git add results/leaderboard.json
+          git commit -m "chore(tournament): update leaderboard"
+          git push --force origin "$BRANCH"
+          if [ -n "$(gh pr list --head "$BRANCH" --state open --json number --jq '.[].number')" ]; then
+            echo "Updated the open leaderboard pull request."
           else
-            git add results/leaderboard.json
-            # No CI-skip marker here (it suppresses every workflow on the push).
-            # Note that removing it is not what redeploys the scoreboard: this
-            # push uses the default GITHUB_TOKEN, and GitHub raises no `push`
-            # event for such commits, so no workflow can trigger from it at all.
-            # Pages instead reacts to *this workflow completing*, via its
-            # `workflow_run` trigger. See .github/workflows/pages.yml.
-            git commit -m "chore(tournament): update leaderboard"
-            git push
+            gh pr create --base main --head "$BRANCH" \
+              --title "chore(tournament): update leaderboard" \
+              --body "Automatic results from the Tournament workflow, run ${{ github.run_id }}. Merge to publish the scoreboard."
           fi
