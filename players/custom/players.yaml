@@ -32,3 +32,7 @@ players:
   # antonioorteu bot
   - file: antonioorteu-xormaster.py
     class: XorMaster
+
+  # daniela gonzález bot
+  - file: daniela-playernim.py
+    class: DanielaBot
